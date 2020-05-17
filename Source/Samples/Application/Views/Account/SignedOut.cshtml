@@ -1,0 +1,15 @@
+@{ ViewBag.Heading = "Signed out"; }
+@{ ViewBag.SignedOut = true; }
+<div class="card">
+	<div class="card-header">
+		<h1 class="h4 m-0 p-0">
+			<svg class="size-1-point-4-rem m-0 p-0" role="presentation">
+				<use xlink:href="/Style/Icons/sprite.svg#check" />
+			</svg>
+			@ViewBag.Heading
+		</h1>
+	</div>
+	<div class="card-body">
+		<p>You are now sigend out.</p>
+	</div>
+</div>

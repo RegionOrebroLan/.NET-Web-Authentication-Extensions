@@ -1,0 +1,18 @@
+<Project>
+	<PropertyGroup>
+		<AssemblyOriginatorKeyFile>$(SolutionDir).Global\Signing\StrongName.Development.snk</AssemblyOriginatorKeyFile>
+		<CodeAnalysisRuleSet>CodeAnalysis\Rules.ruleset</CodeAnalysisRuleSet>
+		<DelaySign>false</DelaySign>
+		<SignAssembly>true</SignAssembly>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Remove="CodeAnalysis\Dictionary.xml" />
+		<AdditionalFiles Include="CodeAnalysis\Dictionary.xml" />
+		<AdditionalFiles Include="$(SolutionDir).Global\CodeAnalysis\Solution-dictionary.xml">
+			<Link>CodeAnalysis\Solution-dictionary.xml</Link>
+		</AdditionalFiles>
+		<Compile Include="$(SolutionDir).Global\CodeAnalysis\Solution-suppressions.cs">
+			<Link>CodeAnalysis\Solution-suppressions.cs</Link>
+		</Compile>
+	</ItemGroup>
+</Project>

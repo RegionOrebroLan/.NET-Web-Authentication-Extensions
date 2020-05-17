@@ -1,0 +1,1 @@
+﻿Drop the "StrongName.snk" file in this folder. The file should not be included in source control.

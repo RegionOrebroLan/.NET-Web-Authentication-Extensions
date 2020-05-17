@@ -1,0 +1,47 @@
+@model HomeViewModel
+@{ ViewBag.Heading = "Authentication-schemes"; }
+@if(Model.AuthenticationSchemes.Any())
+{
+	<div class="card">
+		<div class="card-header">
+			<h1 class="h4">@ViewBag.Heading</h1>
+		</div>
+		<div class="card-body">
+			<p>The following authentication-schemes are registered.</p>
+			<ul class="authentication-schemes list-group">
+				@foreach(var authenticationScheme in Model.AuthenticationSchemes)
+				{
+					<li class="list-group-item">
+						<h2 class="h6">
+							<svg class="size-1-point-4-rem" role="presentation">
+								<use xlink:href="/Style/Icons/sprite.svg#@authenticationScheme.Icon" />
+							</svg>
+							@authenticationScheme.Name
+						</h2>
+						<ul>
+							<li>Display-name: <strong>@authenticationScheme.DisplayName</strong></li>
+							<li>Handler-type:<br /><strong>@authenticationScheme.HandlerType</strong></li>
+							<li>Icon: <strong>@authenticationScheme.Icon</strong></li>
+							<li>Index: <strong>@authenticationScheme.Index</strong></li>
+							<li>Interactive: <strong>@authenticationScheme.Interactive</strong></li>
+							<li>Kind: <strong>@authenticationScheme.Kind</strong></li>
+							<li>Name: <strong>@authenticationScheme.Name</strong></li>
+						</ul>
+					</li>
+				}
+			</ul>
+		</div>
+	</div>
+}
+else
+{
+	<div class="alert alert-warning">
+		<h1 class="h5">
+			<svg class="size-1-point-6-rem" role="presentation">
+				<use xlink:href="/Style/Icons/sprite.svg#alert-circle" />
+			</svg>
+			No schemes
+		</h1>
+		<p>There are no authentication-schemes registered.</p>
+	</div>
+}

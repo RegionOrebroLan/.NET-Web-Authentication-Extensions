@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="Build\Build.props" />
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+	</PropertyGroup>
+	<Import Project="Build\Build.targets" />
+</Project>

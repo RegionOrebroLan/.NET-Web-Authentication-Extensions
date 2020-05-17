@@ -1,0 +1,34 @@
+@{ ViewBag.Heading = "Your identity"; }
+<div class="card">
+	<div class="card-header">
+		<h1 class="h4 m-0 p-0">
+			<svg class="size-1-point-4-rem m-0 p-0" role="presentation">
+				<use xlink:href="/Style/Icons/sprite.svg#person" />
+			</svg>
+			@ViewBag.Heading
+		</h1>
+	</div>
+	<div class="card-body">
+		<p>User-name: <strong>@User.Identity.Name</strong></p>
+		<h2 class="h6">Claims</h2>
+		<ul class="list-group">
+			@foreach(var claim in this.User.Claims.OrderBy(item => item.Type))
+			{
+				<li class="list-group-item">
+					<h3 class="h6">@claim.Type</h3>
+					<ul class="list-unstyled">
+						<li>
+							<small>Value: <strong>@claim.Value</strong></small>
+						</li>
+						<li>
+							<small>Issuer: <strong>@claim.Issuer</strong></small>
+						</li>
+						<li>
+							<small>Original issuer: <strong>@claim.OriginalIssuer</strong></small>
+						</li>
+					</ul>
+				</li>
+			}
+		</ul>
+	</div>
+</div>

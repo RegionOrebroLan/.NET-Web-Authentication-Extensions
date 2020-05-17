@@ -1,0 +1,140 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+//@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+//@import "bootstrap/scss/images";
+//@import "bootstrap/scss/code";
+@import "bootstrap/scss/grid";
+//@import "bootstrap/scss/tables";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/dropdown";
+//@import "bootstrap/scss/button-group";
+@import "bootstrap/scss/input-group";
+@import "bootstrap/scss/custom-forms";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";
+@import "bootstrap/scss/card";
+//@import "bootstrap/scss/breadcrumb";
+//@import "bootstrap/scss/pagination";
+//@import "bootstrap/scss/badge";
+//@import "bootstrap/scss/jumbotron";
+@import "bootstrap/scss/alert";
+//@import "bootstrap/scss/progress";
+//@import "bootstrap/scss/media";
+@import "bootstrap/scss/list-group";
+//@import "bootstrap/scss/close";
+//@import "bootstrap/scss/toasts";
+//@import "bootstrap/scss/modal";
+//@import "bootstrap/scss/tooltip";
+@import "bootstrap/scss/popover";
+//@import "bootstrap/scss/carousel";
+//@import "bootstrap/scss/spinners";
+@import "bootstrap/scss/utilities";
+@import "bootstrap/scss/print";
+
+body {
+	//background-image: linear-gradient(315deg, #d8eacb 0.04%, #d5eaff 100%);
+	margin-top: 75px;
+}
+
+.card {
+	margin-bottom: 1rem;
+}
+
+.container, .container-sm, .container-md, .container-lg, .container-xl {
+	max-width: 720px;
+}
+
+.dropdown-menu {
+	left: auto;
+	right: 0;
+}
+
+.authentication-schemes {
+	margin: auto;
+
+	li {
+		border-radius: 0.25rem;
+		margin-bottom: 0.6rem;
+
+		a {
+			color: inherit;
+		}
+
+		a:hover {
+			text-decoration: none;
+		}
+
+		h2 {
+			font-weight: bold;
+			margin: 0;
+		}
+
+		svg {
+			margin-right: 0.6rem;
+		}
+	}
+
+	li:hover {
+		background-color: $card-cap-bg;
+	}
+
+	.list-group-item {
+		border-top-width: 1px;
+	}
+}
+
+.authentication-schemes.sign-in {
+	max-width: 500px;
+
+	li {
+		h2 {
+			font-weight: normal;
+		}
+	}
+}
+
+.navbar-brand {
+	margin: 0;
+	margin-right: 1rem;
+	padding: 0;
+}
+
+.size-1-rem {
+	height: 1rem;
+	width: 1rem;
+}
+
+.size-1-point-2-rem {
+	height: 1.2rem;
+	width: 1.2rem;
+}
+
+.size-1-point-4-rem {
+	height: 1.4rem;
+	width: 1.4rem;
+}
+
+.size-1-point-6-rem {
+	height: 1.6rem;
+	width: 1.6rem;
+}
+
+.size-1-point-8-rem {
+	height: 1.8rem;
+	width: 1.8rem;
+}
+
+.size-2-rem {
+	height: 2rem;
+	width: 2rem;
+}
+
+.size-4-rem {
+	height: 4rem;
+	width: 4rem;
+}

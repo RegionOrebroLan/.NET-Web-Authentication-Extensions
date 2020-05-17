@@ -1,0 +1,19 @@
+<!-- https://docs.microsoft.com/en-us/visualstudio/code-quality/how-to-customize-the-code-analysis-dictionary?view=vs-2017 -->
+<Dictionary>
+	<Acronyms>
+		<CasingExceptions>
+			<!--<Acronym></Acronym>-->
+		</CasingExceptions>
+	</Acronyms>
+	<Words>
+		<DiscreteExceptions>
+			<!--<Term></Term>-->
+		</DiscreteExceptions>
+		<Recognized>
+			<!--<Word></Word>-->
+		</Recognized>
+		<Unrecognized>
+			<!--<Word></Word>-->
+		</Unrecognized>
+	</Words>
+</Dictionary>

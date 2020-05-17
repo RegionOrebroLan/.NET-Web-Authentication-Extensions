@@ -1,0 +1,5 @@
+@model SignOutForm
+<form asp-action="SignOut" asp-controller="Account" class="d-inline ml-2">
+	<input name="@(nameof(Model.Id))" type="hidden" value="@Model.Id" />
+	<button autofocus="autofocus" class="btn btn-primary" type="submit">Yes</button>
+</form>
