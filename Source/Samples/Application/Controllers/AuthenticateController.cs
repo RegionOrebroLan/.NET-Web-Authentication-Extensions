@@ -56,7 +56,7 @@ namespace Application.Controllers
 			var authenticateResult = await this.HttpContext.AuthenticateAsync(this.AuthenticationOptions.Value.DefaultSignInScheme);
 
 			if(!authenticateResult.Succeeded)
-				throw new InvalidOperationException("Authentication error.");
+				throw new InvalidOperationException("Authentication error.", authenticateResult.Failure);
 
 			var returnUrl = this.ResolveAndValidateReturnUrl(authenticateResult.Properties.Items["returnUrl"]);
 
@@ -87,7 +87,7 @@ namespace Application.Controllers
 			var authenticateResult = await this.HttpContext.AuthenticateAsync(authenticationScheme);
 
 			if(!authenticateResult.Succeeded)
-				throw new InvalidOperationException("Authentication error.");
+				throw new InvalidOperationException("Authentication error.", authenticateResult.Failure);
 
 			var authenticationProperties = this.CreateAuthenticationProperties(returnUrl, authenticationScheme);
 

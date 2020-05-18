@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="Build\Build.props" />
 	<ItemGroup>
-		<PackageReference Include="RegionOrebroLan.Web.Authentication.Certificate" Version="0.0.0-alpha" />
+		<PackageReference Include="RegionOrebroLan.Web.Authentication.Certificate" Version="0.0.1-alpha" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="3.1.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.1.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="3.1.4" />
