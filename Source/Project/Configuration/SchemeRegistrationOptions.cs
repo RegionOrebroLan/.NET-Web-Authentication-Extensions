@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
+using RegionOrebroLan.Configuration;
 
 namespace RegionOrebroLan.Web.Authentication.Configuration
 {
-	public class SchemeRegistrationOptions
+	public class SchemeRegistrationOptions : DynamicOptions
 	{
 		#region Properties
 
@@ -18,9 +18,7 @@ namespace RegionOrebroLan.Web.Authentication.Configuration
 		/// </summary>
 		public virtual bool Interactive { get; set; } = true;
 
-		public virtual IConfigurationSection Options { get; set; }
 		public virtual bool SignOutSupport { get; set; }
-		public virtual string Type { get; set; }
 
 		#endregion
 	}
