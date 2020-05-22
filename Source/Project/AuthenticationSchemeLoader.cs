@@ -4,10 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using RegionOrebroLan.DependencyInjection;
 using RegionOrebroLan.Web.Authentication.Configuration;
 
 namespace RegionOrebroLan.Web.Authentication
 {
+	[ServiceConfiguration(ServiceType = typeof(IAuthenticationSchemeLoader))]
 	public class AuthenticationSchemeLoader : IAuthenticationSchemeLoader
 	{
 		#region Constructors
