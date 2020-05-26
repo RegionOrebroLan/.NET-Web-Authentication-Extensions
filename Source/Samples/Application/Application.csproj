@@ -5,7 +5,7 @@
 		<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="IdentityModel" Version="4.2.0" />
+		<PackageReference Include="IdentityModel" Version="4.3.0" />
 		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.9.2">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
