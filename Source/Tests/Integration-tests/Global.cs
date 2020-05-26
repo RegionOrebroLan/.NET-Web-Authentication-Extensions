@@ -31,13 +31,7 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests
 			get
 			{
 				if(_configuration == null)
-				{
-					var configurationBuilder = CreateConfigurationBuilder();
-
-					_configuration = configurationBuilder
-						.AddJsonFile("AppSettings.json", true, true)
-						.Build();
-				}
+					_configuration = CreateConfiguration("AppSettings.json");
 
 				return _configuration;
 			}
@@ -63,6 +57,18 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests
 			return services.BuildServiceProvider().GetRequiredService<ICertificateResolver>();
 		}
 
+		public static IConfiguration CreateConfiguration(params string[] jsonFilePaths)
+		{
+			var configurationBuilder = CreateConfigurationBuilder();
+
+			foreach(var path in jsonFilePaths)
+			{
+				configurationBuilder.AddJsonFile(path, true, true);
+			}
+
+			return configurationBuilder.Build();
+		}
+
 		public static IConfigurationBuilder CreateConfigurationBuilder()
 		{
 			var configurationBuilder = new ConfigurationBuilder();
@@ -83,9 +89,14 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests
 
 		public static IServiceCollection CreateServices()
 		{
+			return CreateServices(Configuration);
+		}
+
+		public static IServiceCollection CreateServices(IConfiguration configuration)
+		{
 			var services = new ServiceCollection();
 
-			services.AddSingleton(Configuration);
+			services.AddSingleton(configuration);
 			services.AddSingleton(HostEnvironment);
 			services.AddSingleton<ILoggerFactory, LoggerFactoryMock>();
 
