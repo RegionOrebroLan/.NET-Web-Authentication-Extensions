@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
+using Microsoft.Extensions.Logging;
+using RegionOrebroLan.Security.Cryptography;
+using RegionOrebroLan.Web.Authentication.Test.Mocks.Logging;
 
 namespace RegionOrebroLan.Web.Authentication.IntegrationTests
 {
@@ -46,6 +49,20 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests
 
 		#region Methods
 
+		public static ICertificateResolver CreateCertificateResolver()
+		{
+			var services = new ServiceCollection();
+
+			services.AddSingleton(AppDomain.CurrentDomain);
+			services.AddSingleton<FileCertificateResolver>();
+			services.AddSingleton(HostEnvironment);
+			services.AddSingleton<IApplicationDomain, ApplicationHost>();
+			services.AddSingleton<ICertificateResolver, CertificateResolver>();
+			services.AddSingleton<StoreCertificateResolver>();
+
+			return services.BuildServiceProvider().GetRequiredService<ICertificateResolver>();
+		}
+
 		public static IConfigurationBuilder CreateConfigurationBuilder()
 		{
 			var configurationBuilder = new ConfigurationBuilder();
@@ -70,6 +87,7 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests
 
 			services.AddSingleton(Configuration);
 			services.AddSingleton(HostEnvironment);
+			services.AddSingleton<ILoggerFactory, LoggerFactoryMock>();
 
 			return services;
 		}

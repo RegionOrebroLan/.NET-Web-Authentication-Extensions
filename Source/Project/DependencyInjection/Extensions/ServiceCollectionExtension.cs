@@ -2,8 +2,9 @@ using System;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RegionOrebroLan.DependencyInjection;
+using RegionOrebroLan.Security.Cryptography;
 using RegionOrebroLan.Web.Authentication.Configuration;
-using RegionOrebroLan.Web.Authentication.Extensions;
 
 namespace RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions
 {
@@ -11,25 +12,28 @@ namespace RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions
 	{
 		#region Methods
 
-		public static AuthenticationBuilder AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+		public static ExtendedAuthenticationBuilder AddAuthentication(this IServiceCollection services, ICertificateResolver certificateResolver, IConfiguration configuration, IInstanceFactory instanceFactory)
 		{
-			return services.AddAuthentication(configuration, ConfigurationKeys.AuthenticationPath);
+			return services.AddAuthentication(certificateResolver, configuration, ConfigurationKeys.AuthenticationPath, instanceFactory);
 		}
 
-		public static AuthenticationBuilder AddAuthentication(this IServiceCollection services, IConfiguration configuration, string configurationKey)
+		public static ExtendedAuthenticationBuilder AddAuthentication(this IServiceCollection services, ICertificateResolver certificateResolver, IConfiguration configuration, string configurationKey, IInstanceFactory instanceFactory)
 		{
-			return services.AddAuthentication(configuration, configurationKey, _ => { });
+			return services.AddAuthentication(certificateResolver, configuration, configurationKey, instanceFactory, _ => { });
 		}
 
-		public static AuthenticationBuilder AddAuthentication(this IServiceCollection services, IConfiguration configuration, Action<AuthenticationOptions> postConfigureOptions)
+		public static ExtendedAuthenticationBuilder AddAuthentication(this IServiceCollection services, ICertificateResolver certificateResolver, IConfiguration configuration, IInstanceFactory instanceFactory, Action<AuthenticationOptions> postConfigureOptions)
 		{
-			return services.AddAuthentication(configuration, ConfigurationKeys.AuthenticationPath, postConfigureOptions);
+			return services.AddAuthentication(certificateResolver, configuration, ConfigurationKeys.AuthenticationPath, instanceFactory, postConfigureOptions);
 		}
 
-		public static AuthenticationBuilder AddAuthentication(this IServiceCollection services, IConfiguration configuration, string configurationKey, Action<AuthenticationOptions> postConfigureOptions)
+		public static ExtendedAuthenticationBuilder AddAuthentication(this IServiceCollection services, ICertificateResolver certificateResolver, IConfiguration configuration, string configurationKey, IInstanceFactory instanceFactory, Action<AuthenticationOptions> postConfigureOptions)
 		{
 			if(services == null)
 				throw new ArgumentNullException(nameof(services));
+
+			if(certificateResolver == null)
+				throw new ArgumentNullException(nameof(certificateResolver));
 
 			if(configuration == null)
 				throw new ArgumentNullException(nameof(configuration));
@@ -37,11 +41,21 @@ namespace RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions
 			if(configurationKey == null)
 				throw new ArgumentNullException(nameof(configurationKey));
 
+			if(instanceFactory == null)
+				throw new ArgumentNullException(nameof(instanceFactory));
+
 			if(postConfigureOptions == null)
 				throw new ArgumentNullException(nameof(postConfigureOptions));
 
-			var authenticationBuilder = services.AddAuthentication(options => { configuration.GetSection(configurationKey)?.Bind(options); })
-				.Configure(configuration, configurationKey);
+			services.AddAuthentication(options => { configuration.GetSection(configurationKey)?.Bind(options); });
+
+			var authenticationBuilder = new ExtendedAuthenticationBuilder(services)
+			{
+				CertificateResolver = certificateResolver,
+				Configuration = configuration,
+				ConfigurationKey = configurationKey,
+				InstanceFactory = instanceFactory,
+			}.Configure();
 
 			services.PostConfigure(postConfigureOptions);
 

@@ -4,14 +4,4 @@
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 	</PropertyGroup>
 	<Import Project="Build\Build.targets" />
-	<ItemGroup>
-	  <None Remove="AppSettings.json" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Content Include="AppSettings.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-	  </Content>
-	</ItemGroup>
 </Project>

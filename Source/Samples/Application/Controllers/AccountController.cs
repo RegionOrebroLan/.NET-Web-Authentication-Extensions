@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Application.Business.Security.Claims.Extensions;
 using Application.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using RegionOrebroLan.Web.Authentication;
 using RegionOrebroLan.Web.Authentication.Configuration;
+using RegionOrebroLan.Web.Authentication.Security.Claims.Extensions;
 
 namespace Application.Controllers
 {
@@ -80,7 +80,7 @@ namespace Application.Controllers
 		[ValidateAntiForgeryToken]
 		public virtual async Task<IActionResult> SignOut(SignOutForm form)
 		{
-			var authenticationSchemeName = this.User.Claims.FindIdentityProviderClaim()?.Value;
+			var authenticationSchemeName = this.User.Claims.FindFirstIdentityProviderClaim()?.Value;
 
 			if(this.User.Identity.IsAuthenticated)
 				await this.HttpContext.SignOutAsync();

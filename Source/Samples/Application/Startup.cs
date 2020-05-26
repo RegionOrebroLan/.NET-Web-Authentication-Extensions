@@ -1,9 +1,12 @@
 using System;
-using Application.Business.Builder.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RegionOrebroLan;
+using RegionOrebroLan.DependencyInjection;
+using RegionOrebroLan.Security.Cryptography;
+using RegionOrebroLan.Web.Authentication.Builder.Extensions;
 using RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions;
 
 namespace Application
@@ -31,6 +34,9 @@ namespace Application
 
 		public virtual void Configure(IApplicationBuilder applicationBuilder)
 		{
+			if(applicationBuilder == null)
+				throw new ArgumentNullException(nameof(applicationBuilder));
+
 			applicationBuilder
 				.UseDeveloperExceptionPage()
 				.ResolveWindowsAuthentication()
@@ -43,6 +49,9 @@ namespace Application
 
 		public virtual void ConfigureServices(IServiceCollection services)
 		{
+			if(services == null)
+				throw new ArgumentNullException(nameof(services));
+
 			//// We could skip the configuration of cookie-authentication in the configuration-file (AppSettings.json) and instead do:
 			//services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 			//	.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -52,8 +61,22 @@ namespace Application
 			//	})
 			//	.Configure(this.Configuration);
 
-			services.AddAuthentication(this.Configuration);
+			services.AddAuthentication(this.CreateCertificateResolver(), this.Configuration, new InstanceFactory());
 			services.AddControllersWithViews();
+		}
+
+		protected internal virtual ICertificateResolver CreateCertificateResolver()
+		{
+			var services = new ServiceCollection();
+
+			services.AddSingleton(AppDomain.CurrentDomain);
+			services.AddSingleton<FileCertificateResolver>();
+			services.AddSingleton(this.HostEnvironment);
+			services.AddSingleton<IApplicationDomain, ApplicationHost>();
+			services.AddSingleton<ICertificateResolver, CertificateResolver>();
+			services.AddSingleton<StoreCertificateResolver>();
+
+			return services.BuildServiceProvider().GetRequiredService<ICertificateResolver>();
 		}
 
 		#endregion

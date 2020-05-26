@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RegionOrebroLan.DependencyInjection;
 using RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions;
 
 namespace RegionOrebroLan.Web.Authentication.IntegrationTests.DependencyInjection.Extensions
@@ -21,7 +22,7 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests.DependencyInjectio
 		{
 			var services = Global.CreateServices();
 
-			services.AddAuthentication(Global.Configuration);
+			services.AddAuthentication(Global.CreateCertificateResolver(), Global.Configuration, new InstanceFactory());
 
 			var serviceProvider = services.BuildServiceProvider();
 
