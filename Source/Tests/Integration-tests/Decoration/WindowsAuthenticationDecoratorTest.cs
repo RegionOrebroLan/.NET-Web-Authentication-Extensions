@@ -11,6 +11,7 @@ using Moq;
 using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
+using RegionOrebroLan.Web.Authentication.DirectoryServices;
 using RegionOrebroLan.Web.Authentication.Security.Claims;
 
 namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
@@ -37,7 +38,9 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
 
 		protected internal virtual WindowsAuthenticationDecorator CreateWindowsAuthenticationDecorator(ExtendedAuthenticationOptions authenticationOptions, ILoggerFactory loggerFactory)
 		{
-			return new WindowsAuthenticationDecorator(Options.Create(authenticationOptions), loggerFactory);
+			var options = Options.Create(authenticationOptions);
+
+			return new WindowsAuthenticationDecorator(new ActiveDirectory(options), options, loggerFactory);
 		}
 
 		[TestMethod]
@@ -52,7 +55,7 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
 
 			windowsAuthenticationDecorator.DecorateAsync(authenticateResult, authenticationScheme, claims, null).Wait();
 
-			Assert.AreEqual(6, claims.Count);
+			Assert.AreEqual(8, claims.Count);
 			Assert.AreEqual(windowsIdentity.AuthenticationType, claims.First(claim => string.Equals(claim.Type, ClaimTypes.AuthenticationMethod, StringComparison.Ordinal)).Value);
 			Assert.AreEqual(windowsIdentity.Name, claims.First(claim => string.Equals(claim.Type, ClaimTypes.Name, StringComparison.Ordinal)).Value);
 			Assert.AreEqual(windowsIdentity.FindFirst(ClaimTypes.PrimarySid).Value, claims.First(claim => string.Equals(claim.Type, ClaimTypes.NameIdentifier, StringComparison.Ordinal)).Value);
@@ -74,7 +77,7 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
 			windowsAuthenticationDecorator.DecorateAsync(authenticateResult, authenticationScheme, claims, null).Wait();
 
 			// ReSharper disable PossibleNullReferenceException
-			Assert.AreEqual(6 + windowsIdentity.Groups.Count, claims.Count);
+			Assert.AreEqual(8 + windowsIdentity.Groups.Count, claims.Count);
 			// ReSharper restore PossibleNullReferenceException
 		}
 

@@ -13,12 +13,13 @@ using RegionOrebroLan.Logging.Extensions;
 using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Security.Claims.Extensions;
 using RegionOrebroLan.Web.Authentication.Configuration;
+using RegionOrebroLan.Web.Authentication.DirectoryServices;
 
 namespace RegionOrebroLan.Web.Authentication.Decoration
 {
 	/// <inheritdoc />
 	[ServiceConfiguration(Lifetime = ServiceLifetime.Transient)]
-	public class WindowsAuthenticationDecorator : IncludeClaimDecorator
+	public class WindowsAuthenticationDecorator : ActiveDirectoryDecorator
 	{
 		#region Fields
 
@@ -28,53 +29,68 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 		#region Constructors
 
-		public WindowsAuthenticationDecorator(IOptions<ExtendedAuthenticationOptions> authenticationOptions, ILoggerFactory loggerFactory) : base(loggerFactory)
-		{
-			this.AuthenticationOptions = authenticationOptions ?? throw new ArgumentNullException(nameof(authenticationOptions));
-		}
+		public WindowsAuthenticationDecorator(IActiveDirectory activeDirectory, IOptions<ExtendedAuthenticationOptions> authenticationOptions, ILoggerFactory loggerFactory) : base(activeDirectory, authenticationOptions, loggerFactory) { }
 
 		#endregion
 
 		#region Properties
 
-		protected internal virtual IOptions<ExtendedAuthenticationOptions> AuthenticationOptions { get; }
-
-		public override IDictionary<string, ClaimMapping> ClaimInclusionsMap => this._claimInclusionsMap ??= new Dictionary<string, ClaimMapping>(StringComparer.OrdinalIgnoreCase)
+		public override IDictionary<string, ClaimMapping> ClaimInclusionsMap
 		{
+			get
 			{
-				"AuthenticationMethod", new ClaimMapping
+				// ReSharper disable InvertIf
+				if(this._claimInclusionsMap == null)
 				{
-					Destination = ClaimTypes.AuthenticationMethod,
-					Source = this.PrincipalIdentityAuthenticationTypeSource
+					var claimInclusionsMap = new Dictionary<string, ClaimMapping>
+					{
+						{
+							"AuthenticationMethod", new ClaimMapping
+							{
+								Destination = ClaimTypes.AuthenticationMethod,
+								Source = this.PrincipalIdentityAuthenticationTypeSource
+							}
+						},
+						{
+							"Name", new ClaimMapping
+							{
+								Source = ClaimTypes.Name
+							}
+						},
+						{
+							"NameIdentifier", new ClaimMapping
+							{
+								Destination = ClaimTypes.NameIdentifier,
+								Source = ClaimTypes.PrimarySid
+							}
+						},
+						{
+							"PrimarySid", new ClaimMapping
+							{
+								Source = ClaimTypes.PrimarySid
+							}
+						},
+						{
+							"WindowsAccountName", new ClaimMapping
+							{
+								Destination = ClaimTypes.WindowsAccountName,
+								Source = ClaimTypes.Name
+							}
+						}
+					};
+
+					foreach(var (key, value) in base.ClaimInclusionsMap)
+					{
+						claimInclusionsMap.Add(key, value);
+					}
+
+					this._claimInclusionsMap = claimInclusionsMap;
 				}
-			},
-			{
-				"Name", new ClaimMapping
-				{
-					Source = ClaimTypes.Name
-				}
-			},
-			{
-				"NameIdentifier", new ClaimMapping
-				{
-					Destination = ClaimTypes.NameIdentifier,
-					Source = ClaimTypes.PrimarySid
-				}
-			},
-			{
-				"PrimarySid", new ClaimMapping
-				{
-					Source = ClaimTypes.PrimarySid
-				}
-			},
-			{
-				"WindowsAccountName", new ClaimMapping
-				{
-					Destination = ClaimTypes.WindowsAccountName,
-					Source = ClaimTypes.Name
-				}
+				// ReSharper restore InvertIf
+
+				return this._claimInclusionsMap;
 			}
-		};
+		}
 
 		#endregion
 
