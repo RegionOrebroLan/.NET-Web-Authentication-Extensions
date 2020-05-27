@@ -48,6 +48,7 @@ namespace RegionOrebroLan.Web.Authentication
 				registrator.Add(this, key, value);
 			}
 
+			this.Services.TryAddTransient<ActiveDirectoryCallbackDecorator>();
 			this.Services.TryAddTransient<CallbackDecorator>();
 			this.Services.TryAddTransient<CertificateAuthenticationDecorator>();
 			this.Services.TryAddSingleton<IActiveDirectory, ActiveDirectory>();
