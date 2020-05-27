@@ -31,7 +31,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 		/// <summary>
 		/// We use a dictionary only to be able to replace entries by configuration. The key is never used.
 		/// </summary>
-		protected internal virtual IDictionary<string, ClaimMapping> ClaimInclusionsMap { get; } = new Dictionary<string, ClaimMapping>(StringComparer.OrdinalIgnoreCase);
+		public virtual IDictionary<string, ClaimMapping> ClaimInclusionsMap { get; } = new Dictionary<string, ClaimMapping>(StringComparer.OrdinalIgnoreCase);
 
 		protected internal virtual string PrincipalIdentityAuthenticationTypeSource => _principalIdentityAuthenticationTypeSource;
 		protected internal virtual string PrincipalIdentitySourcePrefix => _principalIdentitySourcePrefix;

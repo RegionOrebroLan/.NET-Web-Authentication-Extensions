@@ -18,7 +18,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 		#region Properties
 
-		protected internal virtual ISet<string> ClaimTypeExclusions { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		public virtual ISet<string> ClaimTypeExclusions { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 		#endregion
 

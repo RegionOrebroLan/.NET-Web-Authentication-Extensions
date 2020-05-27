@@ -39,7 +39,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 		protected internal virtual IOptions<ExtendedAuthenticationOptions> AuthenticationOptions { get; }
 
-		protected internal override IDictionary<string, ClaimMapping> ClaimInclusionsMap => this._claimInclusionsMap ??= new Dictionary<string, ClaimMapping>(StringComparer.OrdinalIgnoreCase)
+		public override IDictionary<string, ClaimMapping> ClaimInclusionsMap => this._claimInclusionsMap ??= new Dictionary<string, ClaimMapping>(StringComparer.OrdinalIgnoreCase)
 		{
 			{
 				"AuthenticationMethod", new ClaimMapping
