@@ -9,6 +9,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="3.1.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.WsFederation" Version="3.1.4" />
 		<PackageReference Include="RegionOrebroLan.Web.Authentication.Certificate" Version="0.0.5-alpha" />
+		<PackageReference Include="System.DirectoryServices.Protocols" Version="4.7.0" />
 	</ItemGroup>
 	<Import Project="Build\Build.targets" />
 </Project>

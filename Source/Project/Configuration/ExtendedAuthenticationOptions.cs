@@ -4,12 +4,15 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Server.IIS;
 using RegionOrebroLan.Web.Authentication.Decoration;
 using RegionOrebroLan.Web.Authentication.Decoration.Configuration;
+using RegionOrebroLan.Web.Authentication.DirectoryServices.Configuration;
 
 namespace RegionOrebroLan.Web.Authentication.Configuration
 {
 	public class ExtendedAuthenticationOptions : AuthenticationOptions
 	{
 		#region Properties
+
+		public virtual ActiveDirectoryOptions ActiveDirectory { get; set; } = new ActiveDirectoryOptions();
 
 		public virtual IDictionary<string, AuthenticationDecoratorOptions> Decorators { get; } = new Dictionary<string, AuthenticationDecoratorOptions>(StringComparer.OrdinalIgnoreCase)
 		{

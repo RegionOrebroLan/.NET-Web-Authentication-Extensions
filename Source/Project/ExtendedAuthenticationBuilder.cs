@@ -8,6 +8,7 @@ using RegionOrebroLan.Security.Cryptography;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Configuration.Registration;
 using RegionOrebroLan.Web.Authentication.Decoration;
+using RegionOrebroLan.Web.Authentication.DirectoryServices;
 
 namespace RegionOrebroLan.Web.Authentication
 {
@@ -49,6 +50,7 @@ namespace RegionOrebroLan.Web.Authentication
 
 			this.Services.TryAddTransient<CallbackDecorator>();
 			this.Services.TryAddTransient<CertificateAuthenticationDecorator>();
+			this.Services.TryAddSingleton<IActiveDirectory, ActiveDirectory>();
 			this.Services.TryAddSingleton<IAuthenticationDecoratorLoader, AuthenticationDecoratorLoader>();
 			this.Services.TryAddSingleton<IAuthenticationSchemeLoader, AuthenticationSchemeLoader>();
 			this.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
