@@ -13,6 +13,7 @@ using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Web.Authentication;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
+using RegionOrebroLan.Web.Authentication.Security.Claims.Extensions;
 
 namespace Application.Controllers
 {
@@ -75,6 +76,14 @@ namespace Application.Controllers
 				await decorator.DecorateAsync(authenticateResult, authenticationScheme, claims, authenticationProperties);
 			}
 
+			var uniqueIdentifierClaim = claims.FindFirstUniqueIdentifierClaim();
+
+			if(uniqueIdentifierClaim == null)
+				throw new InvalidOperationException($"There is no unique-identifier-claim for authentication-scheme \"{authenticationScheme}\".");
+
+			uniqueIdentifierClaim.Value = this.GetOrCreateUniqueIdentifier(authenticationScheme, uniqueIdentifierClaim.Value);
+			uniqueIdentifierClaim.Issuer = uniqueIdentifierClaim.OriginalIssuer = uniqueIdentifierClaim.ValueType = null;
+
 			await this.HttpContext.SignInAsync(this.AuthenticationOptions.Value.DefaultScheme, this.CreateClaimsPrincipal(authenticationScheme, claims), authenticationProperties);
 
 			await this.HttpContext.SignOutAsync(this.AuthenticationOptions.Value.DefaultSignInScheme);
@@ -125,11 +134,8 @@ namespace Application.Controllers
 		{
 			var authenticationProperties = new AuthenticationProperties
 			{
-				RedirectUri = this.Url.Action(nameof(Callback))
+				RedirectUri = this.Url.Action(nameof(this.Callback))
 			};
-
-			//// This is mainly for ActiveLogin-handlers
-			//authenticationProperties.SetString("cancelReturnUrl", this.Url.Action("SignIn", "Account", new {returnUrl}));
 
 			authenticationProperties.SetString(nameof(returnUrl), returnUrl);
 			authenticationProperties.SetString(nameof(scheme), scheme);
@@ -142,7 +148,7 @@ namespace Application.Controllers
 			if(claims == null)
 				throw new ArgumentNullException(nameof(claims));
 
-			return new ClaimsPrincipal(new ClaimsIdentity(claims.Build(), authenticationScheme));
+			return new ClaimsPrincipal(new ClaimsIdentity(claims.Build(), authenticationScheme, claims.FindFirstNameClaim()?.Type, null));
 		}
 
 		protected internal virtual string GetOrCreateUniqueIdentifier(string authenticationScheme, string remoteUniqueIdentifier)
@@ -179,51 +185,6 @@ namespace Application.Controllers
 
 			return returnUrl;
 		}
-
-		protected internal virtual void ResolveAuthenticationProperties(AuthenticateResult authenticateResult, AuthenticationProperties authenticationProperties)
-		{
-			const string idTokenName = "id_token";
-
-			var idToken = authenticateResult.Properties.GetTokenValue(idTokenName);
-
-			if(idToken != null)
-				authenticationProperties.StoreTokens(new[] {new AuthenticationToken {Name = idTokenName, Value = idToken}});
-		}
-
-		//protected internal virtual void ResolveClaims(string authenticationScheme, ISet<Claim> claims)
-		//{
-		//	if(authenticationScheme == null)
-		//		throw new ArgumentNullException(nameof(authenticationScheme));
-
-		//	if(claims == null)
-		//		throw new ArgumentNullException(nameof(claims));
-
-		//	var uniqueIdentifierClaim = claims.FindFirstUniqueIdentifierClaim();
-
-		//	if(uniqueIdentifierClaim == null)
-		//		throw new InvalidOperationException("There is no unique-identifier-claim.");
-
-		//	var uniqueIdentifier = this.GetOrCreateUniqueIdentifier(authenticationScheme, uniqueIdentifierClaim.Value);
-
-		//	claims.Remove(uniqueIdentifierClaim);
-
-		//	claims.Add(new Claim(uniqueIdentifierClaim.Type, uniqueIdentifier));
-
-		//	var nameClaim = claims.FindNameClaim();
-
-		//	if(nameClaim != null)
-		//	{
-		//		claims.Add(new Claim(ClaimTypes.Name, nameClaim.Value));
-		//		claims.Remove(nameClaim);
-		//	}
-
-		//	var identityProviderClaim = claims.FindIdentityProviderClaim();
-
-		//	if(identityProviderClaim != null)
-		//		claims.Remove(identityProviderClaim);
-
-		//	claims.Add(new Claim(ExtendedClaimTypes.IdentityProvider, authenticationScheme));
-		//}
 
 		public virtual async Task<IActionResult> Undefined(string authenticationScheme, string returnUrl)
 		{
