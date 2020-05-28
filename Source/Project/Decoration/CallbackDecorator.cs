@@ -26,13 +26,16 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 		{
 			try
 			{
-				await base.DecorateAsync(authenticateResult, authenticationScheme, claims, properties).ConfigureAwait(false);
-
 				if(authenticateResult == null)
 					throw new ArgumentNullException(nameof(authenticateResult));
 
+				if(claims == null)
+					throw new ArgumentNullException(nameof(claims));
+
 				if(properties == null)
 					throw new ArgumentNullException(nameof(properties));
+
+				await base.DecorateAsync(authenticateResult, authenticationScheme, claims, properties).ConfigureAwait(false);
 
 				// If the external provider issued an id_token, we'll keep it for sign-out.
 				var identityToken = authenticateResult.Properties.GetTokenValue(OidcConstants.TokenTypes.IdentityToken);

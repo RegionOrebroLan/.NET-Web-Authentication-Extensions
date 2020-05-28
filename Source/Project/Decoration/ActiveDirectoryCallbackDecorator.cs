@@ -24,8 +24,9 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 		#region Properties
 
+		public override bool AdjustIdentityProviderClaim { get; set; } = false;
 		public override IdentifierKind IdentifierKind { get; set; } = IdentifierKind.UserPrincipalName;
-		protected internal override bool IncludeAuthenticationSchemeAsIdentityProviderClaim { get; set; } = false;
+		public override bool IncludeAuthenticationSchemeAsIdentityProviderClaim { get; set; } = false;
 
 		#endregion
 
