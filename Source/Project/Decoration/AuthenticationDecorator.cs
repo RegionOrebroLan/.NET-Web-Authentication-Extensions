@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Security.Claims.Extensions;
@@ -11,18 +10,13 @@ using RegionOrebroLan.Web.Authentication.Security.Claims.Extensions;
 
 namespace RegionOrebroLan.Web.Authentication.Decoration
 {
-	/// <inheritdoc />
-	public abstract class AuthenticationDecorator : IAuthenticationDecorator
+	/// <inheritdoc cref="Decorator" />
+	/// <inheritdoc cref="IAuthenticationDecorator" />
+	public abstract class AuthenticationDecorator : Decorator, IAuthenticationDecorator
 	{
 		#region Constructors
 
-		protected AuthenticationDecorator(ILoggerFactory loggerFactory)
-		{
-			if(loggerFactory == null)
-				throw new ArgumentNullException(nameof(loggerFactory));
-
-			this.Logger = loggerFactory.CreateLogger(this.GetType());
-		}
+		protected AuthenticationDecorator(ILoggerFactory loggerFactory) : base(loggerFactory) { }
 
 		#endregion
 
@@ -34,8 +28,6 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 		/// Will include the authentication-scheme as identity-provider-claim.
 		/// </summary>
 		public virtual bool IncludeAuthenticationSchemeAsIdentityProviderClaim { get; set; } = true;
-
-		protected internal virtual ILogger Logger { get; }
 
 		#endregion
 
@@ -89,13 +81,6 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 			this.AddAuthenticationSchemeAsIdentityProviderClaimIfNecessary(authenticationScheme, claims);
 
 			this.AdjustIdentityProviderClaimIfNecessary(authenticationScheme, claims);
-
-			await Task.CompletedTask.ConfigureAwait(false);
-		}
-
-		public virtual async Task InitializeAsync(IConfigurationSection optionsConfiguration)
-		{
-			optionsConfiguration?.Bind(this, binderOptions => { binderOptions.BindNonPublicProperties = true; });
 
 			await Task.CompletedTask.ConfigureAwait(false);
 		}
