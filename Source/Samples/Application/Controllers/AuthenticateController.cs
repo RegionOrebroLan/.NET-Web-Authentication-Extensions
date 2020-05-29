@@ -76,13 +76,7 @@ namespace Application.Controllers
 				await decorator.DecorateAsync(authenticateResult, authenticationScheme, claims, authenticationProperties);
 			}
 
-			var uniqueIdentifierClaim = claims.FindFirstUniqueIdentifierClaim();
-
-			if(uniqueIdentifierClaim == null)
-				throw new InvalidOperationException($"There is no unique-identifier-claim for authentication-scheme \"{authenticationScheme}\".");
-
-			uniqueIdentifierClaim.Value = this.GetOrCreateUniqueIdentifier(authenticationScheme, uniqueIdentifierClaim.Value);
-			uniqueIdentifierClaim.Issuer = uniqueIdentifierClaim.OriginalIssuer = uniqueIdentifierClaim.ValueType = null;
+			await this.ResolveUniqueIdentifier(authenticationScheme, claims);
 
 			await this.HttpContext.SignInAsync(this.AuthenticationOptions.Value.DefaultScheme, this.CreateClaimsPrincipal(authenticationScheme, claims), authenticationProperties);
 
@@ -189,6 +183,24 @@ namespace Application.Controllers
 				throw new Exception($"\"{returnUrl}\" is an invalid return-url.");
 
 			return returnUrl;
+		}
+
+		protected internal virtual async Task ResolveUniqueIdentifier(string authenticationScheme, IClaimBuilderCollection claims)
+		{
+			if(claims == null)
+				throw new ArgumentNullException(nameof(claims));
+
+			var uniqueIdentifierClaim = claims.FindFirstUniqueIdentifierClaim();
+
+			if(uniqueIdentifierClaim == null)
+				throw new InvalidOperationException($"There is no unique-identifier-claim for authentication-scheme \"{authenticationScheme}\".");
+
+			var identityProvider = claims.FindFirstIdentityProviderClaim()?.Value ?? authenticationScheme;
+
+			uniqueIdentifierClaim.Value = this.GetOrCreateUniqueIdentifier(identityProvider, uniqueIdentifierClaim.Value);
+			uniqueIdentifierClaim.Issuer = uniqueIdentifierClaim.OriginalIssuer = uniqueIdentifierClaim.ValueType = null;
+
+			await Task.CompletedTask.ConfigureAwait(false);
 		}
 
 		public virtual async Task<IActionResult> Undefined(string authenticationScheme, string returnUrl)
