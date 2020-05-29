@@ -9,7 +9,7 @@ using RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions;
 namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
 {
 	[TestClass]
-	public class AuthenticationDecoratorLoaderTest
+	public class DecorationLoaderTest
 	{
 		#region Methods
 
@@ -24,9 +24,9 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
 
 			var serviceProvider = services.BuildServiceProvider();
 
-			var authenticationDecoratorLoader = serviceProvider.GetRequiredService<IAuthenticationDecoratorLoader>();
+			var decorationLoader = serviceProvider.GetRequiredService<IDecorationLoader>();
 
-			var decorators = authenticationDecoratorLoader.GetDecoratorsAsync("Windows").Result;
+			var decorators = decorationLoader.GetAuthenticationDecoratorsAsync("Windows").Result;
 
 			Assert.AreEqual(1, decorators.Count());
 		}

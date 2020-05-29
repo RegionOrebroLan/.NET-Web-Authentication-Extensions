@@ -1,11 +1,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Configuration;
 using RegionOrebroLan.Security.Claims;
 
 namespace RegionOrebroLan.Web.Authentication.Decoration
 {
-	public interface IAuthenticationDecorator
+	public interface IAuthenticationDecorator : IDecorator
 	{
 		#region Methods
 
@@ -17,8 +16,6 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 		/// <param name="claims">The collection of claim-builders to decorate.</param>
 		/// <param name="properties">The authentication-properties to decorate.</param>
 		Task DecorateAsync(AuthenticateResult authenticateResult, string authenticationScheme, IClaimBuilderCollection claims, AuthenticationProperties properties);
-
-		Task InitializeAsync(IConfigurationSection optionsConfiguration);
 
 		#endregion
 	}

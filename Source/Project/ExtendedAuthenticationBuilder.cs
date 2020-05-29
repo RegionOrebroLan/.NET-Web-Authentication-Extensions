@@ -52,8 +52,8 @@ namespace RegionOrebroLan.Web.Authentication
 			this.Services.TryAddTransient<CallbackDecorator>();
 			this.Services.TryAddTransient<CertificateAuthenticationDecorator>();
 			this.Services.TryAddSingleton<IActiveDirectory, ActiveDirectory>();
-			this.Services.TryAddSingleton<IAuthenticationDecoratorLoader, AuthenticationDecoratorLoader>();
 			this.Services.TryAddSingleton<IAuthenticationSchemeLoader, AuthenticationSchemeLoader>();
+			this.Services.TryAddSingleton<IDecorationLoader, DecorationLoader>();
 			this.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			this.Services.TryAddTransient<WindowsAuthenticationDecorator>();
 

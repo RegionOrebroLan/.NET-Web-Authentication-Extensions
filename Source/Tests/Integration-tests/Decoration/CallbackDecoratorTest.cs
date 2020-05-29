@@ -18,9 +18,9 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
 			var serviceProvider = this.ConfigureServices("Callback-Decorator-Change");
 			var authenticationOptions = serviceProvider.GetRequiredService<IOptions<ExtendedAuthenticationOptions>>().Value;
 
-			Assert.AreEqual(173, authenticationOptions.PostDecorators.First().Value.AuthenticationSchemes.First().Value);
+			Assert.AreEqual(173, authenticationOptions.CallbackDecorators.First().Value.AuthenticationSchemes.First().Value);
 
-			var callbackDecorator = (CallbackDecorator) serviceProvider.GetRequiredService<IAuthenticationDecoratorLoader>().GetPostDecoratorsAsync("Any").Result.First();
+			var callbackDecorator = (CallbackDecorator) serviceProvider.GetRequiredService<IDecorationLoader>().GetCallbackDecoratorsAsync("Any").Result.First();
 
 			Assert.IsNotNull(callbackDecorator);
 			Assert.AreEqual(4, callbackDecorator.ClaimTypeExclusions.Count);

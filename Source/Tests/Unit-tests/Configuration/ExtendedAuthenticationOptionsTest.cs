@@ -12,27 +12,27 @@ namespace RegionOrebroLan.Web.Authentication.UnitTests.Configuration
 		#region Methods
 
 		[TestMethod]
-		public void Decorators_ShouldContainAWindowsAuthenticationDecoratorByDefault()
+		public void AuthenticationDecorators_ShouldContainAWindowsAuthenticationDecoratorByDefault()
 		{
 			var authenticationOptions = new ExtendedAuthenticationOptions();
 
-			Assert.AreEqual(1, authenticationOptions.Decorators.Count);
-			Assert.AreEqual(IISServerDefaults.AuthenticationScheme, authenticationOptions.Decorators.First().Value.AuthenticationSchemes.First().Key);
-			Assert.AreEqual(10, authenticationOptions.Decorators.First().Value.AuthenticationSchemes.First().Value);
-			Assert.IsTrue(authenticationOptions.Decorators.First().Value.Enabled);
-			Assert.AreEqual(typeof(WindowsAuthenticationDecorator).AssemblyQualifiedName, authenticationOptions.Decorators.First().Value.Type);
+			Assert.AreEqual(1, authenticationOptions.AuthenticationDecorators.Count);
+			Assert.AreEqual(IISServerDefaults.AuthenticationScheme, authenticationOptions.AuthenticationDecorators.First().Value.AuthenticationSchemes.First().Key);
+			Assert.AreEqual(10, authenticationOptions.AuthenticationDecorators.First().Value.AuthenticationSchemes.First().Value);
+			Assert.IsTrue(authenticationOptions.AuthenticationDecorators.First().Value.Enabled);
+			Assert.AreEqual(typeof(WindowsAuthenticationDecorator).AssemblyQualifiedName, authenticationOptions.AuthenticationDecorators.First().Value.Type);
 		}
 
 		[TestMethod]
-		public void PostDecorators_ShouldContainACallbackDecoratorByDefault()
+		public void CallbackDecorators_ShouldContainACallbackDecoratorByDefault()
 		{
 			var authenticationOptions = new ExtendedAuthenticationOptions();
 
-			Assert.AreEqual(1, authenticationOptions.PostDecorators.Count);
-			Assert.AreEqual("*", authenticationOptions.PostDecorators.First().Value.AuthenticationSchemes.First().Key);
-			Assert.AreEqual(10, authenticationOptions.PostDecorators.First().Value.AuthenticationSchemes.First().Value);
-			Assert.IsTrue(authenticationOptions.PostDecorators.First().Value.Enabled);
-			Assert.AreEqual(typeof(CallbackDecorator).AssemblyQualifiedName, authenticationOptions.PostDecorators.First().Value.Type);
+			Assert.AreEqual(1, authenticationOptions.CallbackDecorators.Count);
+			Assert.AreEqual("*", authenticationOptions.CallbackDecorators.First().Value.AuthenticationSchemes.First().Key);
+			Assert.AreEqual(10, authenticationOptions.CallbackDecorators.First().Value.AuthenticationSchemes.First().Value);
+			Assert.IsTrue(authenticationOptions.CallbackDecorators.First().Value.Enabled);
+			Assert.AreEqual(typeof(CallbackDecorator).AssemblyQualifiedName, authenticationOptions.CallbackDecorators.First().Value.Type);
 		}
 
 		#endregion

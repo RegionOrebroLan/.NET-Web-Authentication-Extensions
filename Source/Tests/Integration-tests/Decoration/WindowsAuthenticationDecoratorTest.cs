@@ -87,9 +87,9 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
 			var serviceProvider = this.ConfigureServices("Windows-Decorator-Change");
 			var authenticationOptions = serviceProvider.GetRequiredService<IOptions<ExtendedAuthenticationOptions>>().Value;
 
-			Assert.AreEqual(50, authenticationOptions.Decorators.First().Value.AuthenticationSchemes.First().Value);
+			Assert.AreEqual(54, authenticationOptions.AuthenticationDecorators.First().Value.AuthenticationSchemes.First().Value);
 
-			var windowsAuthenticationDecorator = (WindowsAuthenticationDecorator) serviceProvider.GetRequiredService<IAuthenticationDecoratorLoader>().GetDecoratorsAsync("Windows").Result.First();
+			var windowsAuthenticationDecorator = (WindowsAuthenticationDecorator) serviceProvider.GetRequiredService<IDecorationLoader>().GetAuthenticationDecoratorsAsync("Windows").Result.First();
 
 			Assert.IsNotNull(windowsAuthenticationDecorator);
 			Assert.AreEqual(string.Empty, windowsAuthenticationDecorator.ClaimInclusionsMap["AuthenticationMethod"].Source);

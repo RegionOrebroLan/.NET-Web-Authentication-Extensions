@@ -14,10 +14,10 @@ namespace RegionOrebroLan.Web.Authentication.Configuration
 
 		public virtual ActiveDirectoryOptions ActiveDirectory { get; set; } = new ActiveDirectoryOptions();
 
-		public virtual IDictionary<string, AuthenticationDecoratorOptions> Decorators { get; } = new Dictionary<string, AuthenticationDecoratorOptions>(StringComparer.OrdinalIgnoreCase)
+		public virtual IDictionary<string, DecoratorOptions> AuthenticationDecorators { get; } = new Dictionary<string, DecoratorOptions>(StringComparer.OrdinalIgnoreCase)
 		{
 			{
-				$"{IISServerDefaults.AuthenticationScheme}-Decorator", new AuthenticationDecoratorOptions
+				$"{IISServerDefaults.AuthenticationScheme}-Decorator", new DecoratorOptions
 				{
 					AuthenticationSchemes =
 					{
@@ -30,10 +30,12 @@ namespace RegionOrebroLan.Web.Authentication.Configuration
 			}
 		};
 
-		public virtual IDictionary<string, AuthenticationDecoratorOptions> PostDecorators { get; } = new Dictionary<string, AuthenticationDecoratorOptions>(StringComparer.OrdinalIgnoreCase)
+		public virtual IDictionary<string, DecoratorOptions> AuthenticationPropertiesDecorators { get; } = new Dictionary<string, DecoratorOptions>(StringComparer.OrdinalIgnoreCase);
+
+		public virtual IDictionary<string, DecoratorOptions> CallbackDecorators { get; } = new Dictionary<string, DecoratorOptions>(StringComparer.OrdinalIgnoreCase)
 		{
 			{
-				"Callback-Decorator", new AuthenticationDecoratorOptions
+				"Callback-Decorator", new DecoratorOptions
 				{
 					AuthenticationSchemes =
 					{
