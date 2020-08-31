@@ -7,7 +7,7 @@ namespace Application.Models
 	{
 		#region Properties
 
-		public virtual IList<IAuthenticationScheme> AuthenticationSchemes { get; } = new List<IAuthenticationScheme>();
+		public virtual IDictionary<IAuthenticationScheme, string> AuthenticationSchemes { get; } = new Dictionary<IAuthenticationScheme, string>();
 
 		#endregion
 	}

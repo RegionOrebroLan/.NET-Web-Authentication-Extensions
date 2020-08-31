@@ -9,7 +9,7 @@
 		<div class="card-body">
 			<p>The following authentication-schemes are registered.</p>
 			<ul class="authentication-schemes list-group">
-				@foreach(var authenticationScheme in Model.AuthenticationSchemes)
+				@foreach(var (authenticationScheme, options) in Model.AuthenticationSchemes)
 				{
 					<li class="list-group-item">
 						<h2 class="h6">
@@ -26,6 +26,21 @@
 							<li>Interactive: <strong>@authenticationScheme.Interactive</strong></li>
 							<li>Kind: <strong>@authenticationScheme.Kind</strong></li>
 							<li>Name: <strong>@authenticationScheme.Name</strong></li>
+							@if(options != null)
+							{
+								<li>
+									<button aria-controls="collapse-@authenticationScheme.Name" aria-expanded="false" class="btn btn-primary" data-target="#collapse-@authenticationScheme.Name" data-toggle="collapse" type="button">
+										Options
+									</button>
+									<div class="collapse" id="collapse-@authenticationScheme.Name">
+										<div class="card card-body">
+											<small>
+												<pre>@options</pre>
+											</small>
+										</div>
+									</div>
+								</li>
+							}
 						</ul>
 					</li>
 				}
