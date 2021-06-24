@@ -4,7 +4,7 @@
 		<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.9.2">
+		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.3.2">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 	</ItemGroup>

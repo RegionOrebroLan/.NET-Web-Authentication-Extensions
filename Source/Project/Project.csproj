@@ -24,15 +24,15 @@
 		<PackageTags></PackageTags>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="IdentityModel" Version="4.3.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="3.1.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.1.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="3.1.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="3.1.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.WsFederation" Version="3.1.4" />
+		<PackageReference Include="IdentityModel" Version="5.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(PackageReferenceVersion)" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="$(PackageReferenceVersion)" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(PackageReferenceVersion)" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(PackageReferenceVersion)" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(PackageReferenceVersion)" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.WsFederation" Version="$(PackageReferenceVersion)" />
 		<PackageReference Include="RegionOrebroLan.Web.Authentication.Certificate" Version="0.0.5-alpha" />
-		<PackageReference Include="System.DirectoryServices.Protocols" Version="4.7.0" />
+		<PackageReference Include="System.DirectoryServices.Protocols" Version="5.0.0" />
 	</ItemGroup>
 	<Target Name="HandleAssemblyOriginatorKeyFile" BeforeTargets="BeforeBuild" Condition="$(SignAssembly) AND !Exists('$(AssemblyOriginatorKeyFile)')">
 		<PropertyGroup>
