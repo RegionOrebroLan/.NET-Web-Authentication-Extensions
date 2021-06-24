@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<AssemblyName>RegionOrebroLan.Web.Authentication.UnitTests</AssemblyName>
+		<RootNamespace>UnitTests</RootNamespace>
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 	</PropertyGroup>
 </Project>

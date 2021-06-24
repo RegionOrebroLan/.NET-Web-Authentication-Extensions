@@ -14,7 +14,7 @@ using RegionOrebroLan.Web.Authentication.Decoration;
 using RegionOrebroLan.Web.Authentication.DirectoryServices;
 using RegionOrebroLan.Web.Authentication.Security.Claims;
 
-namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
+namespace IntegrationTests.Decoration
 {
 	[TestClass]
 	public class WindowsAuthenticationDecoratorTest : AuthenticationDecoratorTestBase
@@ -89,7 +89,7 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
 
 			Assert.AreEqual(54, authenticationOptions.AuthenticationDecorators.First().Value.AuthenticationSchemes.First().Value);
 
-			var windowsAuthenticationDecorator = (WindowsAuthenticationDecorator) serviceProvider.GetRequiredService<IDecorationLoader>().GetAuthenticationDecoratorsAsync("Windows").Result.First();
+			var windowsAuthenticationDecorator = (WindowsAuthenticationDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetAuthenticationDecoratorsAsync("Windows").Result.First();
 
 			Assert.IsNotNull(windowsAuthenticationDecorator);
 			Assert.AreEqual(string.Empty, windowsAuthenticationDecorator.ClaimInclusionsMap["AuthenticationMethod"].Source);

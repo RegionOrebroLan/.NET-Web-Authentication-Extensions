@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace RegionOrebroLan.Web.Authentication.Test.Mocks.Logging
+namespace TestHelpers.Mocks.Logging
 {
 	[SuppressMessage("Design", "CA1063:Implement IDisposable Correctly")]
 	public class LoggerFactoryMock : ILoggerFactory

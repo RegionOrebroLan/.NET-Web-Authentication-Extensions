@@ -11,7 +11,7 @@ using RegionOrebroLan.Security.Claims.Extensions;
 using RegionOrebroLan.Web.Authentication.Decoration;
 using RegionOrebroLan.Web.Authentication.Security.Claims;
 
-namespace RegionOrebroLan.Web.Authentication.UnitTests.Decoration
+namespace UnitTests.Decoration
 {
 	[TestClass]
 	public class AuthenticationDecoratorTest

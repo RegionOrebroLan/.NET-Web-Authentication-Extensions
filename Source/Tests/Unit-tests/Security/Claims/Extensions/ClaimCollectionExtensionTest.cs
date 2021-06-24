@@ -4,7 +4,7 @@ using System.Security.Claims;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RegionOrebroLan.Web.Authentication.Security.Claims.Extensions;
 
-namespace RegionOrebroLan.Web.Authentication.UnitTests.Security.Claims.Extensions
+namespace UnitTests.Security.Claims.Extensions
 {
 	[TestClass]
 	public class ClaimCollectionExtensionTest
@@ -17,7 +17,7 @@ namespace RegionOrebroLan.Web.Authentication.UnitTests.Security.Claims.Extension
 		{
 			try
 			{
-				((IEnumerable<Claim>) null).FindFirst();
+				((IEnumerable<Claim>)null).FindFirst();
 			}
 			catch
 			{

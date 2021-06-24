@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
 
-namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
+namespace IntegrationTests.Decoration
 {
 	[TestClass]
 	public class CallbackDecoratorTest : AuthenticationDecoratorTestBase
@@ -20,7 +20,7 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
 
 			Assert.AreEqual(173, authenticationOptions.CallbackDecorators.First().Value.AuthenticationSchemes.First().Value);
 
-			var callbackDecorator = (CallbackDecorator) serviceProvider.GetRequiredService<IDecorationLoader>().GetCallbackDecoratorsAsync("Any").Result.First();
+			var callbackDecorator = (CallbackDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetCallbackDecoratorsAsync("Any").Result.First();
 
 			Assert.IsNotNull(callbackDecorator);
 			Assert.AreEqual(4, callbackDecorator.ClaimTypeExclusions.Count);

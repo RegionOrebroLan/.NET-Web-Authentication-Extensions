@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
 
-namespace RegionOrebroLan.Web.Authentication.UnitTests.Configuration
+namespace UnitTests.Configuration
 {
 	[TestClass]
 	public class ExtendedAuthenticationOptionsTest

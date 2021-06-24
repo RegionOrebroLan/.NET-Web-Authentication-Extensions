@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RegionOrebroLan.Web.Authentication.Decoration;
-using RegionOrebroLan.Web.Authentication.Test.Mocks.Logging;
+using TestHelpers.Mocks.Logging;
 
-namespace RegionOrebroLan.Web.Authentication.UnitTests.Decoration
+namespace UnitTests.Decoration
 {
 	[TestClass]
 	public class CertificateAuthenticationDecoratorTest

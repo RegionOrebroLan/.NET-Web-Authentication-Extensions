@@ -8,7 +8,7 @@ using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
 using RegionOrebroLan.Web.Authentication.DirectoryServices;
 
-namespace RegionOrebroLan.Web.Authentication.UnitTests.Decoration
+namespace UnitTests.Decoration
 {
 	[TestClass]
 	public class WindowsAuthenticationDecoratorTest

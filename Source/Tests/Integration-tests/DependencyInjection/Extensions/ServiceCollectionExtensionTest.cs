@@ -8,9 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RegionOrebroLan.DependencyInjection;
+using RegionOrebroLan.Web.Authentication;
 using RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions;
 
-namespace RegionOrebroLan.Web.Authentication.IntegrationTests.DependencyInjection.Extensions
+namespace IntegrationTests.DependencyInjection.Extensions
 {
 	[TestClass]
 	public class ServiceCollectionExtensionTest

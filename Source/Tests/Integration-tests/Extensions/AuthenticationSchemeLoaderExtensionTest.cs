@@ -8,10 +8,11 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RegionOrebroLan.DependencyInjection;
+using RegionOrebroLan.Web.Authentication;
 using RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions;
 using RegionOrebroLan.Web.Authentication.Extensions;
 
-namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Extensions
+namespace IntegrationTests.Extensions
 {
 	[TestClass]
 	public class AuthenticationSchemeLoaderExtensionTest

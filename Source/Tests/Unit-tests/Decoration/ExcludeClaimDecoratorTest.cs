@@ -9,7 +9,7 @@ using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Security.Claims.Extensions;
 using RegionOrebroLan.Web.Authentication.Decoration;
 
-namespace RegionOrebroLan.Web.Authentication.UnitTests.Decoration
+namespace UnitTests.Decoration
 {
 	[TestClass]
 	public class ExcludeClaimDecoratorTest

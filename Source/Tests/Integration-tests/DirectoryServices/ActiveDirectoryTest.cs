@@ -11,7 +11,7 @@ using RegionOrebroLan.Security.Claims.Extensions;
 using RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions;
 using RegionOrebroLan.Web.Authentication.DirectoryServices;
 
-namespace RegionOrebroLan.Web.Authentication.IntegrationTests.DirectoryServices
+namespace IntegrationTests.DirectoryServices
 {
 	[TestClass]
 	public class ActiveDirectoryTest
@@ -25,7 +25,7 @@ namespace RegionOrebroLan.Web.Authentication.IntegrationTests.DirectoryServices
 
 		#region Properties
 
-		protected internal virtual ActiveDirectory ActiveDirectory => _activeDirectory ??= (ActiveDirectory) this.ServiceProvider.GetRequiredService<IActiveDirectory>();
+		protected internal virtual ActiveDirectory ActiveDirectory => _activeDirectory ??= (ActiveDirectory)this.ServiceProvider.GetRequiredService<IActiveDirectory>();
 
 		protected internal virtual IServiceProvider ServiceProvider
 		{

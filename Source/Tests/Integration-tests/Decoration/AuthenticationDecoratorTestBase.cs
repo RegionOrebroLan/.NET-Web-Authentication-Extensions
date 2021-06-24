@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RegionOrebroLan.DependencyInjection;
 using RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions;
 
-namespace RegionOrebroLan.Web.Authentication.IntegrationTests.Decoration
+namespace IntegrationTests.Decoration
 {
 	public abstract class AuthenticationDecoratorTestBase
 	{
