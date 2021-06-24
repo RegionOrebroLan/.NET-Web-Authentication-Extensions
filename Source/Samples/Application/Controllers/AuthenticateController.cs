@@ -180,7 +180,7 @@ namespace Application.Controllers
 				returnUrl = "~/";
 
 			if(!this.Url.IsLocalUrl(returnUrl))
-				throw new Exception($"\"{returnUrl}\" is an invalid return-url.");
+				throw new InvalidOperationException($"\"{returnUrl}\" is an invalid return-url.");
 
 			return returnUrl;
 		}
