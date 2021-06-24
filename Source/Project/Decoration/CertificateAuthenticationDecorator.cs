@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -63,6 +64,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 			}
 		}
 
+		[SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase")]
 		protected internal virtual Func<string> GetPropertyFunction(ICertificate certificate, string propertyName)
 		{
 			if(certificate == null)
@@ -98,7 +100,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 			// ReSharper disable InvertIf
 			if(!string.IsNullOrWhiteSpace(source) && source.StartsWith(this.CertificateSourcePrefix, StringComparison.OrdinalIgnoreCase))
 			{
-				var certificate = (X509Certificate2Wrapper) this.HttpContextAccessor.HttpContext.Connection.ClientCertificate;
+				var certificate = (X509Certificate2Wrapper)this.HttpContextAccessor.HttpContext.Connection.ClientCertificate;
 
 				if(certificate == null)
 				{

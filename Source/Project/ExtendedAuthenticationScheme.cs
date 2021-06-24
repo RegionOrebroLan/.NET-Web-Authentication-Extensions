@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Authentication;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Extensions;
@@ -30,7 +31,10 @@ namespace RegionOrebroLan.Web.Authentication
 
 		protected internal virtual SchemeRegistrationOptions DefaultOptions => _defaultOptions;
 		public virtual bool Enabled => this.Options?.Enabled ?? false;
+
+		[SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase")]
 		public virtual string Icon => this._icon ??= (this.Options?.Icon ?? this.Name).ToLowerInvariant();
+
 		public virtual int Index => this.Options?.Index ?? this.DefaultOptions.Index;
 		public virtual bool Interactive => this.Options?.Interactive ?? false;
 
