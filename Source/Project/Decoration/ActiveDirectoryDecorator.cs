@@ -9,6 +9,7 @@ using RegionOrebroLan.Logging.Extensions;
 using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.DirectoryServices;
+using RegionOrebroLan.Web.Authentication.Extensions;
 
 namespace RegionOrebroLan.Web.Authentication.Decoration
 {
@@ -85,13 +86,13 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 				var attributes = new List<string>();
 
 				if(!this.ActiveDirectoryIntegration)
-					this.Logger.LogWarningIfEnabled($"Could not get special source-claim for source {this.ValueAsFormatArgument(source)}. Active-Directory integration is not enabled.");
+					this.Logger.LogWarningIfEnabled($"Could not get special source-claim for source {source.ToStringRepresentation()}. Active-Directory integration is not enabled.");
 				else if(source.Equals(this.ActiveDirectoryEmailSource, StringComparison.OrdinalIgnoreCase))
 					attributes.Add(this.ActiveDirectoryEmailAttributeName);
 				else if(source.Equals(this.ActiveDirectoryUserPrincipalNameSource, StringComparison.OrdinalIgnoreCase))
 					attributes.Add(this.ActiveDirectoryUserPrincipalNameAttributeName);
 				else
-					this.Logger.LogDebugIfEnabled($"Could not get special source-claim for source {this.ValueAsFormatArgument(source)}.");
+					this.Logger.LogDebugIfEnabled($"Could not get special source-claim for source {source.ToStringRepresentation()}.");
 
 				if(attributes.Any())
 				{
@@ -111,12 +112,12 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 						}
 						else
 						{
-							this.Logger.LogWarningIfEnabled($"Could not get special source-claim for source {this.ValueAsFormatArgument(source)}. No items were returned for attributes \"{string.Join(", ", attributes)}\".");
+							this.Logger.LogWarningIfEnabled($"Could not get special source-claim for source {source.ToStringRepresentation()}. No items were returned for attributes \"{string.Join(", ", attributes)}\".");
 						}
 					}
 					catch(Exception exception)
 					{
-						this.Logger.LogErrorIfEnabled(exception, $"Could not get special source-claim for source {this.ValueAsFormatArgument(source)}.");
+						this.Logger.LogErrorIfEnabled(exception, $"Could not get special source-claim for source {source.ToStringRepresentation()}.");
 					}
 				}
 

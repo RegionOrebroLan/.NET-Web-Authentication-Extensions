@@ -11,6 +11,7 @@ using RegionOrebroLan.DependencyInjection;
 using RegionOrebroLan.Logging.Extensions;
 using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Security.Cryptography;
+using RegionOrebroLan.Web.Authentication.Extensions;
 
 namespace RegionOrebroLan.Web.Authentication.Decoration
 {
@@ -104,7 +105,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 				if(certificate == null)
 				{
-					this.Logger.LogWarningIfEnabled($"Could not get special source-claim for source {this.ValueAsFormatArgument(source)} because certificate is null.");
+					this.Logger.LogWarningIfEnabled($"Could not get special source-claim for source {source.ToStringRepresentation()} because certificate is null.");
 				}
 				else
 				{
@@ -124,7 +125,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 					}
 					else
 					{
-						this.Logger.LogDebugIfEnabled($"Could not get special source-claim for source {this.ValueAsFormatArgument(source)}.");
+						this.Logger.LogDebugIfEnabled($"Could not get special source-claim for source {source.ToStringRepresentation()}.");
 					}
 				}
 

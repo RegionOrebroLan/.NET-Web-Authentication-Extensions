@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
@@ -52,7 +51,6 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 			claims.Add(ExtendedClaimTypes.IdentityProvider, authenticationScheme);
 		}
 
-		[SuppressMessage("Style", "IDE0016:Use 'throw' expression")]
 		protected internal virtual void AdjustIdentityProviderClaimIfNecessary(string authenticationScheme, IClaimBuilderCollection claims)
 		{
 			if(authenticationScheme == null)
@@ -83,11 +81,6 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 			this.AdjustIdentityProviderClaimIfNecessary(authenticationScheme, claims);
 
 			await Task.CompletedTask.ConfigureAwait(false);
-		}
-
-		protected internal virtual string ValueAsFormatArgument(string value)
-		{
-			return value != null ? $"\"{value}\"" : "null";
 		}
 
 		#endregion

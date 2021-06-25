@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using RegionOrebroLan.Logging.Extensions;
 using RegionOrebroLan.Security.Claims;
+using RegionOrebroLan.Web.Authentication.Extensions;
 
 namespace RegionOrebroLan.Web.Authentication.Decoration
 {
@@ -81,7 +82,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 			var claim = principal.Claims?.FirstOrDefault(item => string.Equals(item.Type, source, StringComparison.OrdinalIgnoreCase));
 
 			if(claim == null)
-				this.Logger.LogDebugIfEnabled($"Could not get source-claim for source {this.ValueAsFormatArgument(source)}.");
+				this.Logger.LogDebugIfEnabled($"Could not get source-claim for source {source.ToStringRepresentation()}.");
 
 			return claim;
 		}
@@ -111,7 +112,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 				}
 				else
 				{
-					this.Logger.LogDebugIfEnabled($"Could not get special source-claim for source {this.ValueAsFormatArgument(source)}.");
+					this.Logger.LogDebugIfEnabled($"Could not get special source-claim for source {source.ToStringRepresentation()}.");
 				}
 
 				return true;
