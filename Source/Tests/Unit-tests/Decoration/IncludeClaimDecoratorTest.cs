@@ -47,8 +47,7 @@ namespace UnitTests.Decoration
 		[TestMethod]
 		public void GetSourceClaim_IfThePrincipalParameterDoesNotContainAClaimWithTheSourceAsClaimType_ShouldReturnNull()
 		{
-			// ReSharper disable ConvertToUsingDeclaration
-			using(var loggerFactory = new LoggerFactoryMock())
+			using(var loggerFactory = LoggerFactoryMock.Create())
 			{
 				const string claimType = "Test";
 				var includeClaimDecorator = this.CreateIncludeClaimDecorator(loggerFactory);
@@ -57,7 +56,6 @@ namespace UnitTests.Decoration
 
 				Assert.IsNull(claim);
 			}
-			// ReSharper restore ConvertToUsingDeclaration
 		}
 
 		[TestMethod]

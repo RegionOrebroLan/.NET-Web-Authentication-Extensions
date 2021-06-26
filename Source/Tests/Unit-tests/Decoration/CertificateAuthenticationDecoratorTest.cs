@@ -51,7 +51,7 @@ namespace UnitTests.Decoration
 			// ReSharper disable ConvertToUsingDeclaration
 			using(var certificate = this.GetCertificate())
 			{
-				using(var loggerFactory = new LoggerFactoryMock())
+				using(var loggerFactory = LoggerFactoryMock.Create())
 				{
 					var httpContextAccessor = new HttpContextAccessor
 					{
@@ -78,7 +78,7 @@ namespace UnitTests.Decoration
 			// ReSharper disable ConvertToUsingDeclaration
 			using(var certificate = this.GetCertificate())
 			{
-				using(var loggerFactory = new LoggerFactoryMock())
+				using(var loggerFactory = LoggerFactoryMock.Create())
 				{
 					var httpContextAccessor = new HttpContextAccessor
 					{
@@ -105,7 +105,7 @@ namespace UnitTests.Decoration
 			// ReSharper disable ConvertToUsingDeclaration
 			using(var certificate = this.GetCertificate())
 			{
-				using(var loggerFactory = new LoggerFactoryMock())
+				using(var loggerFactory = LoggerFactoryMock.Create())
 				{
 					var httpContextAccessor = new HttpContextAccessor
 					{

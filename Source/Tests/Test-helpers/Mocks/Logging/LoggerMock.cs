@@ -18,7 +18,7 @@ namespace TestHelpers.Mocks.Logging
 
 		#region Properties
 
-		public virtual bool Enabled { get; set; }
+		public virtual LogLevelEnabledMode EnabledMode { get; set; }
 		protected virtual ILogger InternalLogger { get; }
 		protected virtual IList<LogMock> Logs { get; }
 
@@ -33,7 +33,10 @@ namespace TestHelpers.Mocks.Logging
 
 		public virtual bool IsEnabled(LogLevel logLevel)
 		{
-			return this.Enabled;
+			if(this.EnabledMode == LogLevelEnabledMode.Configuration)
+				return this.InternalLogger.IsEnabled(logLevel);
+
+			return this.EnabledMode == LogLevelEnabledMode.Enabled;
 		}
 
 		public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
@@ -48,6 +51,8 @@ namespace TestHelpers.Mocks.Logging
 				Message = message,
 				State = state
 			});
+
+			this.InternalLogger.Log(logLevel, eventId, state, exception, formatter);
 		}
 
 		#endregion

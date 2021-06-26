@@ -100,6 +100,15 @@ namespace IntegrationTests
 			services.AddSingleton(configuration);
 			services.AddSingleton(HostEnvironment);
 			services.AddSingleton<ILoggerFactory, LoggerFactoryMock>();
+			services.AddSingleton<LoggerFactory>();
+			services.AddLogging(loggingBuilder =>
+			{
+				loggingBuilder.AddConfiguration(configuration.GetSection("Logging"));
+				loggingBuilder.AddConsole();
+				loggingBuilder.AddDebug();
+				loggingBuilder.AddEventSourceLogger();
+				loggingBuilder.Configure(options => { options.ActivityTrackingOptions = ActivityTrackingOptions.SpanId | ActivityTrackingOptions.TraceId | ActivityTrackingOptions.ParentId; });
+			});
 
 			return services;
 		}
