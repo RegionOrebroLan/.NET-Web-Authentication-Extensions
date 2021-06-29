@@ -32,7 +32,7 @@ namespace IntegrationTests
 			get
 			{
 				if(_configuration == null)
-					_configuration = CreateConfiguration("AppSettings.json");
+					_configuration = CreateConfiguration("appsettings.json");
 
 				return _configuration;
 			}

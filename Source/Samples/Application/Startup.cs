@@ -52,7 +52,7 @@ namespace Application
 			if(services == null)
 				throw new ArgumentNullException(nameof(services));
 
-			//// We could skip the configuration of cookie-authentication in the configuration-file (AppSettings.json) and instead do:
+			//// We could skip the configuration of cookie-authentication in the configuration-file (appsettings.json) and instead do:
 			//services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 			//	.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 			//	{
