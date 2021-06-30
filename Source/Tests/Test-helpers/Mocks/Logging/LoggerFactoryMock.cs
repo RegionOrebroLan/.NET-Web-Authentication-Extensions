@@ -20,7 +20,7 @@ namespace TestHelpers.Mocks.Logging
 
 		#region Properties
 
-		public virtual bool Enabled { get; set; } = true;
+		public virtual LogLevelEnabledMode EnabledMode { get; set; }
 		protected virtual LoggerFactory InternalLoggerFactory { get; }
 		public virtual IEnumerable<LogMock> Logs => this.LogsInternal.ToArray();
 		protected virtual IList<LogMock> LogsInternal { get; } = new List<LogMock>();
@@ -36,14 +36,17 @@ namespace TestHelpers.Mocks.Logging
 
 		public static LoggerFactoryMock Create()
 		{
-			return new LoggerFactoryMock(new LoggerFactory(Enumerable.Empty<ILoggerProvider>()));
+			return new LoggerFactoryMock(new LoggerFactory(Enumerable.Empty<ILoggerProvider>()))
+			{
+				EnabledMode = LogLevelEnabledMode.Enabled
+			};
 		}
 
 		public virtual ILogger CreateLogger(string categoryName)
 		{
 			return new LoggerMock(this.InternalLoggerFactory.CreateLogger(categoryName), this.LogsInternal)
 			{
-				EnabledMode = LogLevelEnabledMode.Configuration
+				EnabledMode = this.EnabledMode
 			};
 		}
 

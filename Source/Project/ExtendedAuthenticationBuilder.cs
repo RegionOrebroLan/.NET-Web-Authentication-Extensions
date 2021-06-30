@@ -43,7 +43,7 @@ namespace RegionOrebroLan.Web.Authentication
 				if(!value.Enabled)
 					continue;
 
-				var registrator = (Registrator) this.InstanceFactory.Create(value.Type);
+				var registrator = (Registrator)this.InstanceFactory.Create(value.Type);
 
 				registrator.Add(this, key, value);
 			}
@@ -55,6 +55,13 @@ namespace RegionOrebroLan.Web.Authentication
 			this.Services.TryAddSingleton<IAuthenticationSchemeLoader, AuthenticationSchemeLoader>();
 			this.Services.TryAddSingleton<IDecorationLoader, DecorationLoader>();
 			this.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			this.Services.TryAddTransient<JwtToMicrosoftMapper>();
+			this.Services.TryAddTransient<JwtToMicrosoftReplacer>();
+			this.Services.TryAddTransient<Mapper>();
+			this.Services.TryAddTransient<MicrosoftToJwtMapper>();
+			this.Services.TryAddTransient<MicrosoftToJwtReplacer>();
+			this.Services.TryAddTransient<Replacer>();
+			this.Services.TryAddTransient<SithsCertificateSubjectExtractor>();
 			this.Services.TryAddTransient<WindowsAuthenticationDecorator>();
 
 			return this;
