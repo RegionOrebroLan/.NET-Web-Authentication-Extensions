@@ -34,7 +34,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.WsFederation" Version="$(PackageReferenceVersion)" />
 		<PackageReference Include="RegionOrebroLan.DirectoryServices" Version="0.0.0-alpha" />
 		<PackageReference Include="RegionOrebroLan.Web.Authentication.Certificate" Version="0.0.6-alpha" />
-		<PackageReference Include="System.DirectoryServices.Protocols" Version="5.0.0" />
+		<PackageReference Include="System.DirectoryServices.Protocols" Version="5.0.1" />
 	</ItemGroup>
 	<Target Name="HandleAssemblyOriginatorKeyFile" BeforeTargets="BeforeBuild" Condition="$(SignAssembly) AND !Exists('$(AssemblyOriginatorKeyFile)')">
 		<PropertyGroup>
