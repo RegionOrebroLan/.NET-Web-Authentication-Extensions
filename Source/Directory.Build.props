@@ -5,7 +5,7 @@
 		<DelaySign>false</DelaySign>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-		<NoWarn>CA1014</NoWarn>
+		<NoWarn>CA1014;IDE0130</NoWarn>
 		<SignAssembly>true</SignAssembly>
 	</PropertyGroup>
 </Project>
