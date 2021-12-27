@@ -53,12 +53,12 @@ namespace RegionOrebroLan.Web.Authentication
 					if(type.IsCookieAuthenticationHandlerType())
 						return AuthenticationSchemeKind.Cookie;
 
-					if(type.IsRemoteAuthenticationHandlerType())
-						return AuthenticationSchemeKind.Remote;
+					if(type.IsNegotiateAuthenticationHandlerType())
+						return AuthenticationSchemeKind.Negotiate;
 
 					// ReSharper disable ConvertIfStatementToReturnStatement
-					if(type.IsWindowsAuthenticationHandlerType())
-						return AuthenticationSchemeKind.Windows;
+					if(type.IsRemoteAuthenticationHandlerType())
+						return AuthenticationSchemeKind.Remote;
 					// ReSharper restore ConvertIfStatementToReturnStatement
 
 					return AuthenticationSchemeKind.Undefined;

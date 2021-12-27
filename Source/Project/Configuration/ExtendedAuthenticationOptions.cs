@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Server.IIS;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using RegionOrebroLan.Web.Authentication.Decoration;
 using RegionOrebroLan.Web.Authentication.Decoration.Configuration;
 using RegionOrebroLan.Web.Authentication.DirectoryServices.Configuration;
@@ -17,15 +17,15 @@ namespace RegionOrebroLan.Web.Authentication.Configuration
 		public virtual IDictionary<string, DecoratorOptions> AuthenticationDecorators { get; } = new Dictionary<string, DecoratorOptions>(StringComparer.OrdinalIgnoreCase)
 		{
 			{
-				$"{IISServerDefaults.AuthenticationScheme}-Decorator", new DecoratorOptions
+				$"{NegotiateDefaults.AuthenticationScheme}-Decorator", new DecoratorOptions
 				{
 					AuthenticationSchemes =
 					{
 						{
-							IISServerDefaults.AuthenticationScheme, 10
+							NegotiateDefaults.AuthenticationScheme, 10
 						}
 					},
-					Type = typeof(WindowsAuthenticationDecorator).AssemblyQualifiedName
+					Type = typeof(NegotiateAuthenticationDecorator).AssemblyQualifiedName
 				}
 			}
 		};
@@ -48,8 +48,8 @@ namespace RegionOrebroLan.Web.Authentication.Configuration
 			}
 		};
 
+		public virtual NegotiateAuthenticationOptions Negotiate { get; set; } = new NegotiateAuthenticationOptions();
 		public virtual IDictionary<string, SchemeRegistrationOptions> SchemeRegistrations { get; } = new Dictionary<string, SchemeRegistrationOptions>(StringComparer.OrdinalIgnoreCase);
-		public virtual WindowsAuthenticationOptions Windows { get; set; } = new WindowsAuthenticationOptions();
 
 		#endregion
 	}

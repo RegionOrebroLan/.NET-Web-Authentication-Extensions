@@ -29,6 +29,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(PackageReferenceVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="$(PackageReferenceVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(PackageReferenceVersion)" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(PackageReferenceVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(PackageReferenceVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(PackageReferenceVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.WsFederation" Version="$(PackageReferenceVersion)" />

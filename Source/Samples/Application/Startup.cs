@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using RegionOrebroLan;
 using RegionOrebroLan.DependencyInjection;
 using RegionOrebroLan.Security.Cryptography;
-using RegionOrebroLan.Web.Authentication.Builder.Extensions;
 using RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions;
 
 namespace Application
@@ -39,7 +38,6 @@ namespace Application
 
 			applicationBuilder
 				.UseDeveloperExceptionPage()
-				.ResolveWindowsAuthentication()
 				.UseStaticFiles()
 				.UseRouting()
 				.UseAuthentication()

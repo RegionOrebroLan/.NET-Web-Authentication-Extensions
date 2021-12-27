@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Server.IIS.Core;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using RegionOrebroLan.Web.Authentication.Certificate;
 
 namespace RegionOrebroLan.Web.Authentication.Extensions
@@ -25,6 +25,11 @@ namespace RegionOrebroLan.Web.Authentication.Extensions
 			return type.IsAuthenticationHandlerType() && typeof(CookieAuthenticationHandler).IsAssignableFrom(type);
 		}
 
+		public static bool IsNegotiateAuthenticationHandlerType(this Type type)
+		{
+			return type.IsAuthenticationHandlerType() && typeof(NegotiateHandler).IsAssignableFrom(type);
+		}
+
 		public static bool IsRemoteAuthenticationHandlerType(this Type type)
 		{
 			// ReSharper disable InvertIf
@@ -45,11 +50,6 @@ namespace RegionOrebroLan.Web.Authentication.Extensions
 			// ReSharper restore InvertIf
 
 			return false;
-		}
-
-		public static bool IsWindowsAuthenticationHandlerType(this Type type)
-		{
-			return type.IsAuthenticationHandlerType() && typeof(IISServerAuthenticationHandler).IsAssignableFrom(type);
 		}
 
 		#endregion

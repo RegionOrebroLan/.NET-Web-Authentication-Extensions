@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -64,7 +65,7 @@ namespace IntegrationTests.Extensions
 		public async Task GetDiagnosticsAsync_ShouldWorkProperly()
 		{
 			var diagnostics = await this.AuthenticationSchemeLoader.GetDiagnosticsAsync(this.ServiceProvider).ConfigureAwait(false);
-			Assert.AreEqual(5, diagnostics.Count);
+			Assert.AreEqual(6, diagnostics.Count);
 
 			Assert.AreEqual("AuthenticationCookie", diagnostics.ElementAt(0).Key.Name);
 			Assert.AreEqual(typeof(CookieAuthenticationHandler), diagnostics.ElementAt(0).Key.HandlerType);
@@ -85,6 +86,10 @@ namespace IntegrationTests.Extensions
 			Assert.AreEqual("Microsoft", diagnostics.ElementAt(4).Key.Name);
 			Assert.AreEqual(typeof(MicrosoftAccountHandler), diagnostics.ElementAt(4).Key.HandlerType);
 			Assert.AreEqual(typeof(MicrosoftAccountOptions), diagnostics.ElementAt(4).Value.GetType());
+
+			Assert.AreEqual("Negotiate", diagnostics.ElementAt(5).Key.Name);
+			Assert.AreEqual(typeof(NegotiateHandler), diagnostics.ElementAt(5).Key.HandlerType);
+			Assert.AreEqual(typeof(NegotiateOptions), diagnostics.ElementAt(5).Value.GetType());
 		}
 
 		#endregion

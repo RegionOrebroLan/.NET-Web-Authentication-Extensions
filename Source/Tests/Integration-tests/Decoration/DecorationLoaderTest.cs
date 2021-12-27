@@ -26,7 +26,7 @@ namespace IntegrationTests.Decoration
 
 			var decorationLoader = serviceProvider.GetRequiredService<IDecorationLoader>();
 
-			var decorators = decorationLoader.GetAuthenticationDecoratorsAsync("Windows").Result;
+			var decorators = decorationLoader.GetAuthenticationDecoratorsAsync("Negotiate").Result;
 
 			Assert.AreEqual(1, decorators.Count());
 		}

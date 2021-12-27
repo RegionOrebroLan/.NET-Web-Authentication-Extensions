@@ -5,7 +5,7 @@ namespace RegionOrebroLan.Web.Authentication
 		Undefined,
 		Certificate,
 		Cookie,
-		Remote,
-		Windows
+		Negotiate,
+		Remote
 	}
 }

@@ -2,8 +2,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -29,8 +29,7 @@ namespace IntegrationTests.DependencyInjection.Extensions
 
 			var authenticationSchemeLoader = serviceProvider.GetRequiredService<IAuthenticationSchemeLoader>();
 
-			// The windows-scheme will not be included because windows-authentication is not enabled in the integration-tests.
-			Assert.AreEqual(5, authenticationSchemeLoader.ListAsync().Result.Count());
+			Assert.AreEqual(6, authenticationSchemeLoader.ListAsync().Result.Count());
 
 			var authenticationCookieOptions = serviceProvider.GetRequiredService<IOptionsFactory<CookieAuthenticationOptions>>().Create("AuthenticationCookie");
 			Assert.AreEqual("/Account/SignIn/", authenticationCookieOptions.LoginPath.Value);
@@ -52,6 +51,13 @@ namespace IntegrationTests.DependencyInjection.Extensions
 			Assert.AreEqual("AuthenticationCookie", microsoftAccountOptions.ForwardSignOut);
 			Assert.AreEqual("IntermediateAuthenticationCookie", microsoftAccountOptions.SignInScheme);
 
+			var negotiateOptions = serviceProvider.GetRequiredService<IOptionsFactory<NegotiateOptions>>().Create("Negotiate");
+			Assert.AreEqual("Test", negotiateOptions.ClaimsIssuer);
+			Assert.AreEqual("Test", negotiateOptions.ForwardDefault);
+			Assert.AreEqual("Test", negotiateOptions.ForwardSignOut);
+			Assert.IsFalse(negotiateOptions.PersistKerberosCredentials);
+			Assert.IsFalse(negotiateOptions.PersistNtlmCredentials);
+
 			var identityServerDemoOptions = serviceProvider.GetRequiredService<IOptionsFactory<OpenIdConnectOptions>>().Create("IdentityServer-Demo");
 			Assert.AreEqual("https://demo.identityserver.io/", identityServerDemoOptions.Authority);
 			Assert.AreEqual("/signin-idsrv", identityServerDemoOptions.CallbackPath.Value);
@@ -62,39 +68,8 @@ namespace IntegrationTests.DependencyInjection.Extensions
 			Assert.AreEqual("/signout-callback-idsrv", identityServerDemoOptions.SignedOutCallbackPath.Value);
 			Assert.AreEqual("name", identityServerDemoOptions.TokenValidationParameters.NameClaimType);
 			Assert.AreEqual("role", identityServerDemoOptions.TokenValidationParameters.RoleClaimType);
-
-			var iisOptions = serviceProvider.GetRequiredService<IOptions<IISOptions>>().Value;
-			Assert.AreEqual("My-Windows-Display-Name", iisOptions.AuthenticationDisplayName);
-			Assert.IsFalse(iisOptions.AutomaticAuthentication);
-			Assert.IsTrue(iisOptions.ForwardClientCertificate);
-
-			var iisServerOptions = serviceProvider.GetRequiredService<IOptions<IISServerOptions>>().Value;
-			Assert.IsFalse(iisServerOptions.AllowSynchronousIO);
-			Assert.AreEqual("My-Windows-Display-Name", iisServerOptions.AuthenticationDisplayName);
-			Assert.IsFalse(iisServerOptions.AutomaticAuthentication);
-			Assert.AreEqual(30000000, iisServerOptions.MaxRequestBodySize);
 		}
 
 		#endregion
-
-		//public static AuthenticationBuilder AddAuthentication(this IServiceCollection services, IConfiguration configuration)
-		//{
-		//	return services.AddAuthentication(configuration, ConfigurationKeys.AuthenticationPath);
-		//}
-
-		//public static AuthenticationBuilder AddAuthentication(this IServiceCollection services, IConfiguration configuration, string configurationKey)
-		//{
-		//	return services.AddAuthentication(configuration, configurationKey, _ => { });
-		//}
-
-		//public static AuthenticationBuilder AddAuthentication(this IServiceCollection services, IConfiguration configuration, Action<AuthenticationOptions> options)
-		//{
-		//	return services.AddAuthentication(configuration, ConfigurationKeys.AuthenticationPath, options);
-		//}
-
-		//public static AuthenticationBuilder AddAuthentication(this IServiceCollection services, IConfiguration configuration, string configurationKey, Action<AuthenticationOptions> options)
-		//{
-
-		//}
 	}
 }

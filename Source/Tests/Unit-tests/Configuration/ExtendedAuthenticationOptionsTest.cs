@@ -1,5 +1,5 @@
 using System.Linq;
-using Microsoft.AspNetCore.Server.IIS;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
@@ -12,15 +12,15 @@ namespace UnitTests.Configuration
 		#region Methods
 
 		[TestMethod]
-		public void AuthenticationDecorators_ShouldContainAWindowsAuthenticationDecoratorByDefault()
+		public void AuthenticationDecorators_ShouldContainANegotiateAuthenticationDecoratorByDefault()
 		{
 			var authenticationOptions = new ExtendedAuthenticationOptions();
 
 			Assert.AreEqual(1, authenticationOptions.AuthenticationDecorators.Count);
-			Assert.AreEqual(IISServerDefaults.AuthenticationScheme, authenticationOptions.AuthenticationDecorators.First().Value.AuthenticationSchemes.First().Key);
+			Assert.AreEqual(NegotiateDefaults.AuthenticationScheme, authenticationOptions.AuthenticationDecorators.First().Value.AuthenticationSchemes.First().Key);
 			Assert.AreEqual(10, authenticationOptions.AuthenticationDecorators.First().Value.AuthenticationSchemes.First().Value);
 			Assert.IsTrue(authenticationOptions.AuthenticationDecorators.First().Value.Enabled);
-			Assert.AreEqual(typeof(WindowsAuthenticationDecorator).AssemblyQualifiedName, authenticationOptions.AuthenticationDecorators.First().Value.Type);
+			Assert.AreEqual(typeof(NegotiateAuthenticationDecorator).AssemblyQualifiedName, authenticationOptions.AuthenticationDecorators.First().Value.Type);
 		}
 
 		[TestMethod]

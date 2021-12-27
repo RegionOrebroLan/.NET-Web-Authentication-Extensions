@@ -17,7 +17,7 @@ using RegionOrebroLan.Web.Authentication.Security.Claims;
 namespace IntegrationTests.Decoration
 {
 	[TestClass]
-	public class WindowsAuthenticationDecoratorTest : AuthenticationDecoratorTestBase
+	public class NegotiateAuthenticationDecoratorTest : AuthenticationDecoratorTestBase
 	{
 		#region Methods
 
@@ -26,21 +26,21 @@ namespace IntegrationTests.Decoration
 			return AuthenticateResult.Success(new AuthenticationTicket(principal, "Ticket-authentication-scheme"));
 		}
 
-		protected internal virtual WindowsAuthenticationDecorator CreateWindowsAuthenticationDecorator()
+		protected internal virtual NegotiateAuthenticationDecorator CreateNegotiateAuthenticationDecorator()
 		{
-			return this.CreateWindowsAuthenticationDecorator(Mock.Of<ILoggerFactory>());
+			return this.CreateNegotiateAuthenticationDecorator(Mock.Of<ILoggerFactory>());
 		}
 
-		protected internal virtual WindowsAuthenticationDecorator CreateWindowsAuthenticationDecorator(ILoggerFactory loggerFactory)
+		protected internal virtual NegotiateAuthenticationDecorator CreateNegotiateAuthenticationDecorator(ILoggerFactory loggerFactory)
 		{
-			return this.CreateWindowsAuthenticationDecorator(new ExtendedAuthenticationOptions(), loggerFactory);
+			return this.CreateNegotiateAuthenticationDecorator(new ExtendedAuthenticationOptions(), loggerFactory);
 		}
 
-		protected internal virtual WindowsAuthenticationDecorator CreateWindowsAuthenticationDecorator(ExtendedAuthenticationOptions authenticationOptions, ILoggerFactory loggerFactory)
+		protected internal virtual NegotiateAuthenticationDecorator CreateNegotiateAuthenticationDecorator(ExtendedAuthenticationOptions authenticationOptions, ILoggerFactory loggerFactory)
 		{
 			var options = Options.Create(authenticationOptions);
 
-			return new WindowsAuthenticationDecorator(new ActiveDirectory(options), options, loggerFactory);
+			return new NegotiateAuthenticationDecorator(new ActiveDirectory(options), options, loggerFactory);
 		}
 
 		[TestMethod]
@@ -51,9 +51,9 @@ namespace IntegrationTests.Decoration
 			var windowsIdentity = WindowsIdentity.GetCurrent();
 			var principal = new WindowsPrincipal(windowsIdentity);
 			var authenticateResult = this.CreateAuthenticateResult(principal);
-			var windowsAuthenticationDecorator = this.CreateWindowsAuthenticationDecorator();
+			var negotiateAuthenticationDecorator = this.CreateNegotiateAuthenticationDecorator();
 
-			windowsAuthenticationDecorator.DecorateAsync(authenticateResult, authenticationScheme, claims, null).Wait();
+			negotiateAuthenticationDecorator.DecorateAsync(authenticateResult, authenticationScheme, claims, null).Wait();
 
 			Assert.AreEqual(8, claims.Count);
 			Assert.AreEqual(windowsIdentity.AuthenticationType, claims.First(claim => string.Equals(claim.Type, ClaimTypes.AuthenticationMethod, StringComparison.Ordinal)).Value);
@@ -72,9 +72,9 @@ namespace IntegrationTests.Decoration
 			var windowsIdentity = WindowsIdentity.GetCurrent();
 			var principal = new WindowsPrincipal(windowsIdentity);
 			var authenticateResult = this.CreateAuthenticateResult(principal);
-			var windowsAuthenticationDecorator = this.CreateWindowsAuthenticationDecorator(new ExtendedAuthenticationOptions {Windows = {IncludeRoleClaims = true}}, Mock.Of<ILoggerFactory>());
+			var negotiateAuthenticationDecorator = this.CreateNegotiateAuthenticationDecorator(new ExtendedAuthenticationOptions { Negotiate = { IncludeRoleClaims = true } }, Mock.Of<ILoggerFactory>());
 
-			windowsAuthenticationDecorator.DecorateAsync(authenticateResult, authenticationScheme, claims, null).Wait();
+			negotiateAuthenticationDecorator.DecorateAsync(authenticateResult, authenticationScheme, claims, null).Wait();
 
 			// ReSharper disable PossibleNullReferenceException
 			Assert.AreEqual(8 + windowsIdentity.Groups.Count, claims.Count);
@@ -84,17 +84,17 @@ namespace IntegrationTests.Decoration
 		[TestMethod]
 		public void OverrideOptionsWithConfiguration_Test()
 		{
-			var serviceProvider = this.ConfigureServices("Windows-Decorator-Change");
+			var serviceProvider = this.ConfigureServices("Negotiate-Decorator-Change");
 			var authenticationOptions = serviceProvider.GetRequiredService<IOptions<ExtendedAuthenticationOptions>>().Value;
 
 			Assert.AreEqual(54, authenticationOptions.AuthenticationDecorators.First().Value.AuthenticationSchemes.First().Value);
 
-			var windowsAuthenticationDecorator = (WindowsAuthenticationDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetAuthenticationDecoratorsAsync("Windows").Result.First();
+			var negotiateAuthenticationDecorator = (NegotiateAuthenticationDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetAuthenticationDecoratorsAsync("Negotiate").Result.First();
 
-			Assert.IsNotNull(windowsAuthenticationDecorator);
-			Assert.AreEqual(string.Empty, windowsAuthenticationDecorator.ClaimInclusionsMap["AuthenticationMethod"].Source);
-			Assert.AreEqual(string.Empty, windowsAuthenticationDecorator.ClaimInclusionsMap["Name"].Source);
-			Assert.AreEqual(" ", windowsAuthenticationDecorator.ClaimInclusionsMap["NameIdentifier"].Source);
+			Assert.IsNotNull(negotiateAuthenticationDecorator);
+			Assert.AreEqual(string.Empty, negotiateAuthenticationDecorator.ClaimInclusionsMap["AuthenticationMethod"].Source);
+			Assert.AreEqual(string.Empty, negotiateAuthenticationDecorator.ClaimInclusionsMap["Name"].Source);
+			Assert.AreEqual(" ", negotiateAuthenticationDecorator.ClaimInclusionsMap["NameIdentifier"].Source);
 		}
 
 		#endregion

@@ -19,7 +19,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 {
 	/// <inheritdoc />
 	[ServiceConfiguration(Lifetime = ServiceLifetime.Transient)]
-	public class WindowsAuthenticationDecorator : ActiveDirectoryDecorator
+	public class NegotiateAuthenticationDecorator : ActiveDirectoryDecorator
 	{
 		#region Fields
 
@@ -29,7 +29,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 		#region Constructors
 
-		public WindowsAuthenticationDecorator(IActiveDirectory activeDirectory, IOptions<ExtendedAuthenticationOptions> authenticationOptions, ILoggerFactory loggerFactory) : base(activeDirectory, authenticationOptions, loggerFactory) { }
+		public NegotiateAuthenticationDecorator(IActiveDirectory activeDirectory, IOptions<ExtendedAuthenticationOptions> authenticationOptions, ILoggerFactory loggerFactory) : base(activeDirectory, authenticationOptions, loggerFactory) { }
 
 		#endregion
 
@@ -111,7 +111,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 				await base.DecorateAsync(authenticateResult, authenticationScheme, claims, properties).ConfigureAwait(false);
 
-				if(this.AuthenticationOptions.Value.Windows.IncludeRoleClaims)
+				if(this.AuthenticationOptions.Value.Negotiate.IncludeRoleClaims)
 				{
 					if(!(authenticateResult.Principal.Identity is WindowsIdentity windowsIdentity))
 					{

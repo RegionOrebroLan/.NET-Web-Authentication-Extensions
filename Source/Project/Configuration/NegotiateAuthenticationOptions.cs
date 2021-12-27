@@ -1,6 +1,6 @@
 namespace RegionOrebroLan.Web.Authentication.Configuration
 {
-	public class WindowsAuthenticationOptions
+	public class NegotiateAuthenticationOptions
 	{
 		#region Properties
 
