@@ -52,6 +52,9 @@
 		<main class="container-md mb-4" role="main">
 			@RenderBody()
 		</main>
+		<footer class="border-top pt-2 text-center">
+			<span>Target-framework: <strong>@(typeof(Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectOptions).Assembly.GetName().Version)</strong></span>
+		</footer>
 		<script src="~/Scripts/Site.min.js"></script>
 	</body>
 </html>
