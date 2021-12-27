@@ -15,7 +15,7 @@ namespace RegionOrebroLan.Web.Authentication.Security.Claims.Extensions
 			claims = (claims ?? Enumerable.Empty<Claim>()).ToArray();
 
 			// ReSharper disable LoopCanBeConvertedToQuery
-			foreach(var type in types)
+			foreach(var type in types ?? Array.Empty<string>())
 			{
 				var claim = claims.FirstOrDefault(item => string.Equals(item.Type, type, StringComparison.OrdinalIgnoreCase));
 
@@ -44,17 +44,17 @@ namespace RegionOrebroLan.Web.Authentication.Security.Claims.Extensions
 
 		public static string[] GetIdentityProviderClaimTypes()
 		{
-			return new[] {ExtendedClaimTypes.IdentityProvider, JwtClaimTypes.IdentityProvider};
+			return new[] { ExtendedClaimTypes.IdentityProvider, JwtClaimTypes.IdentityProvider };
 		}
 
 		public static string[] GetNameClaimTypes()
 		{
-			return new[] {ClaimTypes.Name, JwtClaimTypes.Name};
+			return new[] { ClaimTypes.Name, JwtClaimTypes.Name };
 		}
 
 		public static string[] GetUniqueIdentifierClaimTypes()
 		{
-			return new[] {ClaimTypes.NameIdentifier, JwtClaimTypes.Subject};
+			return new[] { ClaimTypes.NameIdentifier, JwtClaimTypes.Subject };
 		}
 
 		#endregion

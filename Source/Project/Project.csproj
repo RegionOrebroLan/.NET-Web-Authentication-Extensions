@@ -11,7 +11,7 @@
 		<Description>Additions and extensions for .NET web-authentication (ASP.NET Core).</Description>
 		<FileVersion>$(VersionPrefix).0</FileVersion>
 		<RootNamespace>$(AssemblyName)</RootNamespace>
-		<TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
+		<TargetFrameworks>net6.0;net5.0;netcoreapp3.1</TargetFrameworks>
 		<Version>$(VersionPrefix)</Version>
 		<Version Condition="$(VersionPrereleaseName) != ''">$(Version)-$(VersionPrereleaseName)</Version>
 	</PropertyGroup>

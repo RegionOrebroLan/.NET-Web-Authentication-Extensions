@@ -68,7 +68,7 @@ namespace IntegrationTests.DirectoryServices
 
 			try
 			{
-				_ = this.ActiveDirectory.GetAttributesAsync(Enumerable.Empty<string>(), IdentifierKind.SamAccountName, new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, name)}))).Result;
+				_ = this.ActiveDirectory.GetAttributesAsync(Enumerable.Empty<string>(), IdentifierKind.SamAccountName, new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, name) }))).Result;
 			}
 			catch(AggregateException aggregateException)
 			{
@@ -89,7 +89,7 @@ namespace IntegrationTests.DirectoryServices
 		[TestMethod]
 		public void GetAttributesAsync_IfTheIdentifierKindParameterIsSamAccountName_ShouldWorkProperly()
 		{
-			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] {"userPrincipalName"}, IdentifierKind.SamAccountName, new WindowsPrincipal(WindowsIdentity.GetCurrent())).Result;
+			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { "userPrincipalName" }, IdentifierKind.SamAccountName, new WindowsPrincipal(WindowsIdentity.GetCurrent())).Result;
 
 			Assert.AreEqual(1, attributes.Count, "The test must be run on a domain.");
 		}
@@ -97,7 +97,7 @@ namespace IntegrationTests.DirectoryServices
 		[TestMethod]
 		public void GetAttributesAsync_IfTheIdentifierKindParameterIsSecurityIdentifier_ShouldWorkProperly()
 		{
-			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] {"userPrincipalName"}, IdentifierKind.SecurityIdentifier, new WindowsPrincipal(WindowsIdentity.GetCurrent())).Result;
+			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { "userPrincipalName" }, IdentifierKind.SecurityIdentifier, new WindowsPrincipal(WindowsIdentity.GetCurrent())).Result;
 
 			Assert.AreEqual(1, attributes.Count, "The test must be run on a domain.");
 		}
@@ -109,10 +109,10 @@ namespace IntegrationTests.DirectoryServices
 			const string samAccountNameAttributeName = "sAMAccountName";
 			var claims = new ClaimsPrincipalBuilder(new WindowsPrincipal(WindowsIdentity.GetCurrent())).ClaimsIdentityBuilders.First().ClaimBuilders;
 			var samAccountName = claims.First(claim => string.Equals(ClaimTypes.Name, claim.Type, StringComparison.OrdinalIgnoreCase)).Value.Split('\\').Last();
-			var userPrincipalName = this.ActiveDirectory.GetAttributesAsync(new[] {userPrincipalNameAttributeName}, IdentifierKind.SecurityIdentifier, new WindowsPrincipal(WindowsIdentity.GetCurrent())).Result.First().Value;
+			var userPrincipalName = this.ActiveDirectory.GetAttributesAsync(new[] { userPrincipalNameAttributeName }, IdentifierKind.SecurityIdentifier, new WindowsPrincipal(WindowsIdentity.GetCurrent())).Result.First().Value;
 			claims.Add(ClaimTypes.Upn, userPrincipalName);
 
-			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] {samAccountNameAttributeName, userPrincipalNameAttributeName}, IdentifierKind.UserPrincipalName, new ClaimsPrincipal(new ClaimsIdentity(claims.Build()))).Result;
+			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { samAccountNameAttributeName, userPrincipalNameAttributeName }, IdentifierKind.UserPrincipalName, new ClaimsPrincipal(new ClaimsIdentity(claims.Build()))).Result;
 			Assert.AreEqual(2, attributes.Count, "The test must be run on a domain.");
 			Assert.AreEqual(samAccountName, attributes.ElementAt(0).Value, "The test must be run on a domain.");
 			Assert.AreEqual(userPrincipalName, attributes.ElementAt(1).Value, "The test must be run on a domain.");
@@ -121,7 +121,7 @@ namespace IntegrationTests.DirectoryServices
 			userPrincipalNameClaim.Value = $"{samAccountName}@{IPGlobalProperties.GetIPGlobalProperties().DomainName}";
 			claims.Add(ClaimTypes.Email, userPrincipalName);
 
-			attributes = this.ActiveDirectory.GetAttributesAsync(new[] {samAccountNameAttributeName, userPrincipalNameAttributeName}, IdentifierKind.UserPrincipalName, new ClaimsPrincipal(new ClaimsIdentity(claims.Build()))).Result;
+			attributes = this.ActiveDirectory.GetAttributesAsync(new[] { samAccountNameAttributeName, userPrincipalNameAttributeName }, IdentifierKind.UserPrincipalName, new ClaimsPrincipal(new ClaimsIdentity(claims.Build()))).Result;
 			Assert.AreEqual(2, attributes.Count, "The test must be run on a domain.");
 			Assert.AreEqual(samAccountName, attributes.ElementAt(0).Value, "The test must be run on a domain.");
 			Assert.AreEqual(userPrincipalName, attributes.ElementAt(1).Value, "The test must be run on a domain.");
@@ -131,7 +131,7 @@ namespace IntegrationTests.DirectoryServices
 		public void GetDomainNameAsync_Test()
 		{
 			var domainName = this.ActiveDirectory.GetDomainNameAsync().Result;
-			Assert.IsTrue(domainName.Contains(".", StringComparison.OrdinalIgnoreCase), "The domain-name should be a full domain-name, eg domain.net.");
+			Assert.IsTrue(domainName.Contains('.', StringComparison.OrdinalIgnoreCase), "The domain-name should be a full domain-name, eg domain.net.");
 			Assert.AreEqual(IPGlobalProperties.GetIPGlobalProperties().DomainName, domainName, "The test must be run on a domain.");
 		}
 

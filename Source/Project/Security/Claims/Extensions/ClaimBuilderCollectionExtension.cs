@@ -14,7 +14,7 @@ namespace RegionOrebroLan.Web.Authentication.Security.Claims.Extensions
 			claims = (claims ?? Enumerable.Empty<IClaimBuilder>()).ToArray();
 
 			// ReSharper disable LoopCanBeConvertedToQuery
-			foreach(var type in types)
+			foreach(var type in types ?? Array.Empty<string>())
 			{
 				var claim = claims.FirstOrDefault(item => string.Equals(item.Type, type, StringComparison.OrdinalIgnoreCase));
 
