@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.WsFederation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace RegionOrebroLan.Web.Authentication.Configuration.Registration
+namespace RegionOrebroLan.Web.Authentication.DependencyInjection.Registration
 {
 	public class WsFederationRegistrator : RemoteRegistrator<WsFederationOptions>
 	{

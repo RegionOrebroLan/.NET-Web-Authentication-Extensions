@@ -6,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using RegionOrebroLan.DependencyInjection;
 using RegionOrebroLan.Security.Cryptography;
 using RegionOrebroLan.Web.Authentication.Configuration;
-using RegionOrebroLan.Web.Authentication.Configuration.Registration;
 using RegionOrebroLan.Web.Authentication.Decoration;
+using RegionOrebroLan.Web.Authentication.DependencyInjection.Registration;
 using RegionOrebroLan.Web.Authentication.DirectoryServices;
 
 namespace RegionOrebroLan.Web.Authentication

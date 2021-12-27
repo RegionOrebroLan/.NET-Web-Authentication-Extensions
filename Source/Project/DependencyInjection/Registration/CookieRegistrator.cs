@@ -1,9 +1,10 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using RegionOrebroLan.Web.Authentication.Configuration;
 
-namespace RegionOrebroLan.Web.Authentication.Configuration.Registration
+namespace RegionOrebroLan.Web.Authentication.DependencyInjection.Registration
 {
-	public class NegotiateRegistrator : Registrator
+	public class CookieRegistrator : Registrator
 	{
 		#region Methods
 
@@ -15,10 +16,7 @@ namespace RegionOrebroLan.Web.Authentication.Configuration.Registration
 			if(schemeRegistrationOptions == null)
 				throw new ArgumentNullException(nameof(schemeRegistrationOptions));
 
-			authenticationBuilder.AddNegotiate(name, schemeRegistrationOptions.DisplayName, options =>
-			{
-				this.Bind(authenticationBuilder, options, schemeRegistrationOptions);
-			});
+			authenticationBuilder.AddCookie(name, schemeRegistrationOptions.DisplayName, options => { this.Bind(authenticationBuilder, options, schemeRegistrationOptions); });
 		}
 
 		#endregion

@@ -1,7 +1,8 @@
 using System;
 using RegionOrebroLan.Web.Authentication.Certificate;
+using RegionOrebroLan.Web.Authentication.Configuration;
 
-namespace RegionOrebroLan.Web.Authentication.Configuration.Registration
+namespace RegionOrebroLan.Web.Authentication.DependencyInjection.Registration
 {
 	public class CertificateRegistrator : Registrator
 	{

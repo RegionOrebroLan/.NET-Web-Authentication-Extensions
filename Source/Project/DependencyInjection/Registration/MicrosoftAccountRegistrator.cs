@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace RegionOrebroLan.Web.Authentication.Configuration.Registration
+namespace RegionOrebroLan.Web.Authentication.DependencyInjection.Registration
 {
 	public class MicrosoftAccountRegistrator : RemoteRegistrator<MicrosoftAccountOptions>
 	{

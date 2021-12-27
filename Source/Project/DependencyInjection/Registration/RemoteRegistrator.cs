@@ -1,7 +1,8 @@
 using System;
 using Microsoft.AspNetCore.Authentication;
+using RegionOrebroLan.Web.Authentication.Configuration;
 
-namespace RegionOrebroLan.Web.Authentication.Configuration.Registration
+namespace RegionOrebroLan.Web.Authentication.DependencyInjection.Registration
 {
 	public abstract class RemoteRegistrator<T> : Registrator where T : RemoteAuthenticationOptions
 	{
