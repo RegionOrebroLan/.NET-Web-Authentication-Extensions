@@ -129,7 +129,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 			}
 			catch(Exception exception)
 			{
-				const string message = "Could not decorate windows-authentication.";
+				const string message = "Could not decorate negotiate-authentication.";
 
 				this.Logger.LogErrorIfEnabled(exception, message);
 
