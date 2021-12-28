@@ -82,6 +82,30 @@ namespace IntegrationTests.Decoration
 		}
 
 		[TestMethod]
+		public void OverrideOptionsWithConfiguration_Remove_Test()
+		{
+			var serviceProvider = this.ConfigureServices("Negotiate-Decorator-Remove");
+			var authenticationOptions = serviceProvider.GetRequiredService<IOptions<ExtendedAuthenticationOptions>>().Value;
+
+			Assert.AreEqual(444, authenticationOptions.AuthenticationDecorators.First().Value.AuthenticationSchemes.First().Value);
+
+			var negotiateAuthenticationDecorator = (NegotiateAuthenticationDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetAuthenticationDecoratorsAsync("Negotiate").Result.First();
+
+			Assert.IsNotNull(negotiateAuthenticationDecorator);
+			Assert.IsNotNull(negotiateAuthenticationDecorator.ClaimInclusionsMap);
+			Assert.AreEqual(7, negotiateAuthenticationDecorator.ClaimInclusionsMap.Count);
+
+			var claims = new ClaimBuilderCollection();
+			var windowsIdentity = WindowsIdentity.GetCurrent();
+			var principal = new WindowsPrincipal(windowsIdentity);
+			var authenticateResult = this.CreateAuthenticateResult(principal);
+
+			negotiateAuthenticationDecorator.DecorateAsync(authenticateResult, "Negotiate", claims, null).Wait();
+
+			Assert.AreEqual(1, claims.Count);
+		}
+
+		[TestMethod]
 		public void OverrideOptionsWithConfiguration_Test()
 		{
 			var serviceProvider = this.ConfigureServices("Negotiate-Decorator-Change");
