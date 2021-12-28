@@ -61,6 +61,7 @@ namespace RegionOrebroLan.Web.Authentication
 			this.Services.TryAddTransient<MicrosoftToJwtMapper>();
 			this.Services.TryAddTransient<MicrosoftToJwtReplacer>();
 			this.Services.TryAddTransient<NegotiateAuthenticationDecorator>();
+			this.Services.TryAddTransient<OrganizationAuthenticationDecorator>();
 			this.Services.TryAddTransient<Replacer>();
 			this.Services.TryAddTransient<SithsCertificateSubjectExtractor>();
 
