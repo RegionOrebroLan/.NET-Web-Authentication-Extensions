@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using RegionOrebroLan.Web.Authentication.Configuration;
 
@@ -15,6 +16,16 @@ namespace RegionOrebroLan.Web.Authentication.DependencyInjection.Registration
 
 			if(schemeRegistrationOptions == null)
 				throw new ArgumentNullException(nameof(schemeRegistrationOptions));
+
+			authenticationBuilder.Services.Configure<IISOptions>(options =>
+			{
+				options.AutomaticAuthentication = false;
+			});
+
+			authenticationBuilder.Services.Configure<IISServerOptions>(options =>
+			{
+				options.AutomaticAuthentication = false;
+			});
 
 			authenticationBuilder.AddNegotiate(name, schemeRegistrationOptions.DisplayName, options =>
 			{
