@@ -43,7 +43,7 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 			var connection = new LdapConnection(server)
 			{
 				AuthType = this.Options.Value.ActiveDirectory.AuthenticationType,
-				SessionOptions = {ProtocolVersion = 3}
+				SessionOptions = { ProtocolVersion = 3 }
 			};
 
 			return await Task.FromResult(connection).ConfigureAwait(false);
@@ -66,58 +66,77 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 			switch(identifierKind)
 			{
 				case IdentifierKind.SecurityIdentifier:
-				{
-					var securityIdentifierClaim = principal.Claims.FindFirst(ClaimTypes.PrimarySid, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.PrimarySid]);
+					{
+						var securityIdentifierClaim = principal.Claims.FindFirst(ClaimTypes.PrimarySid, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.PrimarySid]);
 
-					if(securityIdentifierClaim == null)
-						throw new InvalidOperationException("Could not find a security-identifier-claim.");
+						if(securityIdentifierClaim == null)
+							throw new InvalidOperationException("Could not find a security-identifier-claim.");
 
-					ldapFilter = $"objectSid={securityIdentifierClaim.Value}";
+						ldapFilter = $"objectSid={securityIdentifierClaim.Value}";
 
-					break;
-				}
+						break;
+					}
 				case IdentifierKind.UserPrincipalName:
-				{
-					var userPrincipalNameClaim = principal.Claims.FindFirst(ClaimTypes.Upn, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Upn]);
+					{
+						var userPrincipalNameClaim = principal.Claims.FindFirst(ClaimTypes.Upn, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Upn]);
 
-					if(userPrincipalNameClaim == null)
-						throw new InvalidOperationException("Could not find a user-principal-name-claim.");
+						if(userPrincipalNameClaim == null)
+							throw new InvalidOperationException("Could not find a user-principal-name-claim.");
 
-					const string userPrincipalNameAttributeName = "userPrincipalName";
+						const string userPrincipalNameAttributeName = "userPrincipalName";
 
-					ldapFilter = $"{userPrincipalNameAttributeName}={userPrincipalNameClaim.Value}";
+						ldapFilter = $"{userPrincipalNameAttributeName}={userPrincipalNameClaim.Value}";
 
-					var emailClaim = principal.Claims.FindFirst(ClaimTypes.Email, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Email]);
+						var emailClaim = principal.Claims.FindFirst(ClaimTypes.Email, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Email]);
 
-					if(emailClaim != null)
-						ldapFilter = $"|({ldapFilter})({userPrincipalNameAttributeName}={emailClaim.Value})";
+						if(emailClaim != null)
+							ldapFilter = $"|({ldapFilter})({userPrincipalNameAttributeName}={emailClaim.Value})";
 
-					break;
-				}
+						break;
+					}
+				case IdentifierKind.WindowsAccountName:
+					{
+						var nameClaim = principal.Claims.FindFirstNameClaim();
+
+						if(nameClaim == null)
+							throw new InvalidOperationException("Could not find a name-claim.");
+
+						if(connection == null)
+							throw new ArgumentNullException(nameof(connection));
+
+						var nameParts = nameClaim.Value.Split('\\');
+						var domain = nameParts.FirstOrDefault();
+						var domainControllerLdapFilter = await this.CreateDomainControllerLdapFilterAsync(domain).ConfigureAwait(false);
+
+						// ReSharper disable PossibleNullReferenceException
+						if(((SearchResponse)connection.SendRequest(new SearchRequest(distinguishedName, domainControllerLdapFilter, SearchScope.Base, "dc"))).Entries.Count == 0)
+							throw new InvalidOperationException($"The name-claim \"{nameClaim.Value}\" has an invalid domain-part. The domain \"{domain}\" is invalid.");
+						// ReSharper restore PossibleNullReferenceException
+
+						var samAccountName = nameParts.LastOrDefault();
+						ldapFilter = $"sAMAccountName={samAccountName}";
+
+						break;
+					}
+				case IdentifierKind.SamAccountName:
+					{
+						var nameClaim = principal.Claims.FindFirstNameClaim();
+
+						if(nameClaim == null)
+							throw new InvalidOperationException("Could not find a name-claim.");
+
+						if(connection == null)
+							throw new ArgumentNullException(nameof(connection));
+
+						var samAccountName = nameClaim.Value;
+						ldapFilter = $"sAMAccountName={samAccountName}";
+
+						break;
+					}
 				default:
-				{
-					var nameClaim = principal.Claims.FindFirstNameClaim();
-
-					if(nameClaim == null)
-						throw new InvalidOperationException("Could not find a name-claim.");
-
-					if(connection == null)
-						throw new ArgumentNullException(nameof(connection));
-
-					var nameParts = nameClaim.Value.Split('\\');
-					var domain = nameParts.FirstOrDefault();
-					var domainControllerLdapFilter = await this.CreateDomainControllerLdapFilterAsync(domain).ConfigureAwait(false);
-
-					// ReSharper disable PossibleNullReferenceException
-					if(((SearchResponse) connection.SendRequest(new SearchRequest(distinguishedName, domainControllerLdapFilter, SearchScope.Base, "dc"))).Entries.Count == 0)
-						throw new InvalidOperationException($"The name-claim \"{nameClaim.Value}\" has an invalid domain-part. The domain \"{domain}\" is invalid.");
-					// ReSharper restore PossibleNullReferenceException
-
-					var samAccountName = nameParts.LastOrDefault();
-					ldapFilter = $"sAMAccountName={samAccountName}";
-
-					break;
-				}
+					{
+						throw new InvalidOperationException($"The identifier-kind {identifierKind} is invalid.");
+					}
 			}
 			// ReSharper restore SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 
@@ -209,7 +228,7 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 			if(connection == null)
 				throw new ArgumentNullException(nameof(connection));
 
-			var searchResponse = (SearchResponse) connection.SendRequest(new SearchRequest(distinguishedName, ldapFilter, scope, (attributes ?? Enumerable.Empty<string>()).ToArray()));
+			var searchResponse = (SearchResponse)connection.SendRequest(new SearchRequest(distinguishedName, ldapFilter, scope, (attributes ?? Enumerable.Empty<string>()).ToArray()));
 
 			return await Task.FromResult(searchResponse?.Entries.Cast<SearchResultEntry>().FirstOrDefault()).ConfigureAwait(false);
 		}

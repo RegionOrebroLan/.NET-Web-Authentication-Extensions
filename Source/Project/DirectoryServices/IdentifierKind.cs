@@ -4,6 +4,7 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 	{
 		SamAccountName,
 		SecurityIdentifier,
-		UserPrincipalName
+		UserPrincipalName,
+		WindowsAccountName
 	}
 }
