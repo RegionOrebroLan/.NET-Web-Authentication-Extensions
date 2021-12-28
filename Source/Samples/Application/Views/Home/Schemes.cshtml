@@ -1,10 +1,10 @@
-@model HomeViewModel
-@{ ViewBag.Heading = "Authentication-schemes"; }
+﻿@model HomeViewModel
+@{ ViewBag.Name = "Authentication-schemes"; }
 @if(Model.AuthenticationSchemes.Any())
 {
 	<div class="card">
 		<div class="card-header">
-			<h1 class="h4">@ViewBag.Heading</h1>
+			<h1 class="h4">@ViewBag.Name</h1>
 		</div>
 		<div class="card-body">
 			<p>The following authentication-schemes are registered.</p>
@@ -29,7 +29,7 @@
 							@if(options != null)
 							{
 								<li>
-									<button aria-controls="collapse-@authenticationScheme.Name" aria-expanded="false" class="btn btn-primary" data-target="#collapse-@authenticationScheme.Name" data-toggle="collapse" type="button">
+									<button aria-controls="collapse-@authenticationScheme.Name" aria-expanded="false" class="btn btn-primary" data-bs-target="#collapse-@authenticationScheme.Name" data-bs-toggle="collapse" type="button">
 										Options
 									</button>
 									<div class="collapse" id="collapse-@authenticationScheme.Name">

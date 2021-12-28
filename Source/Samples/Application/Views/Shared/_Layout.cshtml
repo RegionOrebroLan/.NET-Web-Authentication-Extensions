@@ -1,60 +1,64 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="robots" content="noindex,nofollow" />
-		<title>@ViewBag.Heading - Sample application</title>
-		<link href="~/Style/Site.min.css" rel="stylesheet" />
+		<title>@ViewBag.Name - Sample application</title>
+		<link asp-append-version="true" href="~/Style/Site.min.css" rel="stylesheet" />
 	</head>
 	<body>
-		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<a class="navbar-brand" href="/">
-				<img alt="Logo" src="/Style/Images/logo-32x32.png" />
-			</a>
-			<button aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navigation" data-toggle="collapse" type="button">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-			<div class="collapse navbar-collapse" id="navigation">
-				<ul class="navbar-nav">
-					<li class="nav-item">
-						<a class="nav-link" href="/">Home</a>
-					</li>
-					<li class="nav-item">
-						<a asp-action="Schemes" asp-controller="Home" class="nav-link">Schemes</a>
-					</li>
-				</ul>
-				<ul class="navbar-nav ml-auto">
-					@if(User.Identity.IsAuthenticated && !true.Equals(ViewBag.SignedOut))
-					{
-						<li class="nav-item dropdown active">
-							<a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="identity-dropdown">
-								<svg class="size-1-point-2-rem" role="presentation">
-									<use xlink:href="/Style/Icons/sprite.svg#person" />
-								</svg>
-								@User.Identity.Name
-							</a>
-							<div aria-labelledby="identity-dropdown" class="dropdown-menu">
-								<a asp-controller="Account" class="dropdown-item">Your identity</a>
-								<a asp-action="SignOut" asp-controller="Account" class="dropdown-item">Sign out</a>
-							</div>
-						</li>
-					}
-					else
-					{
-						<li class="nav-item active">
-							<a asp-action="Index" asp-controller="Account" class="nav-link btn btn-light text-dark">Sign in</a>
-						</li>
-					}
-				</ul>
-			</div>
-		</nav>
+		<header>
+			<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+				<div class="container-fluid">
+					<a class="navbar-brand" href="/">
+						<img alt="Logo" src="/Style/Images/logo-32x32.png" />
+					</a>
+					<button aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navigation" data-bs-toggle="collapse" type="button">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="collapse navbar-collapse" id="navigation">
+						<ul class="navbar-nav">
+							<li class="nav-item">
+								<a class="nav-link" href="/">Home</a>
+							</li>
+							<li class="nav-item">
+								<a asp-action="Schemes" asp-controller="Home" class="nav-link">Schemes</a>
+							</li>
+						</ul>
+						<ul class="navbar-nav ms-auto">
+							@if(User.Identity.IsAuthenticated && !true.Equals(ViewBag.SignedOut))
+							{
+								<li class="nav-item dropdown active">
+									<a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" id="identity-dropdown">
+										<svg class="size-1-point-2-rem" role="presentation">
+											<use xlink:href="/Style/Icons/sprite.svg#person" />
+										</svg>
+										@User.Identity.Name
+									</a>
+									<div aria-labelledby="identity-dropdown" class="dropdown-menu">
+										<a asp-controller="Account" class="dropdown-item">Your identity</a>
+										<a asp-action="SignOut" asp-controller="Account" class="dropdown-item">Sign out</a>
+									</div>
+								</li>
+							}
+							else
+							{
+								<li class="nav-item active">
+									<a asp-action="Index" asp-controller="Account" class="nav-link btn btn-light pb-1 pt-1 text-dark">Sign in</a>
+								</li>
+							}
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</header>
 		<main class="container-md mb-4" role="main">
 			@RenderBody()
 		</main>
-		<footer class="border-top pt-2 text-center">
+		<footer class="border-top container pt-2 text-center text-muted">
 			<span>Target-framework: <strong>@(typeof(Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectOptions).Assembly.GetName().Version)</strong></span>
 		</footer>
-		<script src="~/Scripts/Site.min.js"></script>
+		<script asp-append-version="true" src="~/Scripts/Site.min.js"></script>
 	</body>
 </html>

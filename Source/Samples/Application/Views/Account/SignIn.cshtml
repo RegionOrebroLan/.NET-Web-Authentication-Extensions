@@ -1,10 +1,10 @@
-@model SignInViewModel
-@{ ViewBag.Heading = "Sign in"; }
+﻿@model SignInViewModel
+@{ ViewBag.Name = "Sign in"; }
 @if(Model.AuthenticationSchemes.Any())
 {
 	<div class="card">
 		<div class="card-header">
-			<h1 class="h4">@ViewBag.Heading</h1>
+			<h1 class="h4">@ViewBag.Name</h1>
 		</div>
 		<div class="card-body">
 			<p>Choose any of the following schemes to sign in.</p>
@@ -17,7 +17,7 @@
 								<svg class="size-1-point-4-rem" role="presentation">
 									<use xlink:href="/Style/Icons/sprite.svg#@authenticationScheme.Icon" />
 								</svg>
-								<span class="font-weight-light">Sign in with</span> @(authenticationScheme.DisplayName ?? authenticationScheme.Name)
+								<span class="fw-light">Sign in with</span> @(authenticationScheme.DisplayName ?? authenticationScheme.Name)
 							</h2>
 						</a>
 					</li>

@@ -1,4 +1,5 @@
-/// <!--<binding BeforeBuild="default" Clean="clean" ProjectOpened="watch" />-->
+// /// <binding BeforeBuild="default" Clean="clean" ProjectOpened="watch" />
+// If you want to bind to Visual Studio events, remove the leading "// " above.
 "use strict";
 {
 	const del = require("del");
@@ -12,11 +13,9 @@
 	const rollupNodeResolver = require("@rollup/plugin-node-resolve");
 	const rollupTerser = require("rollup-plugin-terser");
 	const rollupTypescript = require("@rollup/plugin-typescript");
-	const sass = require("gulp-sass");
+	const sass = require("gulp-sass")(require("node-sass"));
 	const svgSrite = require("gulp-svg-sprite");
 	const sourcemaps = require("gulp-sourcemaps");
-
-	sass.compiler = require("node-sass");
 
 	const destinationRootDirectoryName = "wwwroot";
 	const iconsDirectoryName = "Icons";
@@ -36,7 +35,7 @@
 	async function buildScriptBundle() {
 		console.log("Building script-bundle...");
 
-		deleteIfExists(scriptsDestinationDirectory);
+		del(replaceBackSlashWithForwardSlash(path.join(scriptsDestinationDirectory, "**/*.js")));
 
 		var bundleName = "Site.js";
 
@@ -96,10 +95,18 @@
 	}
 
 	function clean(done) {
-		console.log(`Deleting directory "${scriptsDestinationDirectory}"...`);
-		console.log(`Deleting directory "${styleDestinationDirectory}"...`);
+		const excludePattern = ".gitkeep";
+		const pattern = "**/*";
 
-		del.sync([scriptsDestinationDirectory, styleDestinationDirectory]);
+		const scriptsExcludePattern = "!" + replaceBackSlashWithForwardSlash(path.join(scriptsDestinationDirectory, excludePattern));
+		const scriptsPattern = replaceBackSlashWithForwardSlash(path.join(scriptsDestinationDirectory, pattern));
+		console.log("Cleaning script-files...");
+		del.sync([scriptsPattern, scriptsExcludePattern]);
+
+		const styleExcludePattern = "!" + replaceBackSlashWithForwardSlash(path.join(styleDestinationDirectory, excludePattern));
+		const stylePattern = replaceBackSlashWithForwardSlash(path.join(styleDestinationDirectory, pattern));
+		console.log("Cleaning style-files...");
+		del.sync([stylePattern, styleExcludePattern]);
 
 		done();
 	};
@@ -109,7 +116,7 @@
 
 		deleteIfExists(imagesDestinationDirectory);
 
-		return gulp.src(path.join(imagesSourceDirectory, "**/*"))
+		return gulp.src([path.join(imagesSourceDirectory, "**/*"), `!${path.join(imagesSourceDirectory, "ReadMe.md")}`])
 			.pipe(gulp.dest(destinationRootDirectoryName));
 	}
 
