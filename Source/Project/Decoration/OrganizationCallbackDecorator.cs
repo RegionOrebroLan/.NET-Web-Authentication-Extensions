@@ -16,11 +16,11 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 {
 	/// <inheritdoc />
 	[ServiceConfiguration(Lifetime = ServiceLifetime.Transient)]
-	public class OrganizationAuthenticationDecorator : ActiveDirectoryCallbackDecorator
+	public class OrganizationCallbackDecorator : ActiveDirectoryCallbackDecorator
 	{
 		#region Constructors
 
-		public OrganizationAuthenticationDecorator(IActiveDirectory activeDirectory, IOptions<ExtendedAuthenticationOptions> authenticationOptions, ILoggerFactory loggerFactory) : base(activeDirectory, authenticationOptions, loggerFactory) { }
+		public OrganizationCallbackDecorator(IActiveDirectory activeDirectory, IOptions<ExtendedAuthenticationOptions> authenticationOptions, ILoggerFactory loggerFactory) : base(activeDirectory, authenticationOptions, loggerFactory) { }
 
 		#endregion
 

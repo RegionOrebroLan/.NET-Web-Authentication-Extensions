@@ -15,7 +15,7 @@ using RegionOrebroLan.Web.Authentication.DirectoryServices;
 namespace IntegrationTests.Decoration
 {
 	[TestClass]
-	public class OrganizationAuthenticationDecoratorTest : AuthenticationDecoratorTestBase
+	public class OrganizationCallbackDecoratorTest : AuthenticationDecoratorTestBase
 	{
 		#region Methods
 
@@ -24,21 +24,21 @@ namespace IntegrationTests.Decoration
 			return AuthenticateResult.Success(new AuthenticationTicket(principal, "Ticket-authentication-scheme"));
 		}
 
-		protected internal virtual OrganizationAuthenticationDecorator CreateOrganizationAuthenticationDecorator()
+		protected internal virtual OrganizationCallbackDecorator CreateOrganizationCallbackDecorator()
 		{
-			return this.CreateOrganizationAuthenticationDecorator(Mock.Of<ILoggerFactory>());
+			return this.CreateOrganizationCallbackDecorator(Mock.Of<ILoggerFactory>());
 		}
 
-		protected internal virtual OrganizationAuthenticationDecorator CreateOrganizationAuthenticationDecorator(ILoggerFactory loggerFactory)
+		protected internal virtual OrganizationCallbackDecorator CreateOrganizationCallbackDecorator(ILoggerFactory loggerFactory)
 		{
-			return this.CreateOrganizationAuthenticationDecorator(new ExtendedAuthenticationOptions(), loggerFactory);
+			return this.CreateOrganizationCallbackDecorator(new ExtendedAuthenticationOptions(), loggerFactory);
 		}
 
-		protected internal virtual OrganizationAuthenticationDecorator CreateOrganizationAuthenticationDecorator(ExtendedAuthenticationOptions authenticationOptions, ILoggerFactory loggerFactory)
+		protected internal virtual OrganizationCallbackDecorator CreateOrganizationCallbackDecorator(ExtendedAuthenticationOptions authenticationOptions, ILoggerFactory loggerFactory)
 		{
 			var options = Options.Create(authenticationOptions);
 
-			return new OrganizationAuthenticationDecorator(new ActiveDirectory(options), options, loggerFactory);
+			return new OrganizationCallbackDecorator(new ActiveDirectory(options), options, loggerFactory);
 		}
 
 		[TestMethod]
@@ -46,18 +46,18 @@ namespace IntegrationTests.Decoration
 		{
 			const string authenticationScheme = "Organization";
 
-			var serviceProvider = this.ConfigureServices("Organization-Decorator");
+			var serviceProvider = this.ConfigureServices("Organization-Callback-Decorator");
 			var authenticationOptions = serviceProvider.GetRequiredService<IOptions<ExtendedAuthenticationOptions>>().Value;
 
 			Assert.AreEqual(200, authenticationOptions.CallbackDecorators.ElementAt(1).Value.AuthenticationSchemes.First().Value);
 
-			var organizationAuthenticationDecorator = (OrganizationAuthenticationDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetCallbackDecoratorsAsync(authenticationScheme).Result.ElementAt(1);
+			var organizationCallbackDecorator = (OrganizationCallbackDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetCallbackDecoratorsAsync(authenticationScheme).Result.ElementAt(1);
 
-			Assert.IsNotNull(organizationAuthenticationDecorator);
-			Assert.AreEqual("organizationIdentity", organizationAuthenticationDecorator.IdentityClaimType);
-			Assert.AreEqual("AB0123456789-", organizationAuthenticationDecorator.IdentityPrefix);
+			Assert.IsNotNull(organizationCallbackDecorator);
+			Assert.AreEqual("organizationIdentity", organizationCallbackDecorator.IdentityClaimType);
+			Assert.AreEqual("AB0123456789-", organizationCallbackDecorator.IdentityPrefix);
 
-			var identity = organizationAuthenticationDecorator.IdentityPrefix;
+			var identity = organizationCallbackDecorator.IdentityPrefix;
 			var identityNameParts = WindowsIdentity.GetCurrent().Name.Split('\\', 2).ToArray();
 			if(identityNameParts.Length == 2)
 				identity += identityNameParts[1];
@@ -66,7 +66,7 @@ namespace IntegrationTests.Decoration
 			var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("organizationIdentity", identity) }, "Test"));
 			var authenticateResult = this.CreateAuthenticateResult(principal);
 
-			organizationAuthenticationDecorator.DecorateAsync(authenticateResult, authenticationScheme, claims, null).Wait();
+			organizationCallbackDecorator.DecorateAsync(authenticateResult, authenticationScheme, claims, null).Wait();
 
 			Assert.AreEqual(2, claims.Count);
 		}
@@ -76,18 +76,18 @@ namespace IntegrationTests.Decoration
 		{
 			const string authenticationScheme = "Organization";
 
-			var serviceProvider = this.ConfigureServices("Organization-Decorator-Without-Options");
+			var serviceProvider = this.ConfigureServices("Organization-Callback-Decorator-Without-Options");
 			var authenticationOptions = serviceProvider.GetRequiredService<IOptions<ExtendedAuthenticationOptions>>().Value;
 
 			Assert.AreEqual(200, authenticationOptions.CallbackDecorators.ElementAt(1).Value.AuthenticationSchemes.First().Value);
 
-			var organizationAuthenticationDecorator = (OrganizationAuthenticationDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetCallbackDecoratorsAsync(authenticationScheme).Result.ElementAt(1);
+			var organizationCallbackDecorator = (OrganizationCallbackDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetCallbackDecoratorsAsync(authenticationScheme).Result.ElementAt(1);
 
-			Assert.IsNotNull(organizationAuthenticationDecorator);
-			Assert.IsNull(organizationAuthenticationDecorator.IdentityClaimType);
-			Assert.IsNull(organizationAuthenticationDecorator.IdentityPrefix);
+			Assert.IsNotNull(organizationCallbackDecorator);
+			Assert.IsNull(organizationCallbackDecorator.IdentityClaimType);
+			Assert.IsNull(organizationCallbackDecorator.IdentityPrefix);
 
-			var identity = organizationAuthenticationDecorator.IdentityPrefix;
+			var identity = organizationCallbackDecorator.IdentityPrefix;
 			var identityNameParts = WindowsIdentity.GetCurrent().Name.Split('\\', 2).ToArray();
 			if(identityNameParts.Length == 2)
 				identity += identityNameParts[1];
@@ -96,7 +96,7 @@ namespace IntegrationTests.Decoration
 			var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("organizationIdentity", identity) }, "Test"));
 			var authenticateResult = this.CreateAuthenticateResult(principal);
 
-			organizationAuthenticationDecorator.DecorateAsync(authenticateResult, authenticationScheme, claims, null).Wait();
+			organizationCallbackDecorator.DecorateAsync(authenticateResult, authenticationScheme, claims, null).Wait();
 
 			Assert.AreEqual(0, claims.Count);
 		}
