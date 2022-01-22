@@ -2,11 +2,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using RegionOrebroLan.DirectoryServices.Protocols.Configuration;
 using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
@@ -36,9 +38,15 @@ namespace IntegrationTests.Decoration
 
 		protected internal virtual OrganizationCallbackDecorator CreateOrganizationCallbackDecorator(ExtendedAuthenticationOptions authenticationOptions, ILoggerFactory loggerFactory)
 		{
+			var configuration = Mock.Of<IConfiguration>();
+
 			var options = Options.Create(authenticationOptions);
 
-			return new OrganizationCallbackDecorator(new ActiveDirectory(options), options, loggerFactory);
+			var optionsMonitorMock = new Mock<IOptionsMonitor<ExtendedAuthenticationOptions>>();
+			optionsMonitorMock.Setup(optionsMonitor => optionsMonitor.CurrentValue).Returns(authenticationOptions);
+			var optionsMonitor = optionsMonitorMock.Object;
+
+			return new OrganizationCallbackDecorator(new ActiveDirectory(configuration, new LdapConnectionStringParser(), loggerFactory, optionsMonitor), options, loggerFactory);
 		}
 
 		[TestMethod]

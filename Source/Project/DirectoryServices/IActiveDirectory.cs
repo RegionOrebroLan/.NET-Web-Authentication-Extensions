@@ -8,6 +8,7 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 	{
 		#region Methods
 
+		Task<IDictionary<string, string>> GetAttributesAsync(IEnumerable<string> attributes, string identifier, IdentifierKind identifierKind);
 		Task<IDictionary<string, string>> GetAttributesAsync(IEnumerable<string> attributes, IdentifierKind identifierKind, ClaimsPrincipal principal);
 
 		#endregion

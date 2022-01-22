@@ -3,11 +3,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using RegionOrebroLan.DirectoryServices.Protocols.Configuration;
 using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
@@ -26,9 +28,16 @@ namespace IntegrationTests.Decoration
 			return AuthenticateResult.Success(new AuthenticationTicket(principal, "Ticket-authentication-scheme"));
 		}
 
+		protected internal virtual ILoggerFactory CreateLoggerFactory()
+		{
+			var loggerFactoryMock = new Mock<ILoggerFactory>();
+			loggerFactoryMock.Setup(loggerFactory => loggerFactory.CreateLogger(It.IsAny<string>())).Returns(Mock.Of<ILogger>());
+			return loggerFactoryMock.Object;
+		}
+
 		protected internal virtual NegotiateAuthenticationDecorator CreateNegotiateAuthenticationDecorator()
 		{
-			return this.CreateNegotiateAuthenticationDecorator(Mock.Of<ILoggerFactory>());
+			return this.CreateNegotiateAuthenticationDecorator(this.CreateLoggerFactory());
 		}
 
 		protected internal virtual NegotiateAuthenticationDecorator CreateNegotiateAuthenticationDecorator(ILoggerFactory loggerFactory)
@@ -38,9 +47,15 @@ namespace IntegrationTests.Decoration
 
 		protected internal virtual NegotiateAuthenticationDecorator CreateNegotiateAuthenticationDecorator(ExtendedAuthenticationOptions authenticationOptions, ILoggerFactory loggerFactory)
 		{
+			var configuration = Mock.Of<IConfiguration>();
+
 			var options = Options.Create(authenticationOptions);
 
-			return new NegotiateAuthenticationDecorator(new ActiveDirectory(options), options, loggerFactory);
+			var optionsMonitorMock = new Mock<IOptionsMonitor<ExtendedAuthenticationOptions>>();
+			optionsMonitorMock.Setup(optionsMonitor => optionsMonitor.CurrentValue).Returns(authenticationOptions);
+			var optionsMonitor = optionsMonitorMock.Object;
+
+			return new NegotiateAuthenticationDecorator(new ActiveDirectory(configuration, new LdapConnectionStringParser(), loggerFactory, optionsMonitor), options, loggerFactory);
 		}
 
 		[TestMethod]
@@ -72,7 +87,7 @@ namespace IntegrationTests.Decoration
 			var windowsIdentity = WindowsIdentity.GetCurrent();
 			var principal = new WindowsPrincipal(windowsIdentity);
 			var authenticateResult = this.CreateAuthenticateResult(principal);
-			var negotiateAuthenticationDecorator = this.CreateNegotiateAuthenticationDecorator(new ExtendedAuthenticationOptions { Negotiate = { IncludeRoleClaims = true } }, Mock.Of<ILoggerFactory>());
+			var negotiateAuthenticationDecorator = this.CreateNegotiateAuthenticationDecorator(new ExtendedAuthenticationOptions { Negotiate = { IncludeRoleClaims = true } }, this.CreateLoggerFactory());
 
 			negotiateAuthenticationDecorator.DecorateAsync(authenticateResult, authenticationScheme, claims, null).Wait();
 

@@ -4,11 +4,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using RegionOrebroLan.DependencyInjection;
+using RegionOrebroLan.DirectoryServices.Protocols.Configuration;
 using RegionOrebroLan.Security.Cryptography;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
 using RegionOrebroLan.Web.Authentication.DependencyInjection.Registration;
 using RegionOrebroLan.Web.Authentication.DirectoryServices;
+using ConfigurationKeys = RegionOrebroLan.Web.Authentication.Configuration.ConfigurationKeys;
 
 namespace RegionOrebroLan.Web.Authentication
 {
@@ -55,6 +57,7 @@ namespace RegionOrebroLan.Web.Authentication
 			this.Services.TryAddSingleton<IAuthenticationSchemeLoader, AuthenticationSchemeLoader>();
 			this.Services.TryAddSingleton<IDecorationLoader, DecorationLoader>();
 			this.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			this.Services.TryAddSingleton<IParser<LdapConnectionOptions>, LdapConnectionStringParser>();
 			this.Services.TryAddTransient<JwtToMicrosoftMapper>();
 			this.Services.TryAddTransient<JwtToMicrosoftReplacer>();
 			this.Services.TryAddTransient<Mapper>();

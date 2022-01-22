@@ -1,9 +1,15 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.DirectoryServices.Protocols;
+using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text;
+using System.Threading.Tasks;
 using IdentityModel;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RegionOrebroLan.DependencyInjection;
@@ -51,17 +57,170 @@ namespace IntegrationTests.DirectoryServices
 
 		#region Methods
 
-		protected internal virtual IServiceProvider ConfigureServices()
+		[TestMethod]
+		public async Task ConnectionString_WithDefaultPort_Test()
 		{
-			var services = Global.CreateServices();
+			await this.ConnectionStringTest("ConnectionString-With-Default-Port", AuthType.Ntlm, await this.GetSystemDomainFirstPartAsync(), 389);
+		}
 
-			services.AddAuthentication(Global.CreateCertificateResolver(), Global.Configuration, new InstanceFactory());
+		[TestMethod]
+		public async Task ConnectionString_WithoutPort_Test()
+		{
+			await this.ConnectionStringTest("ConnectionString-Without-Port", AuthType.Negotiate, IPGlobalProperties.GetIPGlobalProperties().DomainName, null);
+		}
+
+		[TestMethod]
+		[SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase")]
+		public async Task ConnectionString_WithSecurePort_Test()
+		{
+			await this.ConnectionStringTest("ConnectionString-With-Secure-Port", AuthType.Kerberos, (await this.GetSystemDomainFirstPartAsync()).ToLowerInvariant(), 636);
+		}
+
+		protected internal virtual async Task ConnectionStringTest(string appSettingsIdentifier, AuthType authenticationType, string domain, int? port)
+		{
+			await using(var stream = this.GetAppSettingsStream(appSettingsIdentifier, domain))
+			{
+				var serviceProvider = this.CreateServiceProvider(stream);
+
+				var activeDirectory = (ActiveDirectory)serviceProvider.GetRequiredService<IActiveDirectory>();
+
+				Assert.IsNotNull(activeDirectory);
+
+				Assert.AreEqual(authenticationType, activeDirectory.LdapConnectionOptions.AuthenticationType);
+				Assert.AreEqual(domain, activeDirectory.LdapConnectionOptions.DirectoryIdentifier.Servers.First());
+				Assert.AreEqual(port, activeDirectory.LdapConnectionOptions.DirectoryIdentifier.Port);
+
+				var windowsAccountName = WindowsIdentity.GetCurrent().Name;
+				var samAccountName = windowsAccountName.Split('\\').Last();
+
+				var identifier = windowsAccountName;
+				var attributes = (await activeDirectory.GetAttributesAsync(new[] { "sAMAccountName" }, identifier, IdentifierKind.WindowsAccountName)).ToArray();
+				Assert.AreEqual(1, attributes.Length);
+				Assert.AreEqual("sAMAccountName", attributes.ElementAt(0).Key);
+
+				identifier = samAccountName;
+				attributes = (await activeDirectory.GetAttributesAsync(new[] { "sAMAccountName" }, identifier, IdentifierKind.SamAccountName)).ToArray();
+				Assert.AreEqual(1, attributes.Length);
+				Assert.AreEqual("sAMAccountName", attributes.ElementAt(0).Key);
+
+				// Invalid domain-part
+				identifier = $"{Guid.NewGuid()}\\{samAccountName}";
+				attributes = (await activeDirectory.GetAttributesAsync(new[] { "sAMAccountName" }, identifier, IdentifierKind.SamAccountName)).ToArray();
+				Assert.IsFalse(attributes.Any());
+			}
+		}
+
+		protected internal virtual IServiceProvider CreateServiceProvider(Stream jsonStream)
+		{
+			var configurationBuilder = Global.CreateConfigurationBuilder();
+			configurationBuilder.AddJsonStream(jsonStream);
+			var configuration = configurationBuilder.Build();
+			var services = Global.CreateServices(configuration);
+			services.AddAuthentication(Global.CreateCertificateResolver(), configuration, new InstanceFactory());
 
 			return services.BuildServiceProvider();
 		}
 
+		protected internal virtual string GetAppSettingsContent(string appSettingsIdentifier, params string[] formatArguments)
+		{
+			var path = Path.Combine(Global.ProjectDirectoryPath, "DirectoryServices", "Resources", "ActiveDirectory", $"appsettings.{appSettingsIdentifier}.json");
+
+			var content = File.ReadAllText(path);
+
+			formatArguments ??= Array.Empty<string>();
+
+			for(var i = 0; i < formatArguments.Length; i++)
+			{
+				content = content.Replace($"{{{i}}}", formatArguments[i], StringComparison.OrdinalIgnoreCase);
+			}
+
+			return content;
+		}
+
+		protected internal virtual Stream GetAppSettingsStream(string appSettingsIdentifier, params string[] formatArguments)
+		{
+			var content = this.GetAppSettingsContent(appSettingsIdentifier, formatArguments);
+
+			var bytes = Encoding.UTF8.GetBytes(content);
+
+			return new MemoryStream(bytes);
+		}
+
 		[TestMethod]
-		public void GetAttributesAsync_IfTheIdentifierKindParameterIsSamAccountName_ShouldWorkProperly()
+		public void GetAttributesAsync_WithIdentifierParameter_IfTheIdentifierKindParameterIsSamAccountName_ShouldWorkProperly()
+		{
+			var identityNameParts = WindowsIdentity.GetCurrent().Name.Split('\\', 2);
+			string samAccountName = null;
+			if(identityNameParts.Length == 2)
+				samAccountName = identityNameParts[1];
+
+			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { "userPrincipalName" }, samAccountName, IdentifierKind.SamAccountName).Result;
+
+			Assert.AreEqual(1, attributes.Count, "The test must be run on a domain.");
+		}
+
+		[TestMethod]
+		public void GetAttributesAsync_WithIdentifierParameter_IfTheIdentifierKindParameterIsSecurityIdentifier_ShouldWorkProperly()
+		{
+			var identifier = new WindowsPrincipal(WindowsIdentity.GetCurrent()).FindFirst(ClaimTypes.PrimarySid)?.Value;
+
+			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { "userPrincipalName" }, identifier, IdentifierKind.SecurityIdentifier).Result;
+
+			Assert.AreEqual(1, attributes.Count, "The test must be run on a domain.");
+		}
+
+		[TestMethod]
+		public void GetAttributesAsync_WithIdentifierParameter_IfTheIdentifierKindParameterIsUserPrincipalName_ShouldWorkProperly()
+		{
+			const string userPrincipalNameAttributeName = "userPrincipalName";
+			const string samAccountNameAttributeName = "sAMAccountName";
+			var claims = new ClaimsPrincipalBuilder(new WindowsPrincipal(WindowsIdentity.GetCurrent())).ClaimsIdentityBuilders.First().ClaimBuilders;
+			var samAccountName = claims.First(claim => string.Equals(ClaimTypes.Name, claim.Type, StringComparison.OrdinalIgnoreCase)).Value.Split('\\').Last();
+			var userPrincipalName = this.ActiveDirectory.GetAttributesAsync(new[] { userPrincipalNameAttributeName }, IdentifierKind.SecurityIdentifier, new WindowsPrincipal(WindowsIdentity.GetCurrent())).Result.First().Value;
+
+			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { samAccountNameAttributeName, userPrincipalNameAttributeName }, userPrincipalName, IdentifierKind.UserPrincipalName).Result;
+			Assert.AreEqual(2, attributes.Count, "The test must be run on a domain.");
+			Assert.AreEqual(samAccountName, attributes.ElementAt(0).Value, "The test must be run on a domain.");
+			Assert.AreEqual(userPrincipalName, attributes.ElementAt(1).Value, "The test must be run on a domain.");
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void GetAttributesAsync_WithIdentifierParameter_IfTheIdentifierKindParameterIsWindowsAccountName_And_IfTheNameClaimHasAnInvalidDomainPart_ShouldThrowAnInvalidOperationException()
+		{
+			var domain = Guid.NewGuid().ToString();
+			var name = $"{domain}\\abc123";
+
+			try
+			{
+				_ = this.ActiveDirectory.GetAttributesAsync(Enumerable.Empty<string>(), name, IdentifierKind.WindowsAccountName).Result;
+			}
+			catch(AggregateException aggregateException)
+			{
+				if(aggregateException.InnerExceptions.FirstOrDefault() is InvalidOperationException invalidOperationException)
+				{
+					if(string.Equals($"Could not get attributes for principal \"{name}\".", invalidOperationException.Message, StringComparison.Ordinal))
+					{
+						if(invalidOperationException.InnerException != null)
+						{
+							if(string.Equals($"The name-claim \"{name}\" has an invalid domain-part. The domain \"{domain}\" is invalid.", invalidOperationException.InnerException.Message, StringComparison.Ordinal))
+								throw invalidOperationException;
+						}
+					}
+				}
+			}
+		}
+
+		[TestMethod]
+		public void GetAttributesAsync_WithIdentifierParameter_IfTheIdentifierKindParameterIsWindowsAccountName_ShouldWorkProperly()
+		{
+			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { "userPrincipalName" }, WindowsIdentity.GetCurrent().Name, IdentifierKind.WindowsAccountName).Result;
+
+			Assert.AreEqual(1, attributes.Count, "The test must be run on a domain.");
+		}
+
+		[TestMethod]
+		public void GetAttributesAsync_WithPrincipalParameter_IfTheIdentifierKindParameterIsSamAccountName_ShouldWorkProperly()
 		{
 			var identityNameParts = WindowsIdentity.GetCurrent().Name.Split('\\', 2);
 			string samAccountName = null;
@@ -76,7 +235,7 @@ namespace IntegrationTests.DirectoryServices
 		}
 
 		[TestMethod]
-		public void GetAttributesAsync_IfTheIdentifierKindParameterIsSecurityIdentifier_ShouldWorkProperly()
+		public void GetAttributesAsync_WithPrincipalParameter_IfTheIdentifierKindParameterIsSecurityIdentifier_ShouldWorkProperly()
 		{
 			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { "userPrincipalName" }, IdentifierKind.SecurityIdentifier, new WindowsPrincipal(WindowsIdentity.GetCurrent())).Result;
 
@@ -84,7 +243,7 @@ namespace IntegrationTests.DirectoryServices
 		}
 
 		[TestMethod]
-		public void GetAttributesAsync_IfTheIdentifierKindParameterIsUserPrincipalName_ShouldWorkProperly()
+		public void GetAttributesAsync_WithPrincipalParameter_IfTheIdentifierKindParameterIsUserPrincipalName_ShouldWorkProperly()
 		{
 			const string userPrincipalNameAttributeName = "userPrincipalName";
 			const string samAccountNameAttributeName = "sAMAccountName";
@@ -110,7 +269,7 @@ namespace IntegrationTests.DirectoryServices
 
 		[TestMethod]
 		[ExpectedException(typeof(InvalidOperationException))]
-		public void GetAttributesAsync_IfTheIdentifierKindParameterIsWindowsAccountName_And_IfTheNameClaimHasAnInvalidDomainPart_ShouldThrowAnInvalidOperationException()
+		public void GetAttributesAsync_WithPrincipalParameter_IfTheIdentifierKindParameterIsWindowsAccountName_And_IfTheNameClaimHasAnInvalidDomainPart_ShouldThrowAnInvalidOperationException()
 		{
 			var domain = Guid.NewGuid().ToString();
 			var name = $"{domain}\\abc123";
@@ -136,19 +295,88 @@ namespace IntegrationTests.DirectoryServices
 		}
 
 		[TestMethod]
-		public void GetAttributesAsync_IfTheIdentifierKindParameterIsWindowsAccountName_ShouldWorkProperly()
+		public void GetAttributesAsync_WithPrincipalParameter_IfTheIdentifierKindParameterIsWindowsAccountName_ShouldWorkProperly()
 		{
 			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { "userPrincipalName" }, IdentifierKind.WindowsAccountName, new WindowsPrincipal(WindowsIdentity.GetCurrent())).Result;
 
 			Assert.AreEqual(1, attributes.Count, "The test must be run on a domain.");
 		}
 
-		[TestMethod]
-		public void GetDomainNameAsync_Test()
+		protected internal virtual async Task<string> GetSystemDomainFirstPartAsync()
 		{
-			var domainName = this.ActiveDirectory.GetDomainNameAsync().Result;
+			await Task.CompletedTask;
+
+			return IPGlobalProperties.GetIPGlobalProperties().DomainName.Split('.').First().ToUpperInvariant();
+		}
+
+		[TestMethod]
+		public void GetSystemDomainName_Test()
+		{
+			var domainName = this.ActiveDirectory.GetSystemDomainName();
 			Assert.IsTrue(domainName.Contains('.', StringComparison.OrdinalIgnoreCase), "The domain-name should be a full domain-name, eg domain.net.");
-			Assert.AreEqual(IPGlobalProperties.GetIPGlobalProperties().DomainName, domainName, "The test must be run on a domain.");
+			Assert.AreEqual(IPGlobalProperties.GetIPGlobalProperties().DomainName, domainName, "The test must be run on a domain (probably on Windows).");
+		}
+
+		[TestMethod]
+		public void LdapConnectionOptions_AuthenticationType_ShouldReturnKerberosByDefult()
+		{
+			var ldapConnectionOptions = this.ActiveDirectory.LdapConnectionOptions;
+
+			Assert.AreEqual(AuthType.Kerberos, ldapConnectionOptions.AuthenticationType);
+		}
+
+		[TestMethod]
+		public void LdapConnectionOptions_DirectoryIdentifier_Servers_ShouldIncludeTheSystemDomainNameByDefult()
+		{
+			var ldapConnectionOptions = this.ActiveDirectory.LdapConnectionOptions;
+
+			Assert.AreEqual(1, ldapConnectionOptions.DirectoryIdentifier.Servers.Count);
+			Assert.AreEqual(IPGlobalProperties.GetIPGlobalProperties().DomainName, ldapConnectionOptions.DirectoryIdentifier.Servers.First());
+		}
+
+		[TestMethod]
+		public async Task Options_WithInvalidRootDistinguishedName_Test()
+		{
+			await this.OptionsTest("With-Invalid-RootDistinguishedName", "dc=invalid, dc=invalid", false);
+		}
+
+		[TestMethod]
+		public async Task Options_WithValidRootDistinguishedName_Test()
+		{
+			var domain = IPGlobalProperties.GetIPGlobalProperties().DomainName;
+			var rootDistinguishedName = string.Join(", ", domain.Split('.').Select(part => $"dc={part}"));
+
+			await this.OptionsTest("With-Valid-RootDistinguishedName", rootDistinguishedName, true, rootDistinguishedName);
+		}
+
+		protected internal virtual async Task OptionsTest(string appSettingsIdentifier, string rootDistinguishedName, bool samAccountNameHit, params string[] formatArguments)
+		{
+			formatArguments ??= Array.Empty<string>();
+
+			await using(var stream = this.GetAppSettingsStream(appSettingsIdentifier, formatArguments))
+			{
+				var serviceProvider = this.CreateServiceProvider(stream);
+
+				var activeDirectory = (ActiveDirectory)serviceProvider.GetRequiredService<IActiveDirectory>();
+
+				Assert.IsNotNull(activeDirectory);
+
+				Assert.AreEqual(rootDistinguishedName, activeDirectory.RootDistinguishedName);
+
+				var samAccountName = WindowsIdentity.GetCurrent().Name.Split('\\').Last();
+
+				var identifier = samAccountName;
+				var attributes = (await activeDirectory.GetAttributesAsync(new[] { "sAMAccountName" }, identifier, IdentifierKind.SamAccountName)).ToArray();
+				if(samAccountNameHit)
+				{
+					Assert.AreEqual(1, attributes.Length);
+					Assert.AreEqual("sAMAccountName", attributes.ElementAt(0).Key);
+				}
+				else
+				{
+					Assert.IsFalse(attributes.Any());
+				}
+			}
 		}
 
 		#endregion
