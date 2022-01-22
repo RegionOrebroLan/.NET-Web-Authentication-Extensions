@@ -33,10 +33,10 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(PackageReferenceVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(PackageReferenceVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.WsFederation" Version="$(PackageReferenceVersion)" />
-		<PackageReference Include="RegionOrebroLan.DirectoryServices" Version="0.0.0-alpha" />
-		<PackageReference Include="RegionOrebroLan.DirectoryServices.Protocols" Version="0.0.4-alpha" />
+		<PackageReference Include="RegionOrebroLan.DirectoryServices" Version="0.0.1-alpha" />
+		<PackageReference Include="RegionOrebroLan.DirectoryServices.Protocols" Version="0.0.5-alpha" />
 		<PackageReference Include="RegionOrebroLan.Logging" Version="0.0.3-alpha" />
-		<PackageReference Include="RegionOrebroLan.Web.Authentication.Certificate" Version="0.0.6-alpha" />
+		<PackageReference Include="RegionOrebroLan.Web.Authentication.Certificate" Version="0.0.7-alpha" />
 	</ItemGroup>
 	<Target Name="HandleAssemblyOriginatorKeyFile" BeforeTargets="BeforeBuild" Condition="$(SignAssembly) AND !Exists('$(AssemblyOriginatorKeyFile)')">
 		<PropertyGroup>
