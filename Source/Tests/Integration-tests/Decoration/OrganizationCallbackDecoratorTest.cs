@@ -40,13 +40,11 @@ namespace IntegrationTests.Decoration
 		{
 			var configuration = Mock.Of<IConfiguration>();
 
-			var options = Options.Create(authenticationOptions);
+			var authenticationOptionsMonitorMock = new Mock<IOptionsMonitor<ExtendedAuthenticationOptions>>();
+			authenticationOptionsMonitorMock.Setup(optionsMonitor => optionsMonitor.CurrentValue).Returns(authenticationOptions);
+			var authenticationOptionsMonitor = authenticationOptionsMonitorMock.Object;
 
-			var optionsMonitorMock = new Mock<IOptionsMonitor<ExtendedAuthenticationOptions>>();
-			optionsMonitorMock.Setup(optionsMonitor => optionsMonitor.CurrentValue).Returns(authenticationOptions);
-			var optionsMonitor = optionsMonitorMock.Object;
-
-			return new OrganizationCallbackDecorator(new ActiveDirectory(configuration, new LdapConnectionStringParser(), loggerFactory, optionsMonitor), options, loggerFactory);
+			return new OrganizationCallbackDecorator(new ActiveDirectory(configuration, new LdapConnectionStringParser(), loggerFactory, authenticationOptionsMonitor), loggerFactory);
 		}
 
 		[TestMethod]

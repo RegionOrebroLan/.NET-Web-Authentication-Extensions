@@ -29,11 +29,16 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 		#region Constructors
 
-		public NegotiateAuthenticationDecorator(IActiveDirectory activeDirectory, IOptions<ExtendedAuthenticationOptions> authenticationOptions, ILoggerFactory loggerFactory) : base(activeDirectory, authenticationOptions, loggerFactory) { }
+		public NegotiateAuthenticationDecorator(IActiveDirectory activeDirectory, IOptionsMonitor<ExtendedAuthenticationOptions> authenticationOptionsMonitor, ILoggerFactory loggerFactory) : base(activeDirectory, loggerFactory)
+		{
+			this.AuthenticationOptionsMonitor = authenticationOptionsMonitor ?? throw new ArgumentNullException(nameof(authenticationOptionsMonitor));
+		}
 
 		#endregion
 
 		#region Properties
+
+		protected internal virtual IOptionsMonitor<ExtendedAuthenticationOptions> AuthenticationOptionsMonitor { get; }
 
 		public override IDictionary<string, ClaimMapping> ClaimInclusionsMap
 		{
@@ -111,7 +116,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 				await base.DecorateAsync(authenticateResult, authenticationScheme, claims, properties).ConfigureAwait(false);
 
-				if(this.AuthenticationOptions.Value.Negotiate.IncludeRoleClaims)
+				if(this.AuthenticationOptionsMonitor.CurrentValue.Negotiate.IncludeRoleClaims)
 				{
 					if(!(authenticateResult.Principal.Identity is WindowsIdentity windowsIdentity))
 					{

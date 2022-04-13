@@ -49,7 +49,11 @@ namespace UnitTests.Decoration
 
 		protected internal virtual NegotiateAuthenticationDecorator CreateNegotiateAuthenticationDecorator(ExtendedAuthenticationOptions authenticationOptions, ILoggerFactory loggerFactory)
 		{
-			return new NegotiateAuthenticationDecorator(Mock.Of<IActiveDirectory>(), Options.Create(authenticationOptions), loggerFactory);
+			var authenticationOptionsMonitorMock = new Mock<IOptionsMonitor<ExtendedAuthenticationOptions>>();
+			authenticationOptionsMonitorMock.Setup(optionsMonitor => optionsMonitor.CurrentValue).Returns(authenticationOptions);
+			var authenticationOptionsMonitor = authenticationOptionsMonitorMock.Object;
+
+			return new NegotiateAuthenticationDecorator(Mock.Of<IActiveDirectory>(), authenticationOptionsMonitor, loggerFactory);
 		}
 
 		#endregion

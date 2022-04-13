@@ -4,10 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using RegionOrebroLan.DependencyInjection;
 using RegionOrebroLan.Security.Claims;
-using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.DirectoryServices;
 
 namespace RegionOrebroLan.Web.Authentication.Decoration
@@ -18,7 +16,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 	{
 		#region Constructors
 
-		public ActiveDirectoryCallbackDecorator(IActiveDirectory activeDirectory, IOptions<ExtendedAuthenticationOptions> authenticationOptions, ILoggerFactory loggerFactory) : base(activeDirectory, authenticationOptions, loggerFactory) { }
+		public ActiveDirectoryCallbackDecorator(IActiveDirectory activeDirectory, ILoggerFactory loggerFactory) : base(activeDirectory, loggerFactory) { }
 
 		#endregion
 

@@ -4,10 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using RegionOrebroLan.Logging.Extensions;
 using RegionOrebroLan.Security.Claims;
-using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.DirectoryServices;
 using RegionOrebroLan.Web.Authentication.Extensions;
 
@@ -27,10 +25,9 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 		#region Constructors
 
-		protected ActiveDirectoryDecorator(IActiveDirectory activeDirectory, IOptions<ExtendedAuthenticationOptions> authenticationOptions, ILoggerFactory loggerFactory) : base(loggerFactory)
+		protected ActiveDirectoryDecorator(IActiveDirectory activeDirectory, ILoggerFactory loggerFactory) : base(loggerFactory)
 		{
 			this.ActiveDirectory = activeDirectory ?? throw new ArgumentNullException(nameof(activeDirectory));
-			this.AuthenticationOptions = authenticationOptions ?? throw new ArgumentNullException(nameof(authenticationOptions));
 		}
 
 		#endregion
@@ -45,7 +42,6 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 		protected internal virtual string ActiveDirectorySourcePrefix => _activeDirectorySourcePrefix;
 		public virtual string ActiveDirectoryUserPrincipalNameAttributeName { get; set; } = "userPrincipalName";
 		protected internal virtual string ActiveDirectoryUserPrincipalNameSource => _activeDirectoryUserPrincipalNameSource;
-		protected internal virtual IOptions<ExtendedAuthenticationOptions> AuthenticationOptions { get; }
 
 		public override IDictionary<string, ClaimMapping> ClaimInclusionsMap => this._claimInclusionsMap ??= new Dictionary<string, ClaimMapping>(StringComparer.OrdinalIgnoreCase)
 		{
