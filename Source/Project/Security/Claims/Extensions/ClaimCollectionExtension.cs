@@ -10,6 +10,19 @@ namespace RegionOrebroLan.Web.Authentication.Security.Claims.Extensions
 	{
 		#region Methods
 
+		public static IEnumerable<Claim> Find(this IEnumerable<Claim> claims, params string[] types)
+		{
+			claims = (claims ?? Enumerable.Empty<Claim>()).ToArray();
+			var result = new List<Claim>();
+
+			foreach(var type in types ?? Array.Empty<string>())
+			{
+				result.AddRange(claims.Where(claim => string.Equals(claim.Type, type, StringComparison.OrdinalIgnoreCase)));
+			}
+
+			return result;
+		}
+
 		public static Claim FindFirst(this IEnumerable<Claim> claims, params string[] types)
 		{
 			claims = (claims ?? Enumerable.Empty<Claim>()).ToArray();

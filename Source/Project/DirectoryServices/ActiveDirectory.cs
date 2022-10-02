@@ -205,10 +205,12 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 
 			var claimType = identifierKind switch
 			{
+				IdentifierKind.Email => ClaimTypes.Email,
 				IdentifierKind.SamAccountName => ClaimTypes.Name,
-				IdentifierKind.WindowsAccountName => ClaimTypes.Name,
 				IdentifierKind.SecurityIdentifier => ClaimTypes.PrimarySid,
 				IdentifierKind.UserPrincipalName => ClaimTypes.Upn,
+				IdentifierKind.UserPrincipalNameWithEmailFallback => ClaimTypes.Upn,
+				IdentifierKind.WindowsAccountName => ClaimTypes.Name,
 				_ => throw new InvalidOperationException($"The identifier-kind {identifierKind} is invalid.")
 			};
 
@@ -216,6 +218,7 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 		}
 
 		[Obsolete("This method will be removed in a later release. Use GetUserAttributesAsync instead.")]
+		[SuppressMessage("Maintainability", "CA1502:Avoid excessive complexity")]
 		public virtual async Task<IDictionary<string, string>> GetAttributesAsync(IEnumerable<string> attributes, IdentifierKind identifierKind, ClaimsPrincipal principal)
 		{
 			if(principal == null)
@@ -223,64 +226,92 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 
 			try
 			{
-				string filter;
-				string windowsAccountName = null;
+				var attributeNames = this.OptionsMonitor.CurrentValue.ActiveDirectory.AttributeNames;
+				var filterBuilder = new FilterBuilder { Operator = FilterOperator.Or };
+				var windowsAccountNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 				switch(identifierKind)
 				{
+					case IdentifierKind.Email:
+						{
+							foreach(var claim in principal.Claims.Find(ClaimTypes.Email, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Email]))
+							{
+								filterBuilder.Filters.Add($"{attributeNames.Email}={claim.Value}");
+							}
+
+							if(!filterBuilder.Filters.Any())
+								throw new InvalidOperationException("Could not find any email-claims.");
+
+							break;
+						}
 					case IdentifierKind.SamAccountName:
 						{
-							var nameClaim = principal.Claims.FindFirstNameClaim();
+							foreach(var claim in principal.Claims.Find(ClaimCollectionExtension.GetNameClaimTypes()))
+							{
+								filterBuilder.Filters.Add($"{attributeNames.SamAccountName}={claim.Value}");
+							}
 
-							if(nameClaim == null)
-								throw new InvalidOperationException("Could not find a name-claim.");
-
-							var samAccountName = nameClaim.Value;
-							filter = $"sAMAccountName={samAccountName}";
+							if(!filterBuilder.Filters.Any())
+								throw new InvalidOperationException("Could not find any name-claims.");
 
 							break;
 						}
 					case IdentifierKind.SecurityIdentifier:
 						{
-							var securityIdentifierClaim = principal.Claims.FindFirst(ClaimTypes.PrimarySid, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.PrimarySid]);
+							foreach(var claim in principal.Claims.Find(ClaimTypes.PrimarySid, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.PrimarySid]))
+							{
+								filterBuilder.Filters.Add($"{attributeNames.SecurityIdentifier}={claim.Value}");
+							}
 
-							if(securityIdentifierClaim == null)
-								throw new InvalidOperationException("Could not find a security-identifier-claim.");
-
-							filter = $"objectSid={securityIdentifierClaim.Value}";
+							if(!filterBuilder.Filters.Any())
+								throw new InvalidOperationException("Could not find any security-identifier-claims.");
 
 							break;
 						}
 					case IdentifierKind.UserPrincipalName:
 						{
-							var userPrincipalNameClaim = principal.Claims.FindFirst(ClaimTypes.Upn, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Upn]);
+							foreach(var claim in principal.Claims.Find(ClaimTypes.Upn, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Upn]))
+							{
+								filterBuilder.Filters.Add($"{attributeNames.UserPrincipalName}={claim.Value}");
+							}
 
-							if(userPrincipalNameClaim == null)
-								throw new InvalidOperationException("Could not find a user-principal-name-claim.");
+							if(!filterBuilder.Filters.Any())
+								throw new InvalidOperationException("Could not find any user-principal-name-claims.");
 
-							const string userPrincipalNameAttributeName = "userPrincipalName";
+							break;
+						}
+					case IdentifierKind.UserPrincipalNameWithEmailFallback:
+						{
+							foreach(var claim in principal.Claims.Find(ClaimTypes.Upn, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Upn], ClaimTypes.Email, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Email]))
+							{
+								filterBuilder.Filters.Add($"{attributeNames.UserPrincipalName}={claim.Value}");
+							}
 
-							filter = $"{userPrincipalNameAttributeName}={userPrincipalNameClaim.Value}";
-
-							var emailClaim = principal.Claims.FindFirst(ClaimTypes.Email, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Email]);
-
-							if(emailClaim != null)
-								filter = $"|({filter})({userPrincipalNameAttributeName}={emailClaim.Value})";
+							if(!filterBuilder.Filters.Any())
+								throw new InvalidOperationException("Could not find any user-principal-name-claims or email-claims.");
 
 							break;
 						}
 					case IdentifierKind.WindowsAccountName:
 						{
-							var nameClaim = principal.Claims.FindFirstNameClaim();
+							foreach(var claim in principal.Claims.Find(ClaimCollectionExtension.GetNameClaimTypes()))
+							{
+								windowsAccountNames.Add(claim.Value);
+							}
 
-							if(nameClaim == null)
-								throw new InvalidOperationException("Could not find a name-claim.");
+							if(!windowsAccountNames.Any())
+								throw new InvalidOperationException("Could not find any name-claims.");
 
-							windowsAccountName = nameClaim.Value;
-							var windowsAccountNameParts = windowsAccountName.Split('\\');
+							// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+							foreach(var windowsAccountName in windowsAccountNames)
+							{
+								var windowsAccountNameParts = windowsAccountName.Split('\\');
 
-							var samAccountName = windowsAccountNameParts.LastOrDefault();
-							filter = $"sAMAccountName={samAccountName}";
+								var samAccountName = windowsAccountNameParts.LastOrDefault();
+
+								filterBuilder.Filters.Add($"{attributeNames.SamAccountName}={samAccountName}");
+							}
+							// ReSharper restore ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 
 							break;
 						}
@@ -290,28 +321,33 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 						}
 				}
 
-				const string windowsAccountAttributeName = "msDS-PrincipalName";
 				var attributeList = (attributes ?? Enumerable.Empty<string>()).ToList();
 
 				if(identifierKind == IdentifierKind.WindowsAccountName)
-					attributeList.Add(windowsAccountAttributeName);
+					attributeList.Add(attributeNames.WindowsAccountName);
 
-				var firstResult = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-				var result = await this.GetUserAttributesInternalAsync(attributeList, filter).ConfigureAwait(false);
+				var result = await this.GetUserAttributesInternalAsync(attributeList, filterBuilder.Build()).ConfigureAwait(false);
+				var resultAttributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 				foreach(var (distinguishedName, items) in result)
 				{
 					if(identifierKind == IdentifierKind.WindowsAccountName)
 					{
-						if(string.IsNullOrWhiteSpace(windowsAccountName) || !items.TryGetValue(windowsAccountAttributeName, out var foundWindowsAccountName) || !string.Equals(windowsAccountName, foundWindowsAccountName, StringComparison.OrdinalIgnoreCase))
+						if(!windowsAccountNames.Any())
+							continue;
+
+						if(!items.TryGetValue(attributeNames.WindowsAccountName, out var windowsAccountName))
+							continue;
+
+						if(!windowsAccountNames.Contains(windowsAccountName))
 							continue;
 
 						foreach(var (key, value) in items)
 						{
-							if(string.Equals(windowsAccountAttributeName, key, StringComparison.OrdinalIgnoreCase))
+							if(string.Equals(attributeNames.WindowsAccountName, key, StringComparison.OrdinalIgnoreCase))
 								continue;
 
-							firstResult.Add(key, value);
+							resultAttributes.Add(key, value);
 						}
 
 						break;
@@ -319,13 +355,13 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 
 					foreach(var (key, value) in items)
 					{
-						firstResult.Add(key, value);
+						resultAttributes.Add(key, value);
 					}
 
 					break;
 				}
 
-				return firstResult;
+				return resultAttributes;
 			}
 			catch(Exception exception)
 			{

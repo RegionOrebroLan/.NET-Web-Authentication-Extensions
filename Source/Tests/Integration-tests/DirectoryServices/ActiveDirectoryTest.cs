@@ -170,7 +170,7 @@ namespace IntegrationTests.DirectoryServices
 		}
 
 		[TestMethod]
-		public void GetAttributesAsync_WithIdentifierParameter_IfTheIdentifierKindParameterIsUserPrincipalName_ShouldWorkProperly()
+		public void GetAttributesAsync_WithIdentifierParameter_IfTheIdentifierKindParameterIsUserPrincipalNameOrEmail_ShouldWorkProperly()
 		{
 			const string userPrincipalNameAttributeName = "userPrincipalName";
 			const string samAccountNameAttributeName = "sAMAccountName";
@@ -178,7 +178,7 @@ namespace IntegrationTests.DirectoryServices
 			var samAccountName = claims.First(claim => string.Equals(ClaimTypes.Name, claim.Type, StringComparison.OrdinalIgnoreCase)).Value.Split('\\').Last();
 			var userPrincipalName = this.ActiveDirectory.GetAttributesAsync(new[] { userPrincipalNameAttributeName }, IdentifierKind.SecurityIdentifier, new WindowsPrincipal(WindowsIdentity.GetCurrent())).Result.First().Value;
 
-			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { samAccountNameAttributeName, userPrincipalNameAttributeName }, userPrincipalName, IdentifierKind.UserPrincipalName).Result;
+			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { samAccountNameAttributeName, userPrincipalNameAttributeName }, userPrincipalName, IdentifierKind.UserPrincipalNameWithEmailFallback).Result;
 			Assert.AreEqual(2, attributes.Count, "The test must be run on a domain.");
 			Assert.AreEqual(samAccountName, attributes.ElementAt(0).Value, "The test must be run on a domain.");
 			Assert.AreEqual(userPrincipalName, attributes.ElementAt(1).Value, "The test must be run on a domain.");
@@ -227,7 +227,7 @@ namespace IntegrationTests.DirectoryServices
 		}
 
 		[TestMethod]
-		public void GetAttributesAsync_WithPrincipalParameter_IfTheIdentifierKindParameterIsUserPrincipalName_ShouldWorkProperly()
+		public void GetAttributesAsync_WithPrincipalParameter_IfTheIdentifierKindParameterIsUserPrincipalNameOrEmail_ShouldWorkProperly()
 		{
 			const string userPrincipalNameAttributeName = "userPrincipalName";
 			const string samAccountNameAttributeName = "sAMAccountName";
@@ -236,7 +236,7 @@ namespace IntegrationTests.DirectoryServices
 			var userPrincipalName = this.ActiveDirectory.GetAttributesAsync(new[] { userPrincipalNameAttributeName }, IdentifierKind.SecurityIdentifier, new WindowsPrincipal(WindowsIdentity.GetCurrent())).Result.First().Value;
 			claims.Add(ClaimTypes.Upn, userPrincipalName);
 
-			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { samAccountNameAttributeName, userPrincipalNameAttributeName }, IdentifierKind.UserPrincipalName, new ClaimsPrincipal(new ClaimsIdentity(claims.Build()))).Result;
+			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { samAccountNameAttributeName, userPrincipalNameAttributeName }, IdentifierKind.UserPrincipalNameWithEmailFallback, new ClaimsPrincipal(new ClaimsIdentity(claims.Build()))).Result;
 			Assert.AreEqual(2, attributes.Count, "The test must be run on a domain.");
 			Assert.AreEqual(samAccountName, attributes.ElementAt(0).Value, "The test must be run on a domain.");
 			Assert.AreEqual(userPrincipalName, attributes.ElementAt(1).Value, "The test must be run on a domain.");
@@ -245,7 +245,7 @@ namespace IntegrationTests.DirectoryServices
 			userPrincipalNameClaim.Value = $"{samAccountName}@{IPGlobalProperties.GetIPGlobalProperties().DomainName}";
 			claims.Add(ClaimTypes.Email, userPrincipalName);
 
-			attributes = this.ActiveDirectory.GetAttributesAsync(new[] { samAccountNameAttributeName, userPrincipalNameAttributeName }, IdentifierKind.UserPrincipalName, new ClaimsPrincipal(new ClaimsIdentity(claims.Build()))).Result;
+			attributes = this.ActiveDirectory.GetAttributesAsync(new[] { samAccountNameAttributeName, userPrincipalNameAttributeName }, IdentifierKind.UserPrincipalNameWithEmailFallback, new ClaimsPrincipal(new ClaimsIdentity(claims.Build()))).Result;
 			Assert.AreEqual(2, attributes.Count, "The test must be run on a domain.");
 			Assert.AreEqual(samAccountName, attributes.ElementAt(0).Value, "The test must be run on a domain.");
 			Assert.AreEqual(userPrincipalName, attributes.ElementAt(1).Value, "The test must be run on a domain.");
