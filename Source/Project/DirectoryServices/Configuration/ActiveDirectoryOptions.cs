@@ -6,6 +6,8 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices.Configuration
 	{
 		#region Properties
 
+		public virtual AttributeNameOptions AttributeNames { get; set; } = new();
+
 		/// <summary>
 		/// A connection is needed if we are not on a Windows host.
 		/// </summary>
@@ -15,6 +17,8 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices.Configuration
 		/// Can be used as default if we are on a Windows host.
 		/// </summary>
 		public virtual AuthType DefaultAuthenticationType { get; set; } = AuthType.Kerberos;
+
+		public virtual PagingOptions Paging { get; set; } = new();
 
 		/// <summary>
 		/// The distinguished name for the domain, eg. "dc=example,dc=org".

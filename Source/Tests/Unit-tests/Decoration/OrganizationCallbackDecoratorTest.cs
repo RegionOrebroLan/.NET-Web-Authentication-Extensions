@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -78,7 +80,9 @@ namespace UnitTests.Decoration
 				await organizationCallbackDecorator.DecorateAsync(await this.CreateAuthenticateResultAsync(), this.AuthenticationScheme, claims, null);
 				Assert.AreEqual(1, claims.Count);
 
-				activeDirectory.Result.Add(this.ActiveDirectoryEmailAttributeName, this.Email);
+				activeDirectory.Result.Add("Distinguished-name-1", new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+
+				activeDirectory.Result.ElementAt(0).Value.Add(this.ActiveDirectoryEmailAttributeName, this.Email);
 				claims = await this.CreateInitialClaimsAsync();
 				Assert.AreEqual(1, claims.Count);
 				await organizationCallbackDecorator.DecorateAsync(await this.CreateAuthenticateResultAsync(), this.AuthenticationScheme, claims, null);
@@ -90,8 +94,8 @@ namespace UnitTests.Decoration
 				Assert.AreEqual(ClaimTypes.Email, secondClaim.Type);
 				Assert.AreEqual(this.Email, secondClaim.Value);
 
-				activeDirectory.Result.Clear();
-				activeDirectory.Result.Add(this.ActiveDirectoryUserPrincipalNameAttributeName, this.UserPrincipalName);
+				activeDirectory.Result.ElementAt(0).Value.Clear();
+				activeDirectory.Result.ElementAt(0).Value.Add(this.ActiveDirectoryUserPrincipalNameAttributeName, this.UserPrincipalName);
 				claims = await this.CreateInitialClaimsAsync();
 				Assert.AreEqual(1, claims.Count);
 				await organizationCallbackDecorator.DecorateAsync(await this.CreateAuthenticateResultAsync(), this.AuthenticationScheme, claims, null);
@@ -103,9 +107,9 @@ namespace UnitTests.Decoration
 				Assert.AreEqual(ClaimTypes.Upn, secondClaim.Type);
 				Assert.AreEqual(this.UserPrincipalName, secondClaim.Value);
 
-				activeDirectory.Result.Clear();
-				activeDirectory.Result.Add(this.ActiveDirectoryEmailAttributeName, this.Email);
-				activeDirectory.Result.Add(this.ActiveDirectoryUserPrincipalNameAttributeName, this.UserPrincipalName);
+				activeDirectory.Result.ElementAt(0).Value.Clear();
+				activeDirectory.Result.ElementAt(0).Value.Add(this.ActiveDirectoryEmailAttributeName, this.Email);
+				activeDirectory.Result.ElementAt(0).Value.Add(this.ActiveDirectoryUserPrincipalNameAttributeName, this.UserPrincipalName);
 				claims = await this.CreateInitialClaimsAsync();
 				Assert.AreEqual(1, claims.Count);
 				await organizationCallbackDecorator.DecorateAsync(await this.CreateAuthenticateResultAsync(), this.AuthenticationScheme, claims, null);
@@ -139,7 +143,9 @@ namespace UnitTests.Decoration
 				await organizationCallbackDecorator.DecorateAsync(await this.CreateAuthenticateResultAsync(principalClaims.ToArray()), this.AuthenticationScheme, claims, null);
 				Assert.AreEqual(0, claims.Count);
 
-				activeDirectory.Result.Add(this.ActiveDirectoryEmailAttributeName, this.Email);
+				activeDirectory.Result.Add("Distinguished-name-1", new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+
+				activeDirectory.Result.ElementAt(0).Value.Add(this.ActiveDirectoryEmailAttributeName, this.Email);
 				Assert.AreEqual(0, claims.Count);
 				await organizationCallbackDecorator.DecorateAsync(await this.CreateAuthenticateResultAsync(principalClaims.ToArray()), this.AuthenticationScheme, claims, null);
 				Assert.AreEqual(1, claims.Count);
@@ -147,8 +153,8 @@ namespace UnitTests.Decoration
 				Assert.AreEqual(ClaimTypes.Email, firstClaim.Type);
 				Assert.AreEqual(this.Email, firstClaim.Value);
 
-				activeDirectory.Result.Clear();
-				activeDirectory.Result.Add(this.ActiveDirectoryUserPrincipalNameAttributeName, this.UserPrincipalName);
+				activeDirectory.Result.ElementAt(0).Value.Clear();
+				activeDirectory.Result.ElementAt(0).Value.Add(this.ActiveDirectoryUserPrincipalNameAttributeName, this.UserPrincipalName);
 				claims.Clear();
 				Assert.AreEqual(0, claims.Count);
 				await organizationCallbackDecorator.DecorateAsync(await this.CreateAuthenticateResultAsync(principalClaims.ToArray()), this.AuthenticationScheme, claims, null);
@@ -157,9 +163,9 @@ namespace UnitTests.Decoration
 				Assert.AreEqual(ClaimTypes.Upn, firstClaim.Type);
 				Assert.AreEqual(this.UserPrincipalName, firstClaim.Value);
 
-				activeDirectory.Result.Clear();
-				activeDirectory.Result.Add(this.ActiveDirectoryEmailAttributeName, this.Email);
-				activeDirectory.Result.Add(this.ActiveDirectoryUserPrincipalNameAttributeName, this.UserPrincipalName);
+				activeDirectory.Result.ElementAt(0).Value.Clear();
+				activeDirectory.Result.ElementAt(0).Value.Add(this.ActiveDirectoryEmailAttributeName, this.Email);
+				activeDirectory.Result.ElementAt(0).Value.Add(this.ActiveDirectoryUserPrincipalNameAttributeName, this.UserPrincipalName);
 				claims.Clear();
 				Assert.AreEqual(0, claims.Count);
 				await organizationCallbackDecorator.DecorateAsync(await this.CreateAuthenticateResultAsync(principalClaims.ToArray()), this.AuthenticationScheme, claims, null);

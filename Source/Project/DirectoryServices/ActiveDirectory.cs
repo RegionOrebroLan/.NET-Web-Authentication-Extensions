@@ -15,10 +15,12 @@ using RegionOrebroLan.DirectoryServices.Protocols;
 using RegionOrebroLan.DirectoryServices.Protocols.Configuration;
 using RegionOrebroLan.Logging.Extensions;
 using RegionOrebroLan.Web.Authentication.Configuration;
+using RegionOrebroLan.Web.Authentication.Extensions;
 using RegionOrebroLan.Web.Authentication.Security.Claims.Extensions;
 
 namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 {
+	/// <inheritdoc />
 	[ServiceConfiguration(ServiceType = typeof(IActiveDirectory))]
 	public class ActiveDirectory : IActiveDirectory
 	{
@@ -190,106 +192,30 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 			return await Task.FromResult(ldapConnection).ConfigureAwait(false);
 		}
 
-		protected internal virtual async Task<string> CreateDomainControllerLdapFilterAsync(string domain)
+		protected internal virtual async Task<IFilterBuilder> CreateUserFilterBuilderAsync()
 		{
-			return await Task.FromResult($"(&(objectClass=domain)(objectClass=top)(dc={domain}))").ConfigureAwait(false);
+			return await Task.FromResult(new FilterBuilder("objectClass=person", "objectClass=user") { Operator = FilterOperator.And }).ConfigureAwait(false);
 		}
 
-		protected internal virtual async Task<string> CreateLdapFilterAsync(LdapConnection connection, string domain, IdentifierKind identifierKind, ClaimsPrincipal principal)
-		{
-			if(principal == null)
-				throw new ArgumentNullException(nameof(principal));
-
-			string ldapFilter;
-
-			switch(identifierKind)
-			{
-				case IdentifierKind.SamAccountName:
-					{
-						var nameClaim = principal.Claims.FindFirstNameClaim();
-
-						if(nameClaim == null)
-							throw new InvalidOperationException("Could not find a name-claim.");
-
-						var samAccountName = nameClaim.Value;
-						ldapFilter = $"sAMAccountName={samAccountName}";
-
-						break;
-					}
-				case IdentifierKind.SecurityIdentifier:
-					{
-						var securityIdentifierClaim = principal.Claims.FindFirst(ClaimTypes.PrimarySid, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.PrimarySid]);
-
-						if(securityIdentifierClaim == null)
-							throw new InvalidOperationException("Could not find a security-identifier-claim.");
-
-						ldapFilter = $"objectSid={securityIdentifierClaim.Value}";
-
-						break;
-					}
-				case IdentifierKind.UserPrincipalName:
-					{
-						var userPrincipalNameClaim = principal.Claims.FindFirst(ClaimTypes.Upn, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Upn]);
-
-						if(userPrincipalNameClaim == null)
-							throw new InvalidOperationException("Could not find a user-principal-name-claim.");
-
-						const string userPrincipalNameAttributeName = "userPrincipalName";
-
-						ldapFilter = $"{userPrincipalNameAttributeName}={userPrincipalNameClaim.Value}";
-
-						var emailClaim = principal.Claims.FindFirst(ClaimTypes.Email, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Email]);
-
-						if(emailClaim != null)
-							ldapFilter = $"|({ldapFilter})({userPrincipalNameAttributeName}={emailClaim.Value})";
-
-						break;
-					}
-				case IdentifierKind.WindowsAccountName:
-					{
-						var nameClaim = principal.Claims.FindFirstNameClaim();
-
-						if(nameClaim == null)
-							throw new InvalidOperationException("Could not find a name-claim.");
-
-						if(connection == null)
-							throw new ArgumentNullException(nameof(connection));
-
-						var windowsAccountNameParts = nameClaim.Value.Split('\\');
-
-						var domainPart = windowsAccountNameParts.FirstOrDefault();
-
-						var domainControllerLdapFilter = await this.CreateDomainControllerLdapFilterAsync(domainPart).ConfigureAwait(false);
-
-						var domainSearchResponse = (SearchResponse)connection.SendRequest(new SearchRequest(this.RootDistinguishedName, domainControllerLdapFilter, SearchScope.Base, "dc"));
-
-						if(domainSearchResponse == null || domainSearchResponse.Entries.Count == 0)
-							throw new InvalidOperationException($"The name-claim \"{nameClaim.Value}\" has an invalid domain-part. The domain \"{domainPart}\" is invalid.");
-
-						var samAccountName = windowsAccountNameParts.LastOrDefault();
-						ldapFilter = $"sAMAccountName={samAccountName}";
-
-						break;
-					}
-				default:
-					{
-						throw new InvalidOperationException($"The identifier-kind {identifierKind} is invalid.");
-					}
-			}
-
-			return await Task.FromResult($"(&(objectClass=person)(objectClass=user)({ldapFilter}))").ConfigureAwait(false);
-		}
-
+		[Obsolete("This method will be removed in a later release. Use GetUserAttributesAsync instead.")]
 		public virtual async Task<IDictionary<string, string>> GetAttributesAsync(IEnumerable<string> attributes, string identifier, IdentifierKind identifierKind)
 		{
 			if(identifier == null)
 				throw new ArgumentNullException(nameof(identifier));
 
-			var claimType = await this.GetClaimTypeAsync(identifierKind).ConfigureAwait(false);
+			var claimType = identifierKind switch
+			{
+				IdentifierKind.SamAccountName => ClaimTypes.Name,
+				IdentifierKind.WindowsAccountName => ClaimTypes.Name,
+				IdentifierKind.SecurityIdentifier => ClaimTypes.PrimarySid,
+				IdentifierKind.UserPrincipalName => ClaimTypes.Upn,
+				_ => throw new InvalidOperationException($"The identifier-kind {identifierKind} is invalid.")
+			};
 
 			return await this.GetAttributesAsync(attributes, identifierKind, new ClaimsPrincipal(new ClaimsIdentity(new List<Claim> { new(claimType, identifier) }))).ConfigureAwait(false);
 		}
 
+		[Obsolete("This method will be removed in a later release. Use GetUserAttributesAsync instead.")]
 		public virtual async Task<IDictionary<string, string>> GetAttributesAsync(IEnumerable<string> attributes, IdentifierKind identifierKind, ClaimsPrincipal principal)
 		{
 			if(principal == null)
@@ -297,77 +223,114 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 
 			try
 			{
-				return await this.GetAttributesInternalAsync(attributes, identifierKind, principal).ConfigureAwait(false);
-			}
-			catch(Exception exception)
-			{
-				throw new InvalidOperationException($"Could not get attributes for principal \"{principal.Identity?.Name}\".", exception);
-			}
-		}
+				string filter;
+				string windowsAccountName = null;
 
-		protected internal virtual async Task<IDictionary<string, string>> GetAttributesInternalAsync(IEnumerable<string> attributes, IdentifierKind identifierKind, ClaimsPrincipal principal)
-		{
-			string domain;
-
-			try
-			{
-				domain = this.LdapConnectionOptions.DirectoryIdentifier.Servers.First();
-			}
-			catch(Exception exception)
-			{
-				throw new InvalidProgramException("Could not get domain-name from ldap-connection-options. There is no directory-identifier-server.", exception);
-			}
-
-			using(var connection = await this.CreateConnectionAsync().ConfigureAwait(false))
-			{
-				var ldapFilter = await this.CreateLdapFilterAsync(connection, domain, identifierKind, principal).ConfigureAwait(false);
-
-				return await this.GetAttributesInternalAsync(attributes, connection, ldapFilter, SearchScope.Subtree).ConfigureAwait(false);
-			}
-		}
-
-		protected internal virtual async Task<IDictionary<string, string>> GetAttributesInternalAsync(IEnumerable<string> attributes, LdapConnection connection, string ldapFilter, SearchScope scope)
-		{
-			attributes = (attributes ?? Enumerable.Empty<string>()).ToArray();
-			var attributesResult = new Dictionary<string, string>();
-
-			var searchResultAttributes = (await this.GetSearchResultEntryAsync(attributes, connection, ldapFilter, scope).ConfigureAwait(false))?.Attributes;
-
-			// ReSharper disable InvertIf
-			if(searchResultAttributes != null)
-			{
-				var searchResultAttributeNames = (searchResultAttributes.AttributeNames?.Cast<string>() ?? Enumerable.Empty<string>()).ToArray();
-
-				foreach(var attribute in attributes)
+				switch(identifierKind)
 				{
-					if(!searchResultAttributeNames.Contains(attribute, StringComparer.OrdinalIgnoreCase))
-						continue;
+					case IdentifierKind.SamAccountName:
+						{
+							var nameClaim = principal.Claims.FindFirstNameClaim();
 
-					var value = await this.GetDirectoryAttributeValueAsync(attribute, searchResultAttributes).ConfigureAwait(false);
+							if(nameClaim == null)
+								throw new InvalidOperationException("Could not find a name-claim.");
 
-					if(value == null)
-						continue;
+							var samAccountName = nameClaim.Value;
+							filter = $"sAMAccountName={samAccountName}";
 
-					attributesResult.Add(attribute, value);
+							break;
+						}
+					case IdentifierKind.SecurityIdentifier:
+						{
+							var securityIdentifierClaim = principal.Claims.FindFirst(ClaimTypes.PrimarySid, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.PrimarySid]);
+
+							if(securityIdentifierClaim == null)
+								throw new InvalidOperationException("Could not find a security-identifier-claim.");
+
+							filter = $"objectSid={securityIdentifierClaim.Value}";
+
+							break;
+						}
+					case IdentifierKind.UserPrincipalName:
+						{
+							var userPrincipalNameClaim = principal.Claims.FindFirst(ClaimTypes.Upn, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Upn]);
+
+							if(userPrincipalNameClaim == null)
+								throw new InvalidOperationException("Could not find a user-principal-name-claim.");
+
+							const string userPrincipalNameAttributeName = "userPrincipalName";
+
+							filter = $"{userPrincipalNameAttributeName}={userPrincipalNameClaim.Value}";
+
+							var emailClaim = principal.Claims.FindFirst(ClaimTypes.Email, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Email]);
+
+							if(emailClaim != null)
+								filter = $"|({filter})({userPrincipalNameAttributeName}={emailClaim.Value})";
+
+							break;
+						}
+					case IdentifierKind.WindowsAccountName:
+						{
+							var nameClaim = principal.Claims.FindFirstNameClaim();
+
+							if(nameClaim == null)
+								throw new InvalidOperationException("Could not find a name-claim.");
+
+							windowsAccountName = nameClaim.Value;
+							var windowsAccountNameParts = windowsAccountName.Split('\\');
+
+							var samAccountName = windowsAccountNameParts.LastOrDefault();
+							filter = $"sAMAccountName={samAccountName}";
+
+							break;
+						}
+					default:
+						{
+							throw new InvalidOperationException($"The identifier-kind {identifierKind} is invalid.");
+						}
 				}
+
+				const string windowsAccountAttributeName = "msDS-PrincipalName";
+				var attributeList = (attributes ?? Enumerable.Empty<string>()).ToList();
+
+				if(identifierKind == IdentifierKind.WindowsAccountName)
+					attributeList.Add(windowsAccountAttributeName);
+
+				var firstResult = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+				var result = await this.GetUserAttributesInternalAsync(attributeList, filter).ConfigureAwait(false);
+
+				foreach(var (distinguishedName, items) in result)
+				{
+					if(identifierKind == IdentifierKind.WindowsAccountName)
+					{
+						if(string.IsNullOrWhiteSpace(windowsAccountName) || !items.TryGetValue(windowsAccountAttributeName, out var foundWindowsAccountName) || !string.Equals(windowsAccountName, foundWindowsAccountName, StringComparison.OrdinalIgnoreCase))
+							continue;
+
+						foreach(var (key, value) in items)
+						{
+							if(string.Equals(windowsAccountAttributeName, key, StringComparison.OrdinalIgnoreCase))
+								continue;
+
+							firstResult.Add(key, value);
+						}
+
+						break;
+					}
+
+					foreach(var (key, value) in items)
+					{
+						firstResult.Add(key, value);
+					}
+
+					break;
+				}
+
+				return firstResult;
 			}
-			// ReSharper restore InvertIf
-
-			return attributesResult;
-		}
-
-		protected internal virtual async Task<string> GetClaimTypeAsync(IdentifierKind identifierKind)
-		{
-			await Task.CompletedTask.ConfigureAwait(false);
-
-			return identifierKind switch
+			catch(Exception exception)
 			{
-				IdentifierKind.SecurityIdentifier => ClaimTypes.PrimarySid,
-				IdentifierKind.UserPrincipalName => ClaimTypes.Upn,
-				IdentifierKind.SamAccountName => ClaimTypes.Name,
-				IdentifierKind.WindowsAccountName => ClaimTypes.Name,
-				_ => throw new InvalidOperationException($"The identifier-kind {identifierKind} is invalid.")
-			};
+				throw new InvalidOperationException($"Could not get attributes for principal {principal.Identity?.Name.ToStringRepresentation()}.", exception);
+			}
 		}
 
 		protected internal virtual async Task<string> GetDirectoryAttributeValueAsync(DirectoryAttribute directoryAttribute)
@@ -406,19 +369,107 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 			return await this.GetDirectoryAttributeValueAsync(directoryAttribute).ConfigureAwait(false);
 		}
 
-		protected internal virtual async Task<SearchResultEntry> GetSearchResultEntryAsync(IEnumerable<string> attributes, LdapConnection connection, string ldapFilter, SearchScope scope)
+		protected internal virtual async Task<IEnumerable<SearchResultEntry>> GetSearchResultAsync(IEnumerable<string> attributes, LdapConnection connection, string filter, SearchScope scope)
 		{
 			if(connection == null)
 				throw new ArgumentNullException(nameof(connection));
 
-			var searchResponse = (SearchResponse)connection.SendRequest(new SearchRequest(this.UserContainerDistinguishedName, ldapFilter, scope, (attributes ?? Enumerable.Empty<string>()).ToArray()));
+			var searchResult = new List<SearchResultEntry>();
+			var searchRequest = new SearchRequest(this.UserContainerDistinguishedName, filter, scope, (attributes ?? Enumerable.Empty<string>()).ToArray());
+			SearchResponse searchResponse = null;
+			var paging = this.OptionsMonitor.CurrentValue.ActiveDirectory.Paging;
 
-			return await Task.FromResult(searchResponse?.Entries.Cast<SearchResultEntry>().FirstOrDefault()).ConfigureAwait(false);
+			if(paging.Enabled)
+			{
+				connection.SessionOptions.ReferralChasing = ReferralChasingOptions.None;
+				var pageResultRequestControl = new PageResultRequestControl(paging.PageSize);
+				searchRequest.Controls.Add(pageResultRequestControl);
+
+				while(searchResponse == null || pageResultRequestControl.Cookie.Length > 0)
+				{
+					searchResponse = (SearchResponse)connection.SendRequest(searchRequest);
+
+					// ReSharper disable PossibleNullReferenceException
+					var pageResultResponseControl = searchResponse.Controls.OfType<PageResultResponseControl>().FirstOrDefault();
+					// ReSharper restore PossibleNullReferenceException
+
+					if(pageResultResponseControl != null)
+						pageResultRequestControl.Cookie = pageResultResponseControl.Cookie;
+
+					searchResult.AddRange(searchResponse.Entries.Cast<SearchResultEntry>());
+				}
+			}
+			else
+			{
+				searchResponse = (SearchResponse)connection.SendRequest(searchRequest);
+
+				// ReSharper disable PossibleNullReferenceException
+				searchResult.AddRange(searchResponse.Entries.Cast<SearchResultEntry>());
+				// ReSharper restore PossibleNullReferenceException
+			}
+
+			return await Task.FromResult(searchResult).ConfigureAwait(false);
 		}
 
 		protected internal virtual string GetSystemDomainName()
 		{
 			return IPGlobalProperties.GetIPGlobalProperties().DomainName;
+		}
+
+		public virtual async Task<IDictionary<string, IDictionary<string, string>>> GetUserAttributesAsync(IEnumerable<string> attributes, string filter)
+		{
+			try
+			{
+				return await this.GetUserAttributesInternalAsync(attributes, filter).ConfigureAwait(false);
+			}
+			catch(Exception exception)
+			{
+				throw new InvalidOperationException($"Could not get user-attributes for filter {filter.ToStringRepresentation()}.", exception);
+			}
+		}
+
+		protected internal virtual async Task<IDictionary<string, IDictionary<string, string>>> GetUserAttributesInternalAsync(IEnumerable<string> attributes, string filter)
+		{
+			if(!this.LdapConnectionOptions.DirectoryIdentifier.Servers.Any())
+				throw new InvalidOperationException("The ldap-connection-options contains no directory-identifier-server.");
+
+			attributes = (attributes ?? Enumerable.Empty<string>()).ToArray();
+
+			var filterBuilder = await this.CreateUserFilterBuilderAsync().ConfigureAwait(false);
+			filterBuilder.Filters.Add(filter);
+
+			var result = new Dictionary<string, IDictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
+
+			using(var connection = await this.CreateConnectionAsync().ConfigureAwait(false))
+			{
+				foreach(var searchResultEntry in await this.GetSearchResultAsync(attributes, connection, filterBuilder.Build(), SearchScope.Subtree).ConfigureAwait(false))
+				{
+					var resultAttributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+					var entryAttributes = searchResultEntry.Attributes;
+
+					if(entryAttributes != null)
+					{
+						var attributeNames = (entryAttributes.AttributeNames?.Cast<string>() ?? Enumerable.Empty<string>()).ToArray();
+
+						foreach(var attribute in attributes)
+						{
+							if(!attributeNames.Contains(attribute, StringComparer.OrdinalIgnoreCase))
+								continue;
+
+							var value = await this.GetDirectoryAttributeValueAsync(attribute, entryAttributes).ConfigureAwait(false);
+
+							if(value == null)
+								continue;
+
+							resultAttributes.Add(attribute, value);
+						}
+					}
+
+					result.Add(searchResultEntry.DistinguishedName, resultAttributes);
+				}
+			}
+
+			return result;
 		}
 
 		#endregion

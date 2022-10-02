@@ -185,30 +185,14 @@ namespace IntegrationTests.DirectoryServices
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public void GetAttributesAsync_WithIdentifierParameter_IfTheIdentifierKindParameterIsWindowsAccountName_And_IfTheNameClaimHasAnInvalidDomainPart_ShouldThrowAnInvalidOperationException()
+		public async Task GetAttributesAsync_WithIdentifierParameter_IfTheIdentifierKindParameterIsWindowsAccountName_And_IfTheNameClaimHasAnInvalidDomainPart_ShouldReturnAnEmptyResult()
 		{
 			var domain = Guid.NewGuid().ToString();
 			var name = $"{domain}\\abc123";
 
-			try
-			{
-				_ = this.ActiveDirectory.GetAttributesAsync(Enumerable.Empty<string>(), name, IdentifierKind.WindowsAccountName).Result;
-			}
-			catch(AggregateException aggregateException)
-			{
-				if(aggregateException.InnerExceptions.FirstOrDefault() is InvalidOperationException invalidOperationException)
-				{
-					if(string.Equals($"Could not get attributes for principal \"{name}\".", invalidOperationException.Message, StringComparison.Ordinal))
-					{
-						if(invalidOperationException.InnerException != null)
-						{
-							if(string.Equals($"The name-claim \"{name}\" has an invalid domain-part. The domain \"{domain}\" is invalid.", invalidOperationException.InnerException.Message, StringComparison.Ordinal))
-								throw invalidOperationException;
-						}
-					}
-				}
-			}
+			var result = await this.ActiveDirectory.GetAttributesAsync(Enumerable.Empty<string>(), name, IdentifierKind.WindowsAccountName);
+
+			Assert.IsFalse(result.Any());
 		}
 
 		[TestMethod]
@@ -268,30 +252,14 @@ namespace IntegrationTests.DirectoryServices
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public void GetAttributesAsync_WithPrincipalParameter_IfTheIdentifierKindParameterIsWindowsAccountName_And_IfTheNameClaimHasAnInvalidDomainPart_ShouldThrowAnInvalidOperationException()
+		public async Task GetAttributesAsync_WithPrincipalParameter_IfTheIdentifierKindParameterIsWindowsAccountName_And_IfTheNameClaimHasAnInvalidDomainPart_ShouldReturnAnEmptyResult()
 		{
 			var domain = Guid.NewGuid().ToString();
 			var name = $"{domain}\\abc123";
 
-			try
-			{
-				_ = this.ActiveDirectory.GetAttributesAsync(Enumerable.Empty<string>(), IdentifierKind.WindowsAccountName, new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, name) }))).Result;
-			}
-			catch(AggregateException aggregateException)
-			{
-				if(aggregateException.InnerExceptions.FirstOrDefault() is InvalidOperationException invalidOperationException)
-				{
-					if(string.Equals($"Could not get attributes for principal \"{name}\".", invalidOperationException.Message, StringComparison.Ordinal))
-					{
-						if(invalidOperationException.InnerException != null)
-						{
-							if(string.Equals($"The name-claim \"{name}\" has an invalid domain-part. The domain \"{domain}\" is invalid.", invalidOperationException.InnerException.Message, StringComparison.Ordinal))
-								throw invalidOperationException;
-						}
-					}
-				}
-			}
+			var result = await this.ActiveDirectory.GetAttributesAsync(Enumerable.Empty<string>(), IdentifierKind.WindowsAccountName, new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, name) })));
+
+			Assert.IsFalse(result.Any());
 		}
 
 		[TestMethod]
@@ -315,6 +283,66 @@ namespace IntegrationTests.DirectoryServices
 			var domainName = this.ActiveDirectory.GetSystemDomainName();
 			Assert.IsTrue(domainName.Contains('.', StringComparison.OrdinalIgnoreCase), "The domain-name should be a full domain-name, eg domain.net.");
 			Assert.AreEqual(IPGlobalProperties.GetIPGlobalProperties().DomainName, domainName, "The test must be run on a domain (probably on Windows).");
+		}
+
+		[TestMethod]
+		public async Task GetUserAttributesAsync_WindowsAccountName_Test()
+		{
+			var windowsAccountName = WindowsIdentity.GetCurrent().Name;
+			var windowsAccountNameParts = windowsAccountName.Split('\\', 2);
+			string samAccountName = null;
+			if(windowsAccountNameParts.Length == 2)
+				samAccountName = windowsAccountNameParts[1];
+
+			var result = await this.ActiveDirectory.GetUserAttributesAsync(new[] { "msDS-PrincipalName", "userPrincipalName" }, $"sAMAccountName={samAccountName}");
+
+			Assert.AreEqual(1, result.Count, "The test must be run on a domain.");
+			Assert.AreEqual(2, result.ElementAt(0).Value.Count, "The test must be run on a domain.");
+			Assert.AreEqual(windowsAccountName, result.ElementAt(0).Value.ElementAt(0).Value);
+		}
+
+		[TestMethod]
+		public async Task GetUserAttributesAsync_WithSamAccountNameFilter_ShouldWorkProperly()
+		{
+			var identityNameParts = WindowsIdentity.GetCurrent().Name.Split('\\', 2);
+			string samAccountName = null;
+			if(identityNameParts.Length == 2)
+				samAccountName = identityNameParts[1];
+
+			var result = await this.ActiveDirectory.GetUserAttributesAsync(new[] { "userPrincipalName" }, $"sAMAccountName={samAccountName}");
+
+			Assert.AreEqual(1, result.Count, "The test must be run on a domain.");
+			Assert.AreEqual(1, result.ElementAt(0).Value.Count, "The test must be run on a domain.");
+		}
+
+		[TestMethod]
+		public async Task GetUserAttributesAsync_WithSecurityIdentifierFilter_ShouldWorkProperly()
+		{
+			var identifier = new WindowsPrincipal(WindowsIdentity.GetCurrent()).FindFirst(ClaimTypes.PrimarySid)?.Value;
+
+			var result = await this.ActiveDirectory.GetUserAttributesAsync(new[] { "userPrincipalName" }, $"objectSid={identifier}");
+
+			Assert.AreEqual(1, result.Count, "The test must be run on a domain.");
+			Assert.AreEqual(1, result.ElementAt(0).Value.Count, "The test must be run on a domain.");
+		}
+
+		[TestMethod]
+		public async Task GetUserAttributesAsync_WithUserPrincipalNameFilter_ShouldWorkProperly()
+		{
+			const string userPrincipalNameAttributeName = "userPrincipalName";
+			const string samAccountNameAttributeName = "sAMAccountName";
+			var claims = new ClaimsPrincipalBuilder(new WindowsPrincipal(WindowsIdentity.GetCurrent())).ClaimsIdentityBuilders.First().ClaimBuilders;
+			var objectSid = claims.First(claim => string.Equals(ClaimTypes.PrimarySid, claim.Type, StringComparison.OrdinalIgnoreCase)).Value;
+			var samAccountName = claims.First(claim => string.Equals(ClaimTypes.Name, claim.Type, StringComparison.OrdinalIgnoreCase)).Value.Split('\\').Last();
+
+			var userPrincipalName = (await this.ActiveDirectory.GetUserAttributesAsync(new[] { userPrincipalNameAttributeName }, $"objectSid={objectSid}")).First().Value.First().Value;
+
+			var result = await this.ActiveDirectory.GetUserAttributesAsync(new[] { samAccountNameAttributeName, userPrincipalNameAttributeName }, $"{userPrincipalNameAttributeName}={userPrincipalName}");
+			Assert.AreEqual(1, result.Count);
+			var attributes = result.First().Value;
+			Assert.AreEqual(2, attributes.Count, "The test must be run on a domain.");
+			Assert.AreEqual(samAccountName, attributes.ElementAt(0).Value, "The test must be run on a domain.");
+			Assert.AreEqual(userPrincipalName, attributes.ElementAt(1).Value, "The test must be run on a domain.");
 		}
 
 		[TestMethod]

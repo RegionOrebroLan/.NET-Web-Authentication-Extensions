@@ -11,7 +11,7 @@ namespace UnitTests.Mocks.DirectoryServices
 	{
 		#region Properties
 
-		public virtual IDictionary<string, string> Result { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		public virtual IDictionary<string, IDictionary<string, string>> Result { get; } = new Dictionary<string, IDictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
 
 		#endregion
 
@@ -29,15 +29,33 @@ namespace UnitTests.Mocks.DirectoryServices
 
 		protected internal virtual async Task<IDictionary<string, string>> GetAttributesInternalAsync(IEnumerable<string> attributes)
 		{
-			var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			return (await this.GetUserAttributesInternalAsync(attributes)).FirstOrDefault().Value;
+		}
 
-			foreach(var attribute in new HashSet<string>(attributes ?? Enumerable.Empty<string>(), StringComparer.OrdinalIgnoreCase))
+		public virtual async Task<IDictionary<string, IDictionary<string, string>>> GetUserAttributesAsync(IEnumerable<string> attributes, string filter)
+		{
+			return await this.GetUserAttributesInternalAsync(attributes);
+		}
+
+		protected internal virtual async Task<IDictionary<string, IDictionary<string, string>>> GetUserAttributesInternalAsync(IEnumerable<string> attributes)
+		{
+			attributes = (attributes ?? Enumerable.Empty<string>()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+			var result = new Dictionary<string, IDictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
+
+			foreach(var (distinguishedName, items) in this.Result)
 			{
-				foreach(var (key, value) in this.Result)
+				var resultAttributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+				foreach(var attribute in attributes)
 				{
-					if(string.Equals(attribute, key, StringComparison.OrdinalIgnoreCase))
-						result.Add(key, value);
+					foreach(var (key, value) in items)
+					{
+						if(string.Equals(attribute, key, StringComparison.OrdinalIgnoreCase))
+							resultAttributes.Add(key, value);
+					}
 				}
+
+				result.Add(distinguishedName, resultAttributes);
 			}
 
 			return await Task.FromResult(result);
