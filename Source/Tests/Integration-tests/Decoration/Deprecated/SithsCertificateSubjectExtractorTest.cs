@@ -16,7 +16,7 @@ namespace IntegrationTests.Decoration
 		[TestMethod]
 		public async Task AuthenticationDecorator_Test()
 		{
-			var configuration = Global.CreateConfiguration("appsettings.json", $"Decoration\\Resources\\appsettings.SithsCertificateSubjectExtractor-Decorator.json");
+			var configuration = Global.CreateConfiguration("appsettings.json", $"Decoration\\Deprecated\\Resources\\appsettings.SithsCertificateSubjectExtractor-Decorator.json");
 			var services = Global.CreateServices(configuration);
 			services.AddAuthentication(Global.CreateCertificateResolver(), configuration, new InstanceFactory());
 
@@ -34,7 +34,7 @@ namespace IntegrationTests.Decoration
 		[TestMethod]
 		public async Task CallbackDecorator_Test()
 		{
-			var configuration = Global.CreateConfiguration("appsettings.json", $"Decoration\\Resources\\appsettings.SithsCertificateSubjectExtractor-Callback-Decorator.json");
+			var configuration = Global.CreateConfiguration("appsettings.json", $"Decoration\\Deprecated\\Resources\\appsettings.SithsCertificateSubjectExtractor-Callback-Decorator.json");
 			var services = Global.CreateServices(configuration);
 			services.AddAuthentication(Global.CreateCertificateResolver(), configuration, new InstanceFactory());
 

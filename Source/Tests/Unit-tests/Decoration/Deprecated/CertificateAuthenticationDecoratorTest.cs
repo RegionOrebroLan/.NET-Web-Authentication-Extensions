@@ -42,7 +42,7 @@ namespace UnitTests.Decoration
 
 		protected internal virtual X509Certificate2 GetCertificate()
 		{
-			return new X509Certificate2(Path.Combine(this.ProjectDirectoryPath, @"Decoration\Resources\Certificates", "Unit-test-certificate.cer"));
+			return new X509Certificate2(Path.Combine(this.ProjectDirectoryPath, @"Decoration\Deprecated\Resources\Certificates", "Unit-test-certificate.cer"));
 		}
 
 		[TestMethod]

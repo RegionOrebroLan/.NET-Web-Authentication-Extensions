@@ -11,7 +11,7 @@ namespace IntegrationTests.Decoration
 
 		protected internal virtual IServiceProvider ConfigureServices(string configurationLabel)
 		{
-			var configuration = Global.CreateConfiguration($"Decoration\\Resources\\appsettings.{configurationLabel}.json");
+			var configuration = Global.CreateConfiguration($"Decoration\\Deprecated\\Resources\\appsettings.{configurationLabel}.json");
 			var services = Global.CreateServices(configuration);
 
 			services.AddAuthentication(Global.CreateCertificateResolver(), configuration, new InstanceFactory());
