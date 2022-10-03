@@ -318,7 +318,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 			// ReSharper restore ConvertIfStatementToReturnStatement
 
-			return SwedishPersonalIdentityNumber.TryParse(serialNumber, out var _);
+			return PersonalIdentityNumber.TryParse(serialNumber, out var _);
 		}
 
 		#endregion
