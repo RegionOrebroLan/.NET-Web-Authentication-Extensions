@@ -27,9 +27,9 @@ namespace Application.Controllers
 
 		#region Constructors
 
-		public AuthenticateController(IOptions<ExtendedAuthenticationOptions> authenticationOptions, IAuthenticationSchemeLoader authenticationSchemeLoader, IDecorationLoader decorationLoader, ILoggerFactory loggerFactory)
+		public AuthenticateController(IOptionsMonitor<ExtendedAuthenticationOptions> authenticationOptionsMonitor, IAuthenticationSchemeLoader authenticationSchemeLoader, IDecorationLoader decorationLoader, ILoggerFactory loggerFactory)
 		{
-			this.AuthenticationOptions = authenticationOptions ?? throw new ArgumentNullException(nameof(authenticationOptions));
+			this.AuthenticationOptions = (authenticationOptionsMonitor ?? throw new ArgumentNullException(nameof(authenticationOptionsMonitor))).CurrentValue;
 			this.AuthenticationSchemeLoader = authenticationSchemeLoader ?? throw new ArgumentNullException(nameof(authenticationSchemeLoader));
 			this.DecorationLoader = decorationLoader ?? throw new ArgumentNullException(nameof(decorationLoader));
 
@@ -43,7 +43,7 @@ namespace Application.Controllers
 
 		#region Properties
 
-		protected internal virtual IOptions<ExtendedAuthenticationOptions> AuthenticationOptions { get; }
+		protected internal virtual ExtendedAuthenticationOptions AuthenticationOptions { get; }
 		protected internal virtual IAuthenticationSchemeLoader AuthenticationSchemeLoader { get; }
 		protected internal virtual IDecorationLoader DecorationLoader { get; }
 		protected internal virtual ILogger Logger { get; }
@@ -55,32 +55,29 @@ namespace Application.Controllers
 
 		public virtual async Task<IActionResult> Callback()
 		{
-			var authenticateResult = await this.HttpContext.AuthenticateAsync(this.AuthenticationOptions.Value.DefaultSignInScheme);
+			var authenticateResult = await this.HttpContext.AuthenticateAsync(this.AuthenticationOptions.DefaultSignInScheme);
 
 			if(!authenticateResult.Succeeded)
 				throw new InvalidOperationException("Authentication error.", authenticateResult.Failure);
 
 			var returnUrl = this.ResolveAndValidateReturnUrl(authenticateResult.Properties.Items["returnUrl"]);
 
-			var authenticationScheme = authenticateResult.Properties.Items["scheme"];
-			var decorators = (await this.DecorationLoader.GetCallbackDecoratorsAsync(authenticationScheme)).ToArray();
-
-			if(!decorators.Any())
-				throw new InvalidOperationException($"There are no callback-decorators for authentication-scheme \"{authenticationScheme}\".");
-
 			var authenticationProperties = new AuthenticationProperties();
+			var authenticationScheme = authenticateResult.Properties.Items["scheme"];
 			var claims = new ClaimBuilderCollection();
+			var decorators = (await this.DecorationLoader.GetCallbackDecoratorsAsync(authenticationScheme)).ToArray();
 
 			foreach(var decorator in decorators)
 			{
 				await decorator.DecorateAsync(authenticateResult, authenticationScheme, claims, authenticationProperties);
 			}
 
-			await this.ResolveUniqueIdentifier(authenticationScheme, claims);
+			await this.ResolveUniqueIdentifier(authenticateResult, authenticationScheme, claims);
+			await this.ResolveName(authenticateResult, claims);
 
-			await this.HttpContext.SignInAsync(this.AuthenticationOptions.Value.DefaultScheme, this.CreateClaimsPrincipal(authenticationScheme, claims), authenticationProperties);
+			await this.HttpContext.SignInAsync(this.AuthenticationOptions.DefaultScheme, this.CreateClaimsPrincipal(authenticationScheme, claims), authenticationProperties);
 
-			await this.HttpContext.SignOutAsync(this.AuthenticationOptions.Value.DefaultSignInScheme);
+			await this.HttpContext.SignOutAsync(this.AuthenticationOptions.DefaultSignInScheme);
 
 			return this.Redirect(returnUrl);
 		}
@@ -112,7 +109,7 @@ namespace Application.Controllers
 				certificatePrincipal = this.CreateClaimsPrincipal(authenticationScheme, claims);
 			}
 
-			await this.HttpContext.SignInAsync(this.AuthenticationOptions.Value.DefaultSignInScheme, certificatePrincipal, authenticationProperties);
+			await this.HttpContext.SignInAsync(this.AuthenticationOptions.DefaultSignInScheme, certificatePrincipal, authenticationProperties);
 
 			return this.Redirect(authenticationProperties.RedirectUri);
 		}
@@ -190,7 +187,7 @@ namespace Application.Controllers
 					await decorator.DecorateAsync(authenticateResult, authenticationScheme, claims, authenticationProperties);
 				}
 
-				await this.HttpContext.SignInAsync(this.AuthenticationOptions.Value.DefaultSignInScheme, this.CreateClaimsPrincipal(authenticationScheme, claims), authenticationProperties);
+				await this.HttpContext.SignInAsync(this.AuthenticationOptions.DefaultSignInScheme, this.CreateClaimsPrincipal(authenticationScheme, claims), authenticationProperties);
 
 				return this.Redirect(authenticationProperties.RedirectUri);
 			}
@@ -220,12 +217,50 @@ namespace Application.Controllers
 			return returnUrl;
 		}
 
-		protected internal virtual async Task ResolveUniqueIdentifier(string authenticationScheme, IClaimBuilderCollection claims)
+		protected internal virtual async Task ResolveName(AuthenticateResult authenticateResult, IClaimBuilderCollection claims)
 		{
+			if(authenticateResult == null)
+				throw new ArgumentNullException(nameof(authenticateResult));
+
+			if(claims == null)
+				throw new ArgumentNullException(nameof(claims));
+
+			var nameClaim = claims.FindFirstNameClaim();
+
+			if(nameClaim == null)
+			{
+				var principalNameClaim = authenticateResult.Principal.Claims.FindFirstNameClaim();
+
+				if(principalNameClaim != null)
+				{
+					nameClaim = new ClaimBuilder(principalNameClaim);
+					claims.Add(nameClaim);
+				}
+			}
+
+			await Task.CompletedTask.ConfigureAwait(false);
+		}
+
+		protected internal virtual async Task ResolveUniqueIdentifier(AuthenticateResult authenticateResult, string authenticationScheme, IClaimBuilderCollection claims)
+		{
+			if(authenticateResult == null)
+				throw new ArgumentNullException(nameof(authenticateResult));
+
 			if(claims == null)
 				throw new ArgumentNullException(nameof(claims));
 
 			var uniqueIdentifierClaim = claims.FindFirstUniqueIdentifierClaim();
+
+			if(uniqueIdentifierClaim == null)
+			{
+				var principalUniqueIdentifierClaim = authenticateResult.Principal.Claims.FindFirstUniqueIdentifierClaim();
+
+				if(principalUniqueIdentifierClaim != null)
+				{
+					uniqueIdentifierClaim = new ClaimBuilder(principalUniqueIdentifierClaim);
+					claims.Add(uniqueIdentifierClaim);
+				}
+			}
 
 			if(uniqueIdentifierClaim == null)
 				throw new InvalidOperationException($"There is no unique-identifier-claim for authentication-scheme \"{authenticationScheme}\".");
