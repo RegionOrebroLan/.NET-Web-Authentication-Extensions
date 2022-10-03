@@ -174,17 +174,26 @@ namespace Application.Controllers
 			// ReSharper disable All
 			if(authenticateResult?.Principal is WindowsPrincipal)
 			{
-				var decorators = (await this.DecorationLoader.GetAuthenticationDecoratorsAsync(authenticationScheme)).ToArray();
-
-				if(!decorators.Any())
-					throw new InvalidOperationException($"There are no authentication-decorators for authentication-scheme \"{authenticationScheme}\".");
-
 				var authenticationProperties = this.CreateAuthenticationProperties(returnUrl, authenticationScheme);
 				var claims = new ClaimBuilderCollection();
+				var decorators = (await this.DecorationLoader.GetAuthenticationDecoratorsAsync(authenticationScheme)).ToArray();
 
-				foreach(var decorator in decorators)
+				if(decorators.Any())
 				{
-					await decorator.DecorateAsync(authenticateResult, authenticationScheme, claims, authenticationProperties);
+					foreach(var decorator in decorators)
+					{
+						await decorator.DecorateAsync(authenticateResult, authenticationScheme, claims, authenticationProperties);
+					}
+				}
+				else
+				{
+					var nameClaim = authenticateResult.Principal.Claims.FindFirstNameClaim();
+					var securityIdentifierClaim = authenticateResult.Principal.Claims.FindFirst(ClaimTypes.PrimarySid);
+
+					claims.Add(new ClaimBuilder(nameClaim));
+					claims.Add(new ClaimBuilder(securityIdentifierClaim));
+					claims.Add(new ClaimBuilder(nameClaim) { Issuer = null, OriginalIssuer = null, Type = ClaimTypes.WindowsAccountName, ValueType = null });
+					claims.Add(new ClaimBuilder(securityIdentifierClaim) { Issuer = null, OriginalIssuer = null, Type = ClaimTypes.NameIdentifier, ValueType = null });
 				}
 
 				await this.HttpContext.SignInAsync(this.AuthenticationOptions.DefaultSignInScheme, this.CreateClaimsPrincipal(authenticationScheme, claims), authenticationProperties);
