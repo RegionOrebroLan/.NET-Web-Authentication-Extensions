@@ -18,6 +18,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	/// <inheritdoc />
 	[ServiceConfiguration(Lifetime = ServiceLifetime.Transient)]
+	[Obsolete(ObsoleteHelper.Message)]
 	public class OrganizationCallbackDecorator : ActiveDirectoryDecorator
 	{
 		#region Fields

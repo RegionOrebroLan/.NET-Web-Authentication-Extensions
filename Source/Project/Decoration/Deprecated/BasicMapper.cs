@@ -13,6 +13,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	/// <inheritdoc cref="Decorator" />
 	/// <inheritdoc cref="IAuthenticationDecorator" />
+	[Obsolete(ObsoleteHelper.Message)]
 	public abstract class BasicMapper : Decorator, IAuthenticationDecorator
 	{
 		#region Constructors

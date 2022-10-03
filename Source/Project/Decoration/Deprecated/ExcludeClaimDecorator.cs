@@ -8,6 +8,7 @@ using RegionOrebroLan.Security.Claims;
 namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	/// <inheritdoc />
+	[Obsolete(ObsoleteHelper.Message)]
 	public abstract class ExcludeClaimDecorator : AuthenticationDecorator
 	{
 		#region Constructors

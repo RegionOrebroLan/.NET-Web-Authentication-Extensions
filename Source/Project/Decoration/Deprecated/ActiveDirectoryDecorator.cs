@@ -12,6 +12,7 @@ using RegionOrebroLan.Web.Authentication.Extensions;
 namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	/// <inheritdoc />
+	[Obsolete(ObsoleteHelper.Message)]
 	public abstract class ActiveDirectoryDecorator : IncludeClaimDecorator
 	{
 		#region Fields

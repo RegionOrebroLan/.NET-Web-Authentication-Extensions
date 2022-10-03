@@ -1,5 +1,8 @@
+using System;
+
 namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
+	[Obsolete(ObsoleteHelper.Message)]
 	public class ClaimMapping
 	{
 		#region Properties

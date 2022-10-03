@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	/// <inheritdoc />
 	[ServiceConfiguration(Lifetime = ServiceLifetime.Transient)]
+	[Obsolete(ObsoleteHelper.Message)]
 	public class MicrosoftToJwtReplacer : BasicReplacer
 	{
 		#region Constructors
