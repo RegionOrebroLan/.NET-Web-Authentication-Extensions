@@ -42,7 +42,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 				var identityToken = authenticateResult.Properties.GetTokenValue(OidcConstants.TokenTypes.IdentityToken);
 
 				if(identityToken != null)
-					properties.StoreTokens(new[] {new AuthenticationToken {Name = OidcConstants.TokenTypes.IdentityToken, Value = identityToken}});
+					properties.StoreTokens(new[] { new AuthenticationToken { Name = OidcConstants.TokenTypes.IdentityToken, Value = identityToken } });
 			}
 			catch(Exception exception)
 			{

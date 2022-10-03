@@ -57,7 +57,7 @@ namespace UnitTests.Decoration.Deprecated
 					{
 						HttpContext = new DefaultHttpContext
 						{
-							Connection = {ClientCertificate = certificate}
+							Connection = { ClientCertificate = certificate }
 						}
 					};
 					const string source = "Certificate.Email";
@@ -84,7 +84,7 @@ namespace UnitTests.Decoration.Deprecated
 					{
 						HttpContext = new DefaultHttpContext
 						{
-							Connection = {ClientCertificate = certificate}
+							Connection = { ClientCertificate = certificate }
 						}
 					};
 					const string source = "Certificate.Subject";
@@ -111,7 +111,7 @@ namespace UnitTests.Decoration.Deprecated
 					{
 						HttpContext = new DefaultHttpContext
 						{
-							Connection = {ClientCertificate = certificate}
+							Connection = { ClientCertificate = certificate }
 						}
 					};
 					const string source = "Certificate.Upn";

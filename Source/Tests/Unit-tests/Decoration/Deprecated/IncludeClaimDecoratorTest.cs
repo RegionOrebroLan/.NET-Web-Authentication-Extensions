@@ -30,7 +30,7 @@ namespace UnitTests.Decoration.Deprecated
 
 		protected internal virtual IncludeClaimDecorator CreateIncludeClaimDecorator(ILoggerFactory loggerFactory)
 		{
-			return new Mock<IncludeClaimDecorator>(loggerFactory) {CallBase = true}.Object;
+			return new Mock<IncludeClaimDecorator>(loggerFactory) { CallBase = true }.Object;
 		}
 
 		[TestMethod]
@@ -39,7 +39,7 @@ namespace UnitTests.Decoration.Deprecated
 			const string claimType = "Test";
 			var includeClaimDecorator = this.CreateIncludeClaimDecorator();
 
-			var claim = includeClaimDecorator.GetSourceClaim(new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim(claimType, string.Empty),})), claimType);
+			var claim = includeClaimDecorator.GetSourceClaim(new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(claimType, string.Empty), })), claimType);
 
 			Assert.AreEqual(claimType, claim.Type);
 		}
@@ -52,7 +52,7 @@ namespace UnitTests.Decoration.Deprecated
 				const string claimType = "Test";
 				var includeClaimDecorator = this.CreateIncludeClaimDecorator(loggerFactory);
 
-				var claim = includeClaimDecorator.GetSourceClaim(new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim(claimType, string.Empty),})), "Another");
+				var claim = includeClaimDecorator.GetSourceClaim(new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(claimType, string.Empty), })), "Another");
 
 				Assert.IsNull(claim);
 			}

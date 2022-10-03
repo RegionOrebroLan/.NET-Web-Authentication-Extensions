@@ -35,7 +35,7 @@ namespace UnitTests.Decoration.Deprecated
 
 		protected internal virtual AuthenticationDecorator CreateAuthenticationDecorator(ILoggerFactory loggerFactory)
 		{
-			return new Mock<AuthenticationDecorator>(loggerFactory) {CallBase = true}.Object;
+			return new Mock<AuthenticationDecorator>(loggerFactory) { CallBase = true }.Object;
 		}
 
 		[TestMethod]
@@ -45,7 +45,7 @@ namespace UnitTests.Decoration.Deprecated
 			var authenticationDecorator = this.CreateAuthenticationDecorator();
 			var claims = new ClaimBuilderCollection
 			{
-				{ExtendedClaimTypes.IdentityProvider, authenticationScheme}
+				{ ExtendedClaimTypes.IdentityProvider, authenticationScheme }
 			};
 
 			Assert.AreEqual(1, claims.Count);

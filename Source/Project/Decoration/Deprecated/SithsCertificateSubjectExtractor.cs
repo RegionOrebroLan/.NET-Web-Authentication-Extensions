@@ -45,13 +45,13 @@ namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 
 		public virtual IDictionary<string, string> ComponentToClaimMap => this._componentToClaimMap ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 		{
-			{"CN", JwtClaimTypes.Name},
-			{"E", JwtClaimTypes.Email},
-			{"G", JwtClaimTypes.GivenName},
-			{this.HsaIdentityComponentName, ExtendedClaimTypes.HsaIdentity},
-			{this.PersonalIdentityNumberComponentName, ExtendedClaimTypes.PersonalIdentityNumber},
-			{this.SerialNumberComponentName, ExtendedClaimTypes.SithsSerialNumber},
-			{"SN", JwtClaimTypes.FamilyName}
+			{ "CN", JwtClaimTypes.Name },
+			{ "E", JwtClaimTypes.Email },
+			{ "G", JwtClaimTypes.GivenName },
+			{ this.HsaIdentityComponentName, ExtendedClaimTypes.HsaIdentity },
+			{ this.PersonalIdentityNumberComponentName, ExtendedClaimTypes.PersonalIdentityNumber },
+			{ this.SerialNumberComponentName, ExtendedClaimTypes.SithsSerialNumber },
+			{ "SN", JwtClaimTypes.FamilyName }
 		};
 
 		protected internal virtual IParser<IDistinguishedName> DistinguishedNameParser => this._distinguishedNameParser ??= new DistinguishedNameParser(new DistinguishedNameComponentValidator());

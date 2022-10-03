@@ -12,7 +12,7 @@
 		<p>User-name: <strong>@User.Identity.Name</strong></p>
 		<h2 class="h6">Claims</h2>
 		<ul class="list-group">
-			@foreach(var claim in this.User.Claims.OrderBy(item => item.Type))
+			@foreach(var claim in User.Claims.OrderBy(item => item.Type))
 			{
 				<li class="list-group-item">
 					<h3 class="h6">@claim.Type</h3>

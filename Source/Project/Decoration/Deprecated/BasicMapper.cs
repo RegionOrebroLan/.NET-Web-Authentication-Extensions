@@ -72,7 +72,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 					}
 
 					this.Logger.LogDebugIfEnabled($"Adding claim-type {mappedClaimType.ToStringRepresentation()} mapped from {claimType.ToStringRepresentation()}.");
-					claims.Add(new ClaimBuilder(claim) {Type = mappedClaimType});
+					claims.Add(new ClaimBuilder(claim) { Type = mappedClaimType });
 				}
 				else
 				{

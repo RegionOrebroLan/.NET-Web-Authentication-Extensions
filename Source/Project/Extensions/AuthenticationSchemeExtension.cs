@@ -48,7 +48,7 @@ namespace RegionOrebroLan.Web.Authentication.Extensions
 								// ReSharper disable All
 								if(optionsFactory != null)
 								{
-									options = (AuthenticationSchemeOptions) optionsFactory.GetType().GetMethod("Create").Invoke(optionsFactory, new object[] {authenticationScheme.Name});
+									options = (AuthenticationSchemeOptions)optionsFactory.GetType().GetMethod("Create").Invoke(optionsFactory, new object[] { authenticationScheme.Name });
 
 									if(options != null)
 									{

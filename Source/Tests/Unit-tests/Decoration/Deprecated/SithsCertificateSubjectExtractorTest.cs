@@ -106,7 +106,7 @@ namespace UnitTests.Decoration.Deprecated
 				sithsCertificateSubjectExtractor.CertificateSubjectClaimTypes.Add(string.Empty);
 				sithsCertificateSubjectExtractor.CertificateSubjectClaimTypes.Add("   ");
 				sithsCertificateSubjectExtractor.CertificateSubjectClaimTypes.Add(certificateSubjectClaimType);
-				await sithsCertificateSubjectExtractor.DecorateAsync(await this.CreateAuthenticateResultAsync(new ClaimBuilder {Type = certificateSubjectClaimType, Value = this.HsaIdentityCertificateSubject}), this.AuthenticationScheme, claims, null);
+				await sithsCertificateSubjectExtractor.DecorateAsync(await this.CreateAuthenticateResultAsync(new ClaimBuilder { Type = certificateSubjectClaimType, Value = this.HsaIdentityCertificateSubject }), this.AuthenticationScheme, claims, null);
 				Assert.AreEqual(5, claims.Count);
 				Assert.AreEqual(JwtClaimTypes.Email, claims.ElementAt(0).Type);
 				Assert.AreEqual("given-name.surname@example.org", claims.ElementAt(0).Value);
@@ -219,7 +219,7 @@ namespace UnitTests.Decoration.Deprecated
 				sithsCertificateSubjectExtractor.CertificateSubjectClaimTypes.Add(certificateSubjectClaimType);
 				sithsCertificateSubjectExtractor.CertificateSubjectClaimTypes.Add(string.Empty);
 				sithsCertificateSubjectExtractor.CertificateSubjectClaimTypes.Add(null);
-				await sithsCertificateSubjectExtractor.DecorateAsync(await this.CreateAuthenticateResultAsync(new ClaimBuilder {Type = certificateSubjectClaimType, Value = this.InvalidHsaIdentityCertificateSubject}), this.AuthenticationScheme, claims, null);
+				await sithsCertificateSubjectExtractor.DecorateAsync(await this.CreateAuthenticateResultAsync(new ClaimBuilder { Type = certificateSubjectClaimType, Value = this.InvalidHsaIdentityCertificateSubject }), this.AuthenticationScheme, claims, null);
 				Assert.AreEqual(5, claims.Count);
 				Assert.AreEqual(JwtClaimTypes.Email, claims.ElementAt(0).Type);
 				Assert.AreEqual("given-name.surname@example.org", claims.ElementAt(0).Value);
@@ -276,7 +276,7 @@ namespace UnitTests.Decoration.Deprecated
 			{
 				var sithsCertificateSubjectExtractor = await this.CreateSithsCertificateSubjectExtractorAsync(loggerFactory);
 				sithsCertificateSubjectExtractor.CertificateSubjectClaimTypes.Add(certificateSubjectClaimType);
-				await sithsCertificateSubjectExtractor.DecorateAsync(await this.CreateAuthenticateResultAsync(new ClaimBuilder {Type = certificateSubjectClaimType, Value = this.InvalidPersonalIdentityNumberCertificateSubject}), this.AuthenticationScheme, claims, null);
+				await sithsCertificateSubjectExtractor.DecorateAsync(await this.CreateAuthenticateResultAsync(new ClaimBuilder { Type = certificateSubjectClaimType, Value = this.InvalidPersonalIdentityNumberCertificateSubject }), this.AuthenticationScheme, claims, null);
 				Assert.AreEqual(5, claims.Count);
 				Assert.AreEqual(JwtClaimTypes.Email, claims.ElementAt(0).Type);
 				Assert.AreEqual("given-name.surname@example.org", claims.ElementAt(0).Value);
@@ -333,7 +333,7 @@ namespace UnitTests.Decoration.Deprecated
 			{
 				var sithsCertificateSubjectExtractor = await this.CreateSithsCertificateSubjectExtractorAsync(loggerFactory);
 				sithsCertificateSubjectExtractor.CertificateSubjectClaimTypes.Add(certificateSubjectClaimType);
-				await sithsCertificateSubjectExtractor.DecorateAsync(await this.CreateAuthenticateResultAsync(new ClaimBuilder {Type = certificateSubjectClaimType, Value = this.PersonalIdentityNumberCertificateSubject}), this.AuthenticationScheme, claims, null);
+				await sithsCertificateSubjectExtractor.DecorateAsync(await this.CreateAuthenticateResultAsync(new ClaimBuilder { Type = certificateSubjectClaimType, Value = this.PersonalIdentityNumberCertificateSubject }), this.AuthenticationScheme, claims, null);
 				Assert.AreEqual(5, claims.Count);
 				Assert.AreEqual(JwtClaimTypes.Email, claims.ElementAt(0).Type);
 				Assert.AreEqual("given-name.surname@example.org", claims.ElementAt(0).Value);

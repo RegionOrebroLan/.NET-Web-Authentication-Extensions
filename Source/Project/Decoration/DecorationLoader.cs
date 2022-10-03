@@ -172,7 +172,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 					continue;
 
 				var type = Type.GetType(decoratorOptions.Type, true, true);
-				var decorator = (T) this.ServiceProvider.GetRequiredService(type);
+				var decorator = (T)this.ServiceProvider.GetRequiredService(type);
 				decorator.Initialize(decoratorOptions.Options);
 
 				foreach(var (key, value) in decoratorOptions.AuthenticationSchemes)

@@ -1,4 +1,4 @@
-namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
+﻿namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	internal static class ObsoleteHelper
 	{

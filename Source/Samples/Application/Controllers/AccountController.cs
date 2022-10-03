@@ -70,7 +70,7 @@ namespace Application.Controllers
 		public virtual async Task<IActionResult> SignOut(string signOutId)
 		{
 			if(this.User.Identity.IsAuthenticated)
-				return this.View(new SignOutViewModel {Form = {Id = signOutId}});
+				return this.View(new SignOutViewModel { Form = { Id = signOutId } });
 
 			return await Task.FromResult(this.View("SignedOut"));
 		}
@@ -92,9 +92,9 @@ namespace Application.Controllers
 
 				if(authenticationScheme != null && authenticationScheme.SignOutSupport)
 				{
-					var url = this.Url.Action("SignOut", new {signOutId = form?.Id});
+					var url = this.Url.Action("SignOut", new { signOutId = form?.Id });
 
-					return SignOut(new AuthenticationProperties {RedirectUri = url}, authenticationSchemeName);
+					return SignOut(new AuthenticationProperties { RedirectUri = url }, authenticationSchemeName);
 				}
 			}
 			// ReSharper restore InvertIf

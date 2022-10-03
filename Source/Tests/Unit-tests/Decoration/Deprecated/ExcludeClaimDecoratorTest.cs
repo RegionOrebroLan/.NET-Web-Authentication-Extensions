@@ -33,7 +33,7 @@ namespace UnitTests.Decoration.Deprecated
 
 		protected internal virtual ExcludeClaimDecorator CreateExcludeClaimDecorator(ILoggerFactory loggerFactory)
 		{
-			return new Mock<ExcludeClaimDecorator>(loggerFactory) {CallBase = true}.Object;
+			return new Mock<ExcludeClaimDecorator>(loggerFactory) { CallBase = true }.Object;
 		}
 
 		[TestMethod]
@@ -57,11 +57,11 @@ namespace UnitTests.Decoration.Deprecated
 		{
 			var claims = new ClaimBuilderCollection
 			{
-				{"A-type", "A-value"},
-				{"B-type", "B-value"},
-				{"C-type", "C-value"},
-				{"D-type", "D-value"},
-				{"E-type", "E-value"}
+				{ "A-type", "A-value" },
+				{ "B-type", "B-value" },
+				{ "C-type", "C-value" },
+				{ "D-type", "D-value" },
+				{ "E-type", "E-value" }
 			};
 			var authenticateResult = this.CreateAuthenticateResult(new ClaimsPrincipal(new ClaimsIdentity(claims.Build())));
 			var excludeClaimDecorator = this.CreateExcludeClaimDecorator();
@@ -86,9 +86,9 @@ namespace UnitTests.Decoration.Deprecated
 		{
 			var claims = new ClaimBuilderCollection
 			{
-				{"A-type", "A-value"},
-				{"B-type", "B-value"},
-				{"C-type", "C-value"}
+				{ "A-type", "A-value" },
+				{ "B-type", "B-value" },
+				{ "C-type", "C-value" }
 			};
 			var authenticateResult = this.CreateAuthenticateResult(new ClaimsPrincipal(new ClaimsIdentity(claims.Build())));
 			var excludeClaimDecorator = this.CreateExcludeClaimDecorator();
