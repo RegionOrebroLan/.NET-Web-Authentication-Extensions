@@ -14,7 +14,7 @@ using RegionOrebroLan.Web.Authentication.DirectoryServices;
 using RegionOrebroLan.Web.Authentication.Extensions;
 using RegionOrebroLan.Web.Authentication.Security.Claims.Extensions;
 
-namespace RegionOrebroLan.Web.Authentication.Decoration
+namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	/// <inheritdoc />
 	[ServiceConfiguration(Lifetime = ServiceLifetime.Transient)]

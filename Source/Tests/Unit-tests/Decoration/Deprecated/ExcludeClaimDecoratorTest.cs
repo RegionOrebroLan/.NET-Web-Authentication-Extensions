@@ -7,9 +7,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Security.Claims.Extensions;
-using RegionOrebroLan.Web.Authentication.Decoration;
+using RegionOrebroLan.Web.Authentication.Decoration.Deprecated;
 
-namespace UnitTests.Decoration
+namespace UnitTests.Decoration.Deprecated
 {
 	[TestClass]
 	public class ExcludeClaimDecoratorTest

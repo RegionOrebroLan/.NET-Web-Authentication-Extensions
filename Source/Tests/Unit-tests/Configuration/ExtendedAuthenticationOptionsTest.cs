@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
+using RegionOrebroLan.Web.Authentication.Decoration.Deprecated;
 
 namespace UnitTests.Configuration
 {

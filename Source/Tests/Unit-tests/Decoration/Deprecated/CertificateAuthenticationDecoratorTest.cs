@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using RegionOrebroLan.Web.Authentication.Decoration;
+using RegionOrebroLan.Web.Authentication.Decoration.Deprecated;
 using TestHelpers.Mocks.Logging;
 
-namespace UnitTests.Decoration
+namespace UnitTests.Decoration.Deprecated
 {
 	[TestClass]
 	public class CertificateAuthenticationDecoratorTest

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Negotiate;
-using RegionOrebroLan.Web.Authentication.Decoration;
 using RegionOrebroLan.Web.Authentication.Decoration.Configuration;
+using RegionOrebroLan.Web.Authentication.Decoration.Deprecated;
 using RegionOrebroLan.Web.Authentication.DirectoryServices.Configuration;
 
 namespace RegionOrebroLan.Web.Authentication.Configuration

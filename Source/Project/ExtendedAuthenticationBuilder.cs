@@ -8,6 +8,7 @@ using RegionOrebroLan.DirectoryServices.Protocols.Configuration;
 using RegionOrebroLan.Security.Cryptography;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
+using RegionOrebroLan.Web.Authentication.Decoration.Deprecated;
 using RegionOrebroLan.Web.Authentication.DependencyInjection.Registration;
 using RegionOrebroLan.Web.Authentication.DirectoryServices;
 using ConfigurationKeys = RegionOrebroLan.Web.Authentication.Configuration.ConfigurationKeys;

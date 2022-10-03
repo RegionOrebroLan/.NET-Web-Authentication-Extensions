@@ -13,7 +13,7 @@ using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Security.Cryptography;
 using RegionOrebroLan.Web.Authentication.Extensions;
 
-namespace RegionOrebroLan.Web.Authentication.Decoration
+namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	/// <inheritdoc />
 	[ServiceConfiguration(Lifetime = ServiceLifetime.Transient)]

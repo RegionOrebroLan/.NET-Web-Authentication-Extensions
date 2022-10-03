@@ -13,10 +13,11 @@ using RegionOrebroLan.DirectoryServices.Protocols.Configuration;
 using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
+using RegionOrebroLan.Web.Authentication.Decoration.Deprecated;
 using RegionOrebroLan.Web.Authentication.DirectoryServices;
 using RegionOrebroLan.Web.Authentication.Security.Claims;
 
-namespace IntegrationTests.Decoration
+namespace IntegrationTests.Decoration.Deprecated
 {
 	[TestClass]
 	public class NegotiateAuthenticationDecoratorTest : AuthenticationDecoratorTestBase

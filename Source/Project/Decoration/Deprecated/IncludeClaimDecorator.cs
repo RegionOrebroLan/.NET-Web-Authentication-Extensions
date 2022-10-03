@@ -9,7 +9,7 @@ using RegionOrebroLan.Logging.Extensions;
 using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Web.Authentication.Extensions;
 
-namespace RegionOrebroLan.Web.Authentication.Decoration
+namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	/// <inheritdoc />
 	public abstract class IncludeClaimDecorator : AuthenticationDecorator

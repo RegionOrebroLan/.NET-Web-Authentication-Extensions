@@ -6,7 +6,7 @@ using RegionOrebroLan.DependencyInjection.Extensions;
 using RegionOrebroLan.Web.Authentication.Decoration;
 using RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions;
 
-namespace IntegrationTests.Decoration
+namespace IntegrationTests.Decoration.Deprecated
 {
 	[TestClass]
 	public class DecorationLoaderTest

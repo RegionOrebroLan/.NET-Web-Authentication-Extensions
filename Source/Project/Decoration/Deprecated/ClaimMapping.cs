@@ -1,4 +1,4 @@
-namespace RegionOrebroLan.Web.Authentication.Decoration
+namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	public class ClaimMapping
 	{
