@@ -57,7 +57,8 @@ body {
 	max-width: 720px;
 }
 
-.dropdown-menu {
+.dropdown-menu,
+.dropdown-menu[data-bs-popper] {
 	left: auto;
 	right: 0;
 }
