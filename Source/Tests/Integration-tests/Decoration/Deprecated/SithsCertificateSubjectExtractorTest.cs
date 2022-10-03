@@ -43,8 +43,8 @@ namespace IntegrationTests.Decoration.Deprecated
 			{
 				var decorationLoader = serviceProvider.GetRequiredService<IDecorationLoader>();
 				var callbackDecorators = (await decorationLoader.GetCallbackDecoratorsAsync("SithsCertificate")).ToArray();
-				Assert.AreEqual(2, callbackDecorators.Length);
-				var sithsCertificateSubjectExtractor = (SithsCertificateSubjectExtractor)callbackDecorators[1];
+				Assert.AreEqual(1, callbackDecorators.Length);
+				var sithsCertificateSubjectExtractor = (SithsCertificateSubjectExtractor)callbackDecorators[0];
 				Assert.AreEqual(1, sithsCertificateSubjectExtractor.CertificateSubjectClaimTypes.Count);
 				Assert.AreEqual("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/x500distinguishedname", sithsCertificateSubjectExtractor.CertificateSubjectClaimTypes.ElementAt(0));
 			}

@@ -1,9 +1,7 @@
 using System.Linq;
-using Microsoft.AspNetCore.Authentication.Negotiate;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RegionOrebroLan.Web.Authentication.Configuration;
-using RegionOrebroLan.Web.Authentication.Decoration;
-using RegionOrebroLan.Web.Authentication.Decoration.Deprecated;
 
 namespace UnitTests.Configuration
 {
@@ -13,27 +11,24 @@ namespace UnitTests.Configuration
 		#region Methods
 
 		[TestMethod]
-		public void AuthenticationDecorators_ShouldContainANegotiateAuthenticationDecoratorByDefault()
+		public async Task AuthenticationDecorators_ShouldBeEmptyByDefault()
 		{
-			var authenticationOptions = new ExtendedAuthenticationOptions();
-
-			Assert.AreEqual(1, authenticationOptions.AuthenticationDecorators.Count);
-			Assert.AreEqual(NegotiateDefaults.AuthenticationScheme, authenticationOptions.AuthenticationDecorators.First().Value.AuthenticationSchemes.First().Key);
-			Assert.AreEqual(10, authenticationOptions.AuthenticationDecorators.First().Value.AuthenticationSchemes.First().Value);
-			Assert.IsTrue(authenticationOptions.AuthenticationDecorators.First().Value.Enabled);
-			Assert.AreEqual(typeof(NegotiateAuthenticationDecorator).AssemblyQualifiedName, authenticationOptions.AuthenticationDecorators.First().Value.Type);
+			await Task.CompletedTask;
+			Assert.IsFalse(new ExtendedAuthenticationOptions().AuthenticationDecorators.Any());
 		}
 
 		[TestMethod]
-		public void CallbackDecorators_ShouldContainACallbackDecoratorByDefault()
+		public async Task AuthenticationPropertiesDecorators_ShouldBeEmptyByDefault()
 		{
-			var authenticationOptions = new ExtendedAuthenticationOptions();
+			await Task.CompletedTask;
+			Assert.IsFalse(new ExtendedAuthenticationOptions().AuthenticationPropertiesDecorators.Any());
+		}
 
-			Assert.AreEqual(1, authenticationOptions.CallbackDecorators.Count);
-			Assert.AreEqual("*", authenticationOptions.CallbackDecorators.First().Value.AuthenticationSchemes.First().Key);
-			Assert.AreEqual(10, authenticationOptions.CallbackDecorators.First().Value.AuthenticationSchemes.First().Value);
-			Assert.IsTrue(authenticationOptions.CallbackDecorators.First().Value.Enabled);
-			Assert.AreEqual(typeof(CallbackDecorator).AssemblyQualifiedName, authenticationOptions.CallbackDecorators.First().Value.Type);
+		[TestMethod]
+		public async Task CallbackDecorators_ShouldBeEmptyByDefault()
+		{
+			await Task.CompletedTask;
+			Assert.IsFalse(new ExtendedAuthenticationOptions().CallbackDecorators.Any());
 		}
 
 		#endregion

@@ -56,9 +56,9 @@ namespace IntegrationTests.Decoration.Deprecated
 			var serviceProvider = this.ConfigureServices("Organization-Callback-Decorator");
 			var authenticationOptions = serviceProvider.GetRequiredService<IOptions<ExtendedAuthenticationOptions>>().Value;
 
-			Assert.AreEqual(200, authenticationOptions.CallbackDecorators.ElementAt(1).Value.AuthenticationSchemes.First().Value);
+			Assert.AreEqual(200, authenticationOptions.CallbackDecorators.ElementAt(0).Value.AuthenticationSchemes.First().Value);
 
-			var organizationCallbackDecorator = (OrganizationCallbackDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetCallbackDecoratorsAsync(authenticationScheme).Result.ElementAt(1);
+			var organizationCallbackDecorator = (OrganizationCallbackDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetCallbackDecoratorsAsync(authenticationScheme).Result.ElementAt(0);
 
 			Assert.IsNotNull(organizationCallbackDecorator);
 			Assert.AreEqual("organizationIdentity", organizationCallbackDecorator.IdentityClaimType);
@@ -86,9 +86,9 @@ namespace IntegrationTests.Decoration.Deprecated
 			var serviceProvider = this.ConfigureServices("Organization-Callback-Decorator-Without-Options");
 			var authenticationOptions = serviceProvider.GetRequiredService<IOptions<ExtendedAuthenticationOptions>>().Value;
 
-			Assert.AreEqual(200, authenticationOptions.CallbackDecorators.ElementAt(1).Value.AuthenticationSchemes.First().Value);
+			Assert.AreEqual(200, authenticationOptions.CallbackDecorators.ElementAt(0).Value.AuthenticationSchemes.First().Value);
 
-			var organizationCallbackDecorator = (OrganizationCallbackDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetCallbackDecoratorsAsync(authenticationScheme).Result.ElementAt(1);
+			var organizationCallbackDecorator = (OrganizationCallbackDecorator)serviceProvider.GetRequiredService<IDecorationLoader>().GetCallbackDecoratorsAsync(authenticationScheme).Result.ElementAt(0);
 
 			Assert.IsNotNull(organizationCallbackDecorator);
 			Assert.IsNull(organizationCallbackDecorator.IdentityClaimType);

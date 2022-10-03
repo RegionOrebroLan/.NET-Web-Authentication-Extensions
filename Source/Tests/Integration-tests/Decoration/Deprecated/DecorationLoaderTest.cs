@@ -26,9 +26,9 @@ namespace IntegrationTests.Decoration.Deprecated
 
 			var decorationLoader = serviceProvider.GetRequiredService<IDecorationLoader>();
 
-			var decorators = decorationLoader.GetAuthenticationDecoratorsAsync("Negotiate").Result;
+			var decorators = decorationLoader.GetAuthenticationDecoratorsAsync("*").Result;
 
-			Assert.AreEqual(1, decorators.Count());
+			Assert.IsFalse(decorators.Any());
 		}
 
 		#endregion
