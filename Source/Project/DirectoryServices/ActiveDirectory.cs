@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RegionOrebroLan.DependencyInjection;
+using RegionOrebroLan.DirectoryServices;
 using RegionOrebroLan.DirectoryServices.Protocols;
 using RegionOrebroLan.DirectoryServices.Protocols.Configuration;
 using RegionOrebroLan.Logging.Extensions;
