@@ -8,6 +8,24 @@
 		"windowsAuthentication": true
 	},
 	"profiles": {
+		"Kestrel": {
+			"applicationUrl": "https://localhost:5000",
+			"commandName": "Project",
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Development",
+				"ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
+			},
+			"launchBrowser": true
+		},
+		"Kestrel (decoration)": {
+			"applicationUrl": "https://localhost:5000",
+			"commandName": "Project",
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Decoration",
+				"ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
+			},
+			"launchBrowser": true
+		},
 		"IIS Express": {
 			"commandName": "IISExpress",
 			"environmentVariables": {
@@ -20,15 +38,6 @@
 			"commandName": "IISExpress",
 			"environmentVariables": {
 				"ASPNETCORE_ENVIRONMENT": "Decoration",
-				"ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
-			},
-			"launchBrowser": true
-		},
-		"Kestrel": {
-			"applicationUrl": "https://localhost:5001;http://localhost:5000",
-			"commandName": "Project",
-			"environmentVariables": {
-				"ASPNETCORE_ENVIRONMENT": "Development",
 				"ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
 			},
 			"launchBrowser": true
