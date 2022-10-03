@@ -30,5 +30,14 @@
 				</li>
 			}
 		</ul>
+		<h2 class="h6 mt-3">Properties</h2>
+		<ul class="list-group">
+			@foreach(var property in (await Context.AuthenticateAsync()).Properties.Items)
+			{
+				<li class="list-group-item">
+					<strong>@property.Key:</strong> @property.Value
+				</li>
+			}
+		</ul>
 	</div>
 </div>
