@@ -274,10 +274,15 @@ namespace Application.Controllers
 			if(uniqueIdentifierClaim == null)
 				throw new InvalidOperationException($"There is no unique-identifier-claim for authentication-scheme \"{authenticationScheme}\".");
 
+			var uniqueIdentifier = uniqueIdentifierClaim.Value;
+
 			var identityProvider = claims.FindFirstIdentityProviderClaim()?.Value ?? authenticationScheme;
 
-			uniqueIdentifierClaim.Value = this.GetOrCreateUniqueIdentifier(identityProvider, uniqueIdentifierClaim.Value);
+			uniqueIdentifierClaim.Value = this.GetOrCreateUniqueIdentifier(identityProvider, uniqueIdentifier);
 			uniqueIdentifierClaim.Issuer = uniqueIdentifierClaim.OriginalIssuer = uniqueIdentifierClaim.ValueType = null;
+
+			// We add the original unique identifier just for information.
+			claims.Add(new ClaimBuilder { Type = "sub_at_the_provider", Value = uniqueIdentifier });
 
 			await Task.CompletedTask.ConfigureAwait(false);
 		}
