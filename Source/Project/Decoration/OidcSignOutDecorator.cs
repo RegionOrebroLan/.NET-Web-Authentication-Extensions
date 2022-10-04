@@ -88,7 +88,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 			}
 			catch(Exception exception)
 			{
-				const string message = "Could not decorate.";
+				var message = $"Could not decorate authentication-scheme {authenticationScheme.ToStringRepresentation()}.";
 
 				this.Logger.LogErrorIfEnabled(exception, message);
 
