@@ -7,7 +7,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 	{
 		#region Methods
 
-		Task InitializeAsync(IConfigurationSection optionsConfiguration);
+		Task InitializeAsync(IConfiguration optionsConfiguration);
 
 		#endregion
 	}

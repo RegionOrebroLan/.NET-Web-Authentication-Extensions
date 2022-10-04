@@ -28,7 +28,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 		#region Methods
 
-		public virtual async Task InitializeAsync(IConfigurationSection optionsConfiguration)
+		public virtual async Task InitializeAsync(IConfiguration optionsConfiguration)
 		{
 			optionsConfiguration?.Bind(this, binderOptions => { binderOptions.BindNonPublicProperties = true; });
 
