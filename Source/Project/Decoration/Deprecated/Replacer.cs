@@ -8,7 +8,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	/// <inheritdoc />
 	[ServiceConfiguration(Lifetime = ServiceLifetime.Transient)]
-	[Obsolete(ObsoleteHelper.Message)]
+	[Obsolete("This decorator is deprecated. Use RegionOrebroLan.Web.Authentication.Decoration.ReplacementDecorator instead.")]
 	public class Replacer : BasicReplacer
 	{
 		#region Constructors

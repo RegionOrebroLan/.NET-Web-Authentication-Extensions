@@ -11,7 +11,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	/// <inheritdoc cref="Decorator" />
 	/// <inheritdoc cref="IAuthenticationDecorator" />
-	[Obsolete(ObsoleteHelper.Message)]
+	[Obsolete("This decorator is deprecated. Use RegionOrebroLan.Web.Authentication.Decoration.ReplacementDecorator instead.")]
 	public abstract class BasicReplacer : Decorator, IAuthenticationDecorator
 	{
 		#region Constructors

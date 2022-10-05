@@ -1,0 +1,10 @@
+{
+	"Replacements": {
+		"http%3a//schemas.xmlsoap.org/ws/2005/05/identity/claims/name": "name",
+		"http%3a//schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier": "sub",
+		"http%3a//schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname": "given_name",
+		"claim_1_to_replace": "claim_1",
+		"claim_2_to_replace": "claim_2",
+		"claim_3_to_replace": "claim_3"
+	}
+}
