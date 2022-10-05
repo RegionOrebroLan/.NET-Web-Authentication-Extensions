@@ -117,7 +117,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 
 				await base.DecorateAsync(authenticateResult, authenticationScheme, claims, properties).ConfigureAwait(false);
 
-				if(this.AuthenticationOptionsMonitor.CurrentValue.Negotiate.IncludeRoleClaims)
+				if(this.AuthenticationOptionsMonitor.CurrentValue.Negotiate.Roles.Include)
 				{
 					if(!(authenticateResult.Principal.Identity is WindowsIdentity windowsIdentity))
 					{

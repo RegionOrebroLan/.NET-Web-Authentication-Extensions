@@ -86,7 +86,7 @@ namespace IntegrationTests.Decoration.Deprecated
 			var windowsIdentity = WindowsIdentity.GetCurrent();
 			var principal = new WindowsPrincipal(windowsIdentity);
 			var authenticateResult = this.CreateAuthenticateResult(principal);
-			var negotiateAuthenticationDecorator = this.CreateNegotiateAuthenticationDecorator(new ExtendedAuthenticationOptions { Negotiate = { IncludeRoleClaims = true } }, this.CreateLoggerFactory());
+			var negotiateAuthenticationDecorator = this.CreateNegotiateAuthenticationDecorator(new ExtendedAuthenticationOptions { Negotiate = { Roles = { Include = true } } }, this.CreateLoggerFactory());
 
 			negotiateAuthenticationDecorator.DecorateAsync(authenticateResult, authenticationScheme, claims, null).Wait();
 

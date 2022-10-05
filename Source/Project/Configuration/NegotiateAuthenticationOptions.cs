@@ -5,9 +5,9 @@ namespace RegionOrebroLan.Web.Authentication.Configuration
 		#region Properties
 
 		/// <summary>
-		/// Include roles as claims. Be careful if the number of roles is large. It can result in large cookies.
+		/// Options for handling roles.
 		/// </summary>
-		public virtual bool IncludeRoleClaims { get; set; }
+		public virtual NegotiateAuthenticationRoleOptions Roles { get; set; } = new();
 
 		#endregion
 	}
