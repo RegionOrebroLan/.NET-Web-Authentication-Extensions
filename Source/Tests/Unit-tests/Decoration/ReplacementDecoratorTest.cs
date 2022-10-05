@@ -31,8 +31,8 @@ namespace UnitTests.Decoration
 		{
 			var claims = new ClaimBuilderCollection
 			{
-				new ClaimBuilder { Type = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", Value = "1" },
-				new ClaimBuilder { Type = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", Value = "2" },
+				new ClaimBuilder { Type = ClaimTypes.Name, Value = "1" },
+				new ClaimBuilder { Type = ClaimTypes.NameIdentifier, Value = "2" },
 				new ClaimBuilder { Type = "claim_1_to_replace", Value = "3" },
 				new ClaimBuilder { Type = "claim_2_to_replace", Value = "4" },
 				new ClaimBuilder { Type = "claim_4_to_replace", Value = "5" },
