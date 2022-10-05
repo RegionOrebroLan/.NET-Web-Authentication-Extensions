@@ -1,11 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RegionOrebroLan.Security.Claims;
@@ -28,25 +25,11 @@ namespace UnitTests.Decoration
 		private const string _locality = "Locality";
 		private const string _organization = "Organization";
 		private const string _personalIdentityNumber = "189001019802";
-		private static readonly string _resourceDirectoryPath = Path.Combine(new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName, @"Decoration\Resources\SithsCertificateDecorator");
 		private const string _surname = "Family-name";
 
 		#endregion
 
 		#region Methods
-
-		protected internal virtual async Task<IConfiguration> CreateConfigurationAsync(string fileName)
-		{
-			var filePath = Path.Combine(_resourceDirectoryPath, $"{fileName}.json");
-
-			var configurationBuilder = new ConfigurationBuilder();
-
-			configurationBuilder.AddJsonFile(filePath);
-
-			var configuration = configurationBuilder.Build();
-
-			return await Task.FromResult(configuration);
-		}
 
 		protected internal virtual async Task<SithsCertificateDecorator> CreateDecoratorAsync(string fileName, ILoggerFactory loggerFactory)
 		{
