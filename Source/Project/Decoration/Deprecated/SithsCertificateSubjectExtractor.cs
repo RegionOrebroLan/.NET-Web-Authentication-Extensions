@@ -23,7 +23,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 	/// <inheritdoc cref="Decorator" />
 	/// <inheritdoc cref="IAuthenticationDecorator" />
 	[ServiceConfiguration(Lifetime = ServiceLifetime.Transient)]
-	[Obsolete(ObsoleteHelper.Message)]
+	[Obsolete("This decorator is deprecated. Use RegionOrebroLan.Web.Authentication.Decoration.SithsCertificateDecorator instead.")]
 	public class SithsCertificateSubjectExtractor : Decorator, IAuthenticationDecorator
 	{
 		#region Fields

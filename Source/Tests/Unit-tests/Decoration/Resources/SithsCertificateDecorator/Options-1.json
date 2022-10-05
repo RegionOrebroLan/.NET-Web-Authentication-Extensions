@@ -1,0 +1,14 @@
+{
+	"DistinguishedNameComponentToClaimTypeMap": {
+		"G": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname",
+		"HSAIDENTITY": "hsa_identity",
+		"PERSONALIDENTITYNUMBER": "personal_identity_number",
+		"SERIALNUMBER": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+		"SN": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"
+	},
+	"PrincipalClaimTypesToInclude": [
+		"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+		"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
+		"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn"
+	]
+}
