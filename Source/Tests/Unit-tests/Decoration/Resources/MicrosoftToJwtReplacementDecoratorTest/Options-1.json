@@ -1,0 +1,6 @@
+{
+	"Replacements": {
+		"http%3a//schemas.xmlsoap.org/ws/2005/05/identity/claims/name": "new_name",
+		"claim_1_to_replace": "claim_1"
+	}
+}

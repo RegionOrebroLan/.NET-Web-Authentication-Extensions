@@ -9,7 +9,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	/// <inheritdoc />
 	[ServiceConfiguration(Lifetime = ServiceLifetime.Transient)]
-	[Obsolete(ObsoleteHelper.Message)]
+	[Obsolete("This decorator is deprecated. Use RegionOrebroLan.Web.Authentication.Decoration.MicrosoftToJwtReplacementDecorator instead.")]
 	public class MicrosoftToJwtReplacer : BasicReplacer
 	{
 		#region Constructors
