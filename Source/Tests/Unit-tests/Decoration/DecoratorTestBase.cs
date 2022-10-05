@@ -14,13 +14,13 @@ namespace UnitTests.Decoration
 	{
 		#region Fields
 
-		private static string _resourceDirectoryPath;
+		private string _resourceDirectoryPath;
 
 		#endregion
 
 		#region Properties
 
-		protected internal virtual string ResourceDirectoryPath => _resourceDirectoryPath ??= Path.Combine(new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName, @"Decoration\Resources", this.GetType().Name);
+		protected internal virtual string ResourceDirectoryPath => this._resourceDirectoryPath ??= Path.Combine(new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName, @"Decoration\Resources", this.GetType().Name);
 
 		#endregion
 
