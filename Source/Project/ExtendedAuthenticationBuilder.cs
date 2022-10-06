@@ -55,10 +55,12 @@ namespace RegionOrebroLan.Web.Authentication
 			this.Services.TryAddTransient<CallbackDecorator>();
 			this.Services.TryAddTransient<CertificateAuthenticationDecorator>();
 			this.Services.TryAddTransient<DirectActiveDirectoryDecorator>();
+			this.Services.TryAddTransient<Decoration.ExcludeClaimDecorator>();
 			this.Services.TryAddSingleton<IActiveDirectory, ActiveDirectory>();
 			this.Services.TryAddSingleton<IAuthenticationSchemeLoader, AuthenticationSchemeLoader>();
 			this.Services.TryAddSingleton<IDecorationLoader, DecorationLoader>();
 			this.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			this.Services.TryAddTransient<Decoration.IncludeClaimDecorator>();
 			this.Services.TryAddSingleton<IParser<LdapConnectionOptions>, LdapConnectionStringParser>();
 			this.Services.TryAddTransient<JwtToMicrosoftMapper>();
 			this.Services.TryAddTransient<JwtToMicrosoftReplacer>();
