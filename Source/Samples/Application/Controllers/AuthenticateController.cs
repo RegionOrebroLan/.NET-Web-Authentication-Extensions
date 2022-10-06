@@ -13,6 +13,7 @@ using RegionOrebroLan.Security.Claims;
 using RegionOrebroLan.Web.Authentication;
 using RegionOrebroLan.Web.Authentication.Configuration;
 using RegionOrebroLan.Web.Authentication.Decoration;
+using RegionOrebroLan.Web.Authentication.Extensions;
 using RegionOrebroLan.Web.Authentication.Security.Claims.Extensions;
 
 namespace Application.Controllers
@@ -172,8 +173,11 @@ namespace Application.Controllers
 			var authenticateResult = await this.HttpContext.AuthenticateAsync(authenticationScheme);
 
 			// ReSharper disable All
-			if(authenticateResult?.Principal is WindowsPrincipal)
+			if(authenticateResult.Succeeded)
 			{
+				if(authenticateResult.Principal == null)
+					throw new InvalidOperationException("Succeeded authenticate-result but the principal is null.");
+
 				var authenticationProperties = this.CreateAuthenticationProperties(returnUrl, authenticationScheme);
 				var claims = new ClaimBuilderCollection();
 				var decorators = (await this.DecorationLoader.GetAuthenticationDecoratorsAsync(authenticationScheme)).ToArray();
@@ -188,12 +192,66 @@ namespace Application.Controllers
 				else
 				{
 					var nameClaim = authenticateResult.Principal.Claims.FindFirstNameClaim();
-					var securityIdentifierClaim = authenticateResult.Principal.Claims.FindFirst(ClaimTypes.PrimarySid);
 
-					claims.Add(new ClaimBuilder(nameClaim));
-					claims.Add(new ClaimBuilder(securityIdentifierClaim));
-					claims.Add(new ClaimBuilder(nameClaim) { Issuer = null, OriginalIssuer = null, Type = ClaimTypes.WindowsAccountName, ValueType = null });
-					claims.Add(new ClaimBuilder(securityIdentifierClaim) { Issuer = null, OriginalIssuer = null, Type = ClaimTypes.NameIdentifier, ValueType = null });
+					if(nameClaim != null)
+						claims.Add(new ClaimBuilder(nameClaim));
+
+					var uniqueIdentifierClaim = authenticateResult.Principal.Claims.FindFirst(this.AuthenticationOptions.Negotiate.UniqueIdentifierClaimType);
+
+					if(uniqueIdentifierClaim == null)
+						throw new InvalidOperationException($"Could not find an unique identifier claim. Claim-type uses as unique identifier claim-type is {this.AuthenticationOptions.Negotiate.UniqueIdentifierClaimType.ToStringRepresentation()}.");
+
+					claims.Add(new ClaimBuilder { Type = ClaimTypes.NameIdentifier, Value = uniqueIdentifierClaim.Value });
+
+					if(this.AuthenticationOptions.Negotiate.IncludeSecurityIdentifierClaim)
+					{
+						var securityIdentifierClaim = authenticateResult.Principal.Claims.FindFirst(ClaimTypes.PrimarySid);
+
+						if(securityIdentifierClaim != null)
+							claims.Add(new ClaimBuilder(securityIdentifierClaim));
+					}
+
+					if(this.AuthenticationOptions.Negotiate.IncludeNameClaimAsWindowsAccountNameClaim && nameClaim != null)
+						claims.Add(new ClaimBuilder { Type = ClaimTypes.WindowsAccountName, Value = nameClaim.Value });
+
+					if(this.AuthenticationOptions.Negotiate.Roles.Include)
+					{
+						/*
+							If there are many roles we may get an error because we save the principal in the authentication-cookie:
+							Bad Request - Request Too Long: HTTP Error 400. The size of the request headers is too long.
+
+							You could handle that by implementing a CookieAuthenticationOptions.SessionStore (ITicketStore).
+							In this sample we handle it by only including the top 10 roles.
+						*/
+						const int maximumNumberOfRoles = 10;
+						var index = 0;
+						var roles = new List<string>();
+
+						foreach(var roleClaim in authenticateResult.Principal.Claims.Find(this.AuthenticationOptions.Negotiate.Roles.ClaimType))
+						{
+							if(index == maximumNumberOfRoles)
+								break;
+
+							var role = roleClaim.Value;
+
+							if(this.AuthenticationOptions.Negotiate.Roles.Translate && OperatingSystem.IsWindows())
+							{
+								var securityIdentifier = new SecurityIdentifier(role);
+								role = securityIdentifier.Translate(typeof(NTAccount)).Value;
+							}
+
+							roles.Add(role);
+
+							index++;
+						}
+
+						roles.Sort();
+
+						foreach(var role in roles)
+						{
+							claims.Add(new ClaimBuilder { Type = ClaimTypes.Role, Value = role });
+						}
+					}
 				}
 
 				await this.HttpContext.SignInAsync(this.AuthenticationOptions.DefaultSignInScheme, this.CreateClaimsPrincipal(authenticationScheme, claims), authenticationProperties);
