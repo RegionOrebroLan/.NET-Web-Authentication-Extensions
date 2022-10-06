@@ -90,22 +90,36 @@ namespace IntegrationTests.DirectoryServices
 				Assert.AreEqual(domain, activeDirectory.LdapConnectionOptions.DirectoryIdentifier.Servers.First());
 				Assert.AreEqual(port, activeDirectory.LdapConnectionOptions.DirectoryIdentifier.Port);
 
+				var securityIdentifier = WindowsIdentity.GetCurrent().User?.Value;
 				var windowsAccountName = WindowsIdentity.GetCurrent().Name;
 				var samAccountName = windowsAccountName.Split('\\').Last();
 
-				var identifier = windowsAccountName;
-				var attributes = (await activeDirectory.GetAttributesAsync(new[] { "sAMAccountName" }, identifier, IdentifierKind.WindowsAccountName)).ToArray();
-				Assert.AreEqual(1, attributes.Length);
-				Assert.AreEqual("sAMAccountName", attributes.ElementAt(0).Key);
+				var identifier = securityIdentifier;
+				var attributes = (await activeDirectory.GetAttributesAsync(new[] { "msDS-PrincipalName", "objectSid", "sAMAccountName" }, identifier, IdentifierKind.SecurityIdentifier)).ToArray();
+				Assert.AreEqual(3, attributes.Length);
+				Assert.AreEqual("msDS-PrincipalName", attributes.ElementAt(0).Key);
+				Assert.AreEqual(windowsAccountName, attributes.ElementAt(0).Value);
+				Assert.AreEqual("objectSid", attributes.ElementAt(1).Key);
+				var bytes = Convert.FromBase64String(attributes.ElementAt(1).Value);
+				Assert.AreEqual(securityIdentifier, new SecurityIdentifier(bytes, 0).Value);
+				Assert.AreEqual("sAMAccountName", attributes.ElementAt(2).Key);
+				Assert.AreEqual(samAccountName, attributes.ElementAt(2).Value);
 
 				identifier = samAccountName;
-				attributes = (await activeDirectory.GetAttributesAsync(new[] { "sAMAccountName" }, identifier, IdentifierKind.SamAccountName)).ToArray();
-				Assert.AreEqual(1, attributes.Length);
-				Assert.AreEqual("sAMAccountName", attributes.ElementAt(0).Key);
+				attributes = (await activeDirectory.GetAttributesAsync(new[] { "msDS-PrincipalName", "objectSid", "sAMAccountName" }, identifier, IdentifierKind.SamAccountName)).ToArray();
+				Assert.AreEqual(3, attributes.Length);
+				Assert.AreEqual("msDS-PrincipalName", attributes.ElementAt(0).Key);
+				Assert.AreEqual(windowsAccountName, attributes.ElementAt(0).Value);
+				Assert.AreEqual("objectSid", attributes.ElementAt(1).Key);
+				bytes = Convert.FromBase64String(attributes.ElementAt(1).Value);
+				Assert.AreEqual(securityIdentifier, new SecurityIdentifier(bytes, 0).Value);
+				Assert.AreEqual("sAMAccountName", attributes.ElementAt(2).Key);
+				Assert.AreEqual(samAccountName, attributes.ElementAt(2).Value);
 
 				// Invalid domain-part
-				identifier = $"{Guid.NewGuid()}\\{samAccountName}";
-				attributes = (await activeDirectory.GetAttributesAsync(new[] { "sAMAccountName" }, identifier, IdentifierKind.SamAccountName)).ToArray();
+				//identifier = $"{Guid.NewGuid()}\\{samAccountName}";
+				identifier = windowsAccountName;
+				attributes = (await activeDirectory.GetAttributesAsync(new[] { "msDS-PrincipalName", "objectSid", "sAMAccountName" }, identifier, IdentifierKind.SamAccountName)).ToArray();
 				Assert.IsFalse(attributes.Any());
 			}
 		}
@@ -185,25 +199,6 @@ namespace IntegrationTests.DirectoryServices
 		}
 
 		[TestMethod]
-		public async Task GetAttributesAsync_WithIdentifierParameter_IfTheIdentifierKindParameterIsWindowsAccountName_And_IfTheNameClaimHasAnInvalidDomainPart_ShouldReturnAnEmptyResult()
-		{
-			var domain = Guid.NewGuid().ToString();
-			var name = $"{domain}\\abc123";
-
-			var result = await this.ActiveDirectory.GetAttributesAsync(Enumerable.Empty<string>(), name, IdentifierKind.WindowsAccountName);
-
-			Assert.IsFalse(result.Any());
-		}
-
-		[TestMethod]
-		public void GetAttributesAsync_WithIdentifierParameter_IfTheIdentifierKindParameterIsWindowsAccountName_ShouldWorkProperly()
-		{
-			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { "userPrincipalName" }, WindowsIdentity.GetCurrent().Name, IdentifierKind.WindowsAccountName).Result;
-
-			Assert.AreEqual(1, attributes.Count, "The test must be run on a domain.");
-		}
-
-		[TestMethod]
 		public void GetAttributesAsync_WithPrincipalParameter_IfTheIdentifierKindParameterIsSamAccountName_ShouldWorkProperly()
 		{
 			var identityNameParts = WindowsIdentity.GetCurrent().Name.Split('\\', 2);
@@ -249,25 +244,6 @@ namespace IntegrationTests.DirectoryServices
 			Assert.AreEqual(2, attributes.Count, "The test must be run on a domain.");
 			Assert.AreEqual(samAccountName, attributes.ElementAt(0).Value, "The test must be run on a domain.");
 			Assert.AreEqual(userPrincipalName, attributes.ElementAt(1).Value, "The test must be run on a domain.");
-		}
-
-		[TestMethod]
-		public async Task GetAttributesAsync_WithPrincipalParameter_IfTheIdentifierKindParameterIsWindowsAccountName_And_IfTheNameClaimHasAnInvalidDomainPart_ShouldReturnAnEmptyResult()
-		{
-			var domain = Guid.NewGuid().ToString();
-			var name = $"{domain}\\abc123";
-
-			var result = await this.ActiveDirectory.GetAttributesAsync(Enumerable.Empty<string>(), IdentifierKind.WindowsAccountName, new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, name) })));
-
-			Assert.IsFalse(result.Any());
-		}
-
-		[TestMethod]
-		public void GetAttributesAsync_WithPrincipalParameter_IfTheIdentifierKindParameterIsWindowsAccountName_ShouldWorkProperly()
-		{
-			var attributes = this.ActiveDirectory.GetAttributesAsync(new[] { "userPrincipalName" }, IdentifierKind.WindowsAccountName, new WindowsPrincipal(WindowsIdentity.GetCurrent())).Result;
-
-			Assert.AreEqual(1, attributes.Count, "The test must be run on a domain.");
 		}
 
 		protected internal virtual async Task<string> GetSystemDomainFirstPartAsync()

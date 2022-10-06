@@ -211,7 +211,6 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 				IdentifierKind.SecurityIdentifier => ClaimTypes.PrimarySid,
 				IdentifierKind.UserPrincipalName => ClaimTypes.Upn,
 				IdentifierKind.UserPrincipalNameWithEmailFallback => ClaimTypes.Upn,
-				IdentifierKind.WindowsAccountName => ClaimTypes.Name,
 				_ => throw new InvalidOperationException($"The identifier-kind {identifierKind} is invalid.")
 			};
 
@@ -229,7 +228,6 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 			{
 				var attributeNames = this.OptionsMonitor.CurrentValue.ActiveDirectory.AttributeNames;
 				var filterBuilder = new FilterBuilder { Operator = FilterOperator.Or };
-				var windowsAccountNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 				switch(identifierKind)
 				{
@@ -293,29 +291,6 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 
 							break;
 						}
-					case IdentifierKind.WindowsAccountName:
-						{
-							foreach(var claim in principal.Claims.Find(ClaimCollectionExtension.GetNameClaimTypes()))
-							{
-								windowsAccountNames.Add(claim.Value);
-							}
-
-							if(!windowsAccountNames.Any())
-								throw new InvalidOperationException("Could not find any name-claims.");
-
-							// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-							foreach(var windowsAccountName in windowsAccountNames)
-							{
-								var windowsAccountNameParts = windowsAccountName.Split('\\');
-
-								var samAccountName = windowsAccountNameParts.LastOrDefault();
-
-								filterBuilder.Filters.Add($"{attributeNames.SamAccountName}={samAccountName}");
-							}
-							// ReSharper restore ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-
-							break;
-						}
 					default:
 						{
 							throw new InvalidOperationException($"The identifier-kind {identifierKind} is invalid.");
@@ -324,43 +299,8 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 
 				var attributeList = (attributes ?? Enumerable.Empty<string>()).ToList();
 
-				if(identifierKind == IdentifierKind.WindowsAccountName)
-					attributeList.Add(attributeNames.WindowsAccountName);
-
 				var result = await this.GetUserAttributesInternalAsync(attributeList, filterBuilder.Build()).ConfigureAwait(false);
-				var resultAttributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-				foreach(var (distinguishedName, items) in result)
-				{
-					if(identifierKind == IdentifierKind.WindowsAccountName)
-					{
-						if(!windowsAccountNames.Any())
-							continue;
-
-						if(!items.TryGetValue(attributeNames.WindowsAccountName, out var windowsAccountName))
-							continue;
-
-						if(!windowsAccountNames.Contains(windowsAccountName))
-							continue;
-
-						foreach(var (key, value) in items)
-						{
-							if(string.Equals(attributeNames.WindowsAccountName, key, StringComparison.OrdinalIgnoreCase))
-								continue;
-
-							resultAttributes.Add(key, value);
-						}
-
-						break;
-					}
-
-					foreach(var (key, value) in items)
-					{
-						resultAttributes.Add(key, value);
-					}
-
-					break;
-				}
+				var resultAttributes = result.FirstOrDefault().Value ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 				return resultAttributes;
 			}
@@ -370,6 +310,7 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 			}
 		}
 
+		[SuppressMessage("Design", "CA1031:Do not catch general exception types")]
 		protected internal virtual async Task<string> GetDirectoryAttributeValueAsync(DirectoryAttribute directoryAttribute)
 		{
 			if(directoryAttribute == null)
@@ -381,6 +322,9 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 			for(var i = 0; i < directoryAttribute.Count; i++)
 			{
 				var value = directoryAttribute[i];
+
+				if(value is byte[] bytes)
+					value = Convert.ToBase64String(bytes);
 
 				if(value != null)
 					values.Add(value.ToString());
