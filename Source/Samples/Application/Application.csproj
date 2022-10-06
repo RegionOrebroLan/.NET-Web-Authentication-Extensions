@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net5.0;netcoreapp3.1</TargetFrameworks>
+		<TargetFrameworks>net6.0</TargetFrameworks>
 		<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
 		<UserSecretsId>ecb5e5d5-6a65-4d74-ab7c-1da55dadc0a9</UserSecretsId>
 	</PropertyGroup>
