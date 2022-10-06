@@ -137,7 +137,7 @@ namespace IntegrationTests.DirectoryServices
 
 		protected internal virtual string GetAppSettingsContent(string appSettingsIdentifier, params string[] formatArguments)
 		{
-			var path = Path.Combine(Global.ProjectDirectoryPath, "DirectoryServices", "Resources", "ActiveDirectory", $"appsettings.{appSettingsIdentifier}.json");
+			var path = Path.Combine(Global.ProjectDirectoryPath, "DirectoryServices", "Resources", this.GetType().Name, $"appsettings.{appSettingsIdentifier}.json");
 
 			var content = File.ReadAllText(path);
 
