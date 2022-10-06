@@ -6,6 +6,9 @@ namespace RegionOrebroLan.Web.Authentication.Configuration
 	{
 		#region Properties
 
+		/// <summary>
+		/// The claim-type to use for groups / roles.
+		/// </summary>
 		public virtual string ClaimType { get; set; } = ClaimTypes.GroupSid;
 
 		/// <summary>
