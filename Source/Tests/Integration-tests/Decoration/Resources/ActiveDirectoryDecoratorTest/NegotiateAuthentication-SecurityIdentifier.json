@@ -1,0 +1,8 @@
+{
+	"IdentifierKind": "SecurityIdentifier",
+	"Map": {
+		"mail": "email",
+		"userPrincipalName": "upn"
+	},
+	"SecurityIdentifierClaimType": "primarysid"
+}

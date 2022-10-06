@@ -12,7 +12,7 @@ namespace RegionOrebroLan.Web.Authentication.Decoration.Deprecated
 {
 	/// <inheritdoc />
 	[ServiceConfiguration(Lifetime = ServiceLifetime.Transient)]
-	[Obsolete(ObsoleteHelper.Message)]
+	[Obsolete("This decorator is deprecated. Use RegionOrebroLan.Web.Authentication.Decoration.ActiveDirectoryDecorator instead.")]
 	public class ActiveDirectoryCallbackDecorator : ActiveDirectoryDecorator
 	{
 		#region Constructors

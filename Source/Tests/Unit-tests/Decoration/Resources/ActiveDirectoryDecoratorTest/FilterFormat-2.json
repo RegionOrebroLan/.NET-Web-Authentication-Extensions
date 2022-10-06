@@ -1,0 +1,10 @@
+{
+	"FilterClaimTypes": [
+		"first-claim",
+		"second-claim",
+		"third-claim",
+		"fourth-claim",
+		"fifth-claim"
+	],
+	"FilterFormat": "(|(first={2})(second={2})(third={2})(fourth={2})(fifth={2}))"
+}
