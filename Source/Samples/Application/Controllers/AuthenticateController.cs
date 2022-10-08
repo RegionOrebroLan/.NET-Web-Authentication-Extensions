@@ -77,7 +77,7 @@ namespace Application.Controllers
 			await this.ResolveUniqueIdentifier(authenticateResult, authenticationScheme, claims);
 			await this.ResolveName(authenticateResult, claims);
 
-			await this.HttpContext.SignInAsync(this.AuthenticationOptions.DefaultScheme, this.CreateClaimsPrincipal(authenticationScheme, claims), authenticationProperties);
+			await this.HttpContext.SignInAsync(this.AuthenticationOptions.DefaultScheme, await this.CreateClaimsPrincipalAsync(authenticationScheme, claims), authenticationProperties);
 
 			await this.HttpContext.SignOutAsync(this.AuthenticationOptions.DefaultSignInScheme);
 
@@ -95,7 +95,7 @@ namespace Application.Controllers
 			if(!authenticateResult.Succeeded)
 				throw new InvalidOperationException("Authentication error.", authenticateResult.Failure);
 
-			var authenticationProperties = this.CreateAuthenticationProperties(authenticationScheme, returnUrl);
+			var authenticationProperties = await this.CreateAuthenticationPropertiesAsync(authenticationScheme, returnUrl);
 			var certificatePrincipal = authenticateResult.Principal;
 			var decorators = (await this.DecorationLoader.GetAuthenticationDecoratorsAsync(authenticationScheme)).ToArray();
 
@@ -108,7 +108,7 @@ namespace Application.Controllers
 					await decorator.DecorateAsync(authenticateResult, authenticationScheme, claims, authenticationProperties);
 				}
 
-				certificatePrincipal = this.CreateClaimsPrincipal(authenticationScheme, claims);
+				certificatePrincipal = await this.CreateClaimsPrincipalAsync(authenticationScheme, claims);
 			}
 
 			await this.HttpContext.SignInAsync(this.AuthenticationOptions.DefaultSignInScheme, certificatePrincipal, authenticationProperties);
@@ -123,7 +123,7 @@ namespace Application.Controllers
 			return await Task.FromResult(this.NotFound());
 		}
 
-		protected internal virtual AuthenticationProperties CreateAuthenticationProperties(string authenticationScheme, string returnUrl)
+		protected internal virtual async Task<AuthenticationProperties> CreateAuthenticationPropertiesAsync(string authenticationScheme, string returnUrl)
 		{
 			var authenticationProperties = new AuthenticationProperties
 			{
@@ -133,20 +133,20 @@ namespace Application.Controllers
 			authenticationProperties.SetString(nameof(returnUrl), returnUrl);
 			authenticationProperties.SetString("scheme", authenticationScheme);
 
-			foreach(var decorator in this.DecorationLoader.GetAuthenticationPropertiesDecoratorsAsync(authenticationScheme).Result)
+			foreach(var decorator in await this.DecorationLoader.GetAuthenticationPropertiesDecoratorsAsync(authenticationScheme))
 			{
-				decorator.DecorateAsync(authenticationScheme, authenticationProperties, returnUrl);
+				await decorator.DecorateAsync(authenticationScheme, authenticationProperties, returnUrl);
 			}
 
 			return authenticationProperties;
 		}
 
-		protected internal virtual ClaimsPrincipal CreateClaimsPrincipal(string authenticationScheme, IClaimBuilderCollection claims)
+		protected internal virtual async Task<ClaimsPrincipal> CreateClaimsPrincipalAsync(string authenticationScheme, IClaimBuilderCollection claims)
 		{
 			if(claims == null)
 				throw new ArgumentNullException(nameof(claims));
 
-			return new ClaimsPrincipal(new ClaimsIdentity(claims.Build(), authenticationScheme, claims.FindFirstNameClaim()?.Type, claims.FindFirst(ClaimTypes.Role, JwtClaimTypes.Role)?.Type));
+			return await Task.FromResult(new ClaimsPrincipal(new ClaimsIdentity(claims.Build(), authenticationScheme, claims.FindFirstNameClaim()?.Type, claims.FindFirst(ClaimTypes.Role, JwtClaimTypes.Role)?.Type)));
 		}
 
 		protected internal virtual string GetOrCreateUniqueIdentifier(string authenticationScheme, string remoteUniqueIdentifier)
@@ -179,7 +179,7 @@ namespace Application.Controllers
 				if(authenticateResult.Principal == null)
 					throw new InvalidOperationException("Succeeded authenticate-result but the principal is null.");
 
-				var authenticationProperties = this.CreateAuthenticationProperties(authenticationScheme, returnUrl);
+				var authenticationProperties = await this.CreateAuthenticationPropertiesAsync(authenticationScheme, returnUrl);
 				var claims = new ClaimBuilderCollection();
 				var decorators = (await this.DecorationLoader.GetAuthenticationDecoratorsAsync(authenticationScheme)).ToArray();
 
@@ -255,7 +255,7 @@ namespace Application.Controllers
 					}
 				}
 
-				await this.HttpContext.SignInAsync(this.AuthenticationOptions.DefaultSignInScheme, this.CreateClaimsPrincipal(authenticationScheme, claims), authenticationProperties);
+				await this.HttpContext.SignInAsync(this.AuthenticationOptions.DefaultSignInScheme, await this.CreateClaimsPrincipalAsync(authenticationScheme, claims), authenticationProperties);
 
 				return this.Redirect(authenticationProperties.RedirectUri);
 			}
@@ -271,7 +271,7 @@ namespace Application.Controllers
 
 			returnUrl = this.ResolveAndValidateReturnUrl(returnUrl);
 
-			return await Task.FromResult(this.Challenge(this.CreateAuthenticationProperties(authenticationScheme, returnUrl), authenticationScheme));
+			return this.Challenge(await this.CreateAuthenticationPropertiesAsync(authenticationScheme, returnUrl), authenticationScheme);
 		}
 
 		protected internal virtual string ResolveAndValidateReturnUrl(string returnUrl)
