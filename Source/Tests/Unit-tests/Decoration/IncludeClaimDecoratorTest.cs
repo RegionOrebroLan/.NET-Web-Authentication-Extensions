@@ -151,6 +151,71 @@ namespace UnitTests.Decoration
 		}
 
 		[TestMethod]
+		public async Task DecorateAsync_MultipleClaimsWithSameType_ShouldWorkProperly()
+		{
+			var claims = new ClaimBuilderCollection
+			{
+				new ClaimBuilder { Type = "claim_1", Value = "1" },
+				new ClaimBuilder { Type = "claim_1", Value = "2" },
+				new ClaimBuilder { Type = "claim_1", Value = "3" },
+				new ClaimBuilder { Type = "claim_1", Value = "4" },
+				new ClaimBuilder { Type = "claim_2", Value = "1" },
+				new ClaimBuilder { Type = "claim_2", Value = "2" },
+				new ClaimBuilder { Type = "claim_2", Value = "3" },
+				new ClaimBuilder { Type = "claim_2", Value = "4" }
+			};
+
+			var authenticateResult = AuthenticateResult.Success(await this.CreateAuthenticationTicketAsync());
+
+			using(var loggerFactory = LoggerFactoryMock.Create())
+			{
+				var decorator = new IncludeClaimDecorator(loggerFactory)
+				{
+					Patterns = { "claim_1" },
+					PrincipalClaimsAsSource = false
+				};
+
+				await decorator.DecorateAsync(authenticateResult, null, claims, null);
+
+				Assert.AreEqual(4, claims.Count);
+				Assert.AreEqual(4, claims.Count(claim => claim.Type == "claim_1"));
+			}
+		}
+
+		[TestMethod]
+		public async Task DecorateAsync_MultiplePrincipalClaimsWithSameType_ShouldWorkProperly()
+		{
+			var claims = new ClaimBuilderCollection();
+			var principalClaims = new List<Claim>
+			{
+				new("claim_1", "1"),
+				new("claim_1", "2"),
+				new("claim_1", "3"),
+				new("claim_1", "4"),
+				new("claim_2", "1"),
+				new("claim_2", "2"),
+				new("claim_2", "3"),
+				new("claim_2", "4")
+			};
+
+			var authenticateResult = AuthenticateResult.Success(await this.CreateAuthenticationTicketAsync(null, null, principalClaims));
+
+			using(var loggerFactory = LoggerFactoryMock.Create())
+			{
+				var decorator = new IncludeClaimDecorator(loggerFactory)
+				{
+					Patterns = { "claim_1" },
+					PrincipalClaimsAsSource = true
+				};
+
+				await decorator.DecorateAsync(authenticateResult, null, claims, null);
+
+				Assert.AreEqual(4, claims.Count);
+				Assert.AreEqual(4, claims.Count(claim => claim.Type == "claim_1"));
+			}
+		}
+
+		[TestMethod]
 		public async Task DecorateAsync_PrincipalClaimsWithClaimTypePatterns_ShouldWorkProperly()
 		{
 			var claims = new ClaimBuilderCollection();
