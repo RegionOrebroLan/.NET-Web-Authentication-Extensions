@@ -73,6 +73,7 @@ namespace RegionOrebroLan.Web.Authentication
 			this.Services.TryAddTransient<OidcSignOutDecorator>();
 			this.Services.TryAddTransient<OrganizationCallbackDecorator>();
 			this.Services.TryAddTransient<Replacer>();
+			this.Services.TryAddTransient<ReplacementDecorator>();
 			this.Services.TryAddTransient<SithsCertificateDecorator>();
 			this.Services.TryAddTransient<SithsCertificateSubjectExtractor>();
 
