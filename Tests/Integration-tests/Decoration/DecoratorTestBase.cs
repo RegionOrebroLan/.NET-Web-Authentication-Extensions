@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RegionOrebroLan.DependencyInjection;
-using RegionOrebroLan.DependencyInjection.Extensions;
 using RegionOrebroLan.Web.Authentication.DependencyInjection.Extensions;
 
 namespace IntegrationTests.Decoration
@@ -41,8 +40,6 @@ namespace IntegrationTests.Decoration
 		protected internal virtual async Task<ServiceProvider> CreateServiceProviderAsync(IConfiguration configuration = null)
 		{
 			var services = configuration == null ? Global.CreateServices() : Global.CreateServices(configuration);
-
-			services.ScanDependencies();
 
 			services.AddAuthentication(Global.CreateCertificateResolver(), Global.Configuration, new InstanceFactory());
 
