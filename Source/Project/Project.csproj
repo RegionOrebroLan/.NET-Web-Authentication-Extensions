@@ -33,7 +33,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(PackageReferenceVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(PackageReferenceVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.WsFederation" Version="$(PackageReferenceVersion)" />
-		<PackageReference Include="RegionOrebroLan.DirectoryServices.Protocols" Version="0.2.0-alpha" />
+		<PackageReference Include="RegionOrebroLan.DirectoryServices.Protocols" Version="0.3.0-alpha" />
 		<PackageReference Include="RegionOrebroLan.Logging" Version="0.0.3-alpha" />
 		<PackageReference Include="RegionOrebroLan.Web.Authentication.Certificate" Version="0.0.7-alpha" />
 	</ItemGroup>
