@@ -232,69 +232,69 @@ namespace RegionOrebroLan.Web.Authentication.DirectoryServices
 				switch(identifierKind)
 				{
 					case IdentifierKind.Email:
+					{
+						foreach(var claim in principal.Claims.Find(ClaimTypes.Email, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Email]))
 						{
-							foreach(var claim in principal.Claims.Find(ClaimTypes.Email, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Email]))
-							{
-								filterBuilder.Filters.Add($"{attributeNames.Email}={claim.Value}");
-							}
-
-							if(!filterBuilder.Filters.Any())
-								throw new InvalidOperationException("Could not find any email-claims.");
-
-							break;
+							filterBuilder.Filters.Add($"{attributeNames.Email}={claim.Value}");
 						}
+
+						if(!filterBuilder.Filters.Any())
+							throw new InvalidOperationException("Could not find any email-claims.");
+
+						break;
+					}
 					case IdentifierKind.SamAccountName:
+					{
+						foreach(var claim in principal.Claims.Find(ClaimCollectionExtension.GetNameClaimTypes()))
 						{
-							foreach(var claim in principal.Claims.Find(ClaimCollectionExtension.GetNameClaimTypes()))
-							{
-								filterBuilder.Filters.Add($"{attributeNames.SamAccountName}={claim.Value}");
-							}
-
-							if(!filterBuilder.Filters.Any())
-								throw new InvalidOperationException("Could not find any name-claims.");
-
-							break;
+							filterBuilder.Filters.Add($"{attributeNames.SamAccountName}={claim.Value}");
 						}
+
+						if(!filterBuilder.Filters.Any())
+							throw new InvalidOperationException("Could not find any name-claims.");
+
+						break;
+					}
 					case IdentifierKind.SecurityIdentifier:
+					{
+						foreach(var claim in principal.Claims.Find(ClaimTypes.PrimarySid, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.PrimarySid]))
 						{
-							foreach(var claim in principal.Claims.Find(ClaimTypes.PrimarySid, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.PrimarySid]))
-							{
-								filterBuilder.Filters.Add($"{attributeNames.SecurityIdentifier}={claim.Value}");
-							}
-
-							if(!filterBuilder.Filters.Any())
-								throw new InvalidOperationException("Could not find any security-identifier-claims.");
-
-							break;
+							filterBuilder.Filters.Add($"{attributeNames.SecurityIdentifier}={claim.Value}");
 						}
+
+						if(!filterBuilder.Filters.Any())
+							throw new InvalidOperationException("Could not find any security-identifier-claims.");
+
+						break;
+					}
 					case IdentifierKind.UserPrincipalName:
+					{
+						foreach(var claim in principal.Claims.Find(ClaimTypes.Upn, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Upn]))
 						{
-							foreach(var claim in principal.Claims.Find(ClaimTypes.Upn, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Upn]))
-							{
-								filterBuilder.Filters.Add($"{attributeNames.UserPrincipalName}={claim.Value}");
-							}
-
-							if(!filterBuilder.Filters.Any())
-								throw new InvalidOperationException("Could not find any user-principal-name-claims.");
-
-							break;
+							filterBuilder.Filters.Add($"{attributeNames.UserPrincipalName}={claim.Value}");
 						}
+
+						if(!filterBuilder.Filters.Any())
+							throw new InvalidOperationException("Could not find any user-principal-name-claims.");
+
+						break;
+					}
 					case IdentifierKind.UserPrincipalNameWithEmailFallback:
+					{
+						foreach(var claim in principal.Claims.Find(ClaimTypes.Upn, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Upn], ClaimTypes.Email, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Email]))
 						{
-							foreach(var claim in principal.Claims.Find(ClaimTypes.Upn, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Upn], ClaimTypes.Email, JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap[ClaimTypes.Email]))
-							{
-								filterBuilder.Filters.Add($"{attributeNames.UserPrincipalName}={claim.Value}");
-							}
-
-							if(!filterBuilder.Filters.Any())
-								throw new InvalidOperationException("Could not find any user-principal-name-claims or email-claims.");
-
-							break;
+							filterBuilder.Filters.Add($"{attributeNames.UserPrincipalName}={claim.Value}");
 						}
+
+						if(!filterBuilder.Filters.Any())
+							throw new InvalidOperationException("Could not find any user-principal-name-claims or email-claims.");
+
+						break;
+					}
 					default:
-						{
-							throw new InvalidOperationException($"The identifier-kind {identifierKind} is invalid.");
-						}
+					{
+						throw new InvalidOperationException($"The identifier-kind {identifierKind} is invalid.");
+					}
 				}
 
 				var attributeList = (attributes ?? Enumerable.Empty<string>()).ToList();

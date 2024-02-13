@@ -94,7 +94,7 @@ namespace Application.Controllers
 				{
 					var url = this.Url.Action("SignOut", new { signOutId = form?.Id });
 
-					return SignOut(new AuthenticationProperties { RedirectUri = url }, authenticationSchemeName);
+					return this.SignOut(new AuthenticationProperties { RedirectUri = url }, authenticationSchemeName);
 				}
 			}
 			// ReSharper restore InvertIf

@@ -115,69 +115,69 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 			switch(identifierKind)
 			{
 				case DirectoryServices.IdentifierKind.Email:
+				{
+					foreach(var claim in claims.Find(this.EmailClaimType))
 					{
-						foreach(var claim in claims.Find(this.EmailClaimType))
-						{
-							filterBuilder.Filters.Add($"{attributeNames.Email}={claim.Value}");
-						}
-
-						if(!filterBuilder.Filters.Any())
-							throw new InvalidOperationException($"Could not find any email-claims with claim-type {this.EmailClaimType.ToStringRepresentation()}.");
-
-						break;
+						filterBuilder.Filters.Add($"{attributeNames.Email}={claim.Value}");
 					}
+
+					if(!filterBuilder.Filters.Any())
+						throw new InvalidOperationException($"Could not find any email-claims with claim-type {this.EmailClaimType.ToStringRepresentation()}.");
+
+					break;
+				}
 				case DirectoryServices.IdentifierKind.SamAccountName:
+				{
+					foreach(var claim in claims.Find(this.SamAccountNameClaimType))
 					{
-						foreach(var claim in claims.Find(this.SamAccountNameClaimType))
-						{
-							filterBuilder.Filters.Add($"{attributeNames.SamAccountName}={claim.Value}");
-						}
-
-						if(!filterBuilder.Filters.Any())
-							throw new InvalidOperationException($"Could not find any sAMAccountName-claims with claim-type {this.SamAccountNameClaimType.ToStringRepresentation()}.");
-
-						break;
+						filterBuilder.Filters.Add($"{attributeNames.SamAccountName}={claim.Value}");
 					}
+
+					if(!filterBuilder.Filters.Any())
+						throw new InvalidOperationException($"Could not find any sAMAccountName-claims with claim-type {this.SamAccountNameClaimType.ToStringRepresentation()}.");
+
+					break;
+				}
 				case DirectoryServices.IdentifierKind.SecurityIdentifier:
+				{
+					foreach(var claim in claims.Find(this.SecurityIdentifierClaimType))
 					{
-						foreach(var claim in claims.Find(this.SecurityIdentifierClaimType))
-						{
-							filterBuilder.Filters.Add($"{attributeNames.SecurityIdentifier}={claim.Value}");
-						}
-
-						if(!filterBuilder.Filters.Any())
-							throw new InvalidOperationException($"Could not find any security-identifier-claims with claim-type {this.SecurityIdentifierClaimType.ToStringRepresentation()}.");
-
-						break;
+						filterBuilder.Filters.Add($"{attributeNames.SecurityIdentifier}={claim.Value}");
 					}
+
+					if(!filterBuilder.Filters.Any())
+						throw new InvalidOperationException($"Could not find any security-identifier-claims with claim-type {this.SecurityIdentifierClaimType.ToStringRepresentation()}.");
+
+					break;
+				}
 				case DirectoryServices.IdentifierKind.UserPrincipalName:
+				{
+					foreach(var claim in claims.Find(this.UserPrincipalNameClaimType))
 					{
-						foreach(var claim in claims.Find(this.UserPrincipalNameClaimType))
-						{
-							filterBuilder.Filters.Add($"{attributeNames.UserPrincipalName}={claim.Value}");
-						}
-
-						if(!filterBuilder.Filters.Any())
-							throw new InvalidOperationException($"Could not find any user-principal-name-claims with claim-type {this.UserPrincipalNameClaimType.ToStringRepresentation()}.");
-
-						break;
+						filterBuilder.Filters.Add($"{attributeNames.UserPrincipalName}={claim.Value}");
 					}
+
+					if(!filterBuilder.Filters.Any())
+						throw new InvalidOperationException($"Could not find any user-principal-name-claims with claim-type {this.UserPrincipalNameClaimType.ToStringRepresentation()}.");
+
+					break;
+				}
 				case DirectoryServices.IdentifierKind.UserPrincipalNameWithEmailFallback:
+				{
+					foreach(var claim in claims.Find(this.UserPrincipalNameClaimType, this.EmailClaimType))
 					{
-						foreach(var claim in claims.Find(this.UserPrincipalNameClaimType, this.EmailClaimType))
-						{
-							filterBuilder.Filters.Add($"{attributeNames.UserPrincipalName}={claim.Value}");
-						}
-
-						if(!filterBuilder.Filters.Any())
-							throw new InvalidOperationException($"Could not find any user-principal-name-claims with claim-type {this.UserPrincipalNameClaimType.ToStringRepresentation()} or email-claims with claim-type {this.EmailClaimType.ToStringRepresentation()}.");
-
-						break;
+						filterBuilder.Filters.Add($"{attributeNames.UserPrincipalName}={claim.Value}");
 					}
+
+					if(!filterBuilder.Filters.Any())
+						throw new InvalidOperationException($"Could not find any user-principal-name-claims with claim-type {this.UserPrincipalNameClaimType.ToStringRepresentation()} or email-claims with claim-type {this.EmailClaimType.ToStringRepresentation()}.");
+
+					break;
+				}
 				default:
-					{
-						throw new InvalidOperationException($"The identifier-kind {identifierKind.ToStringRepresentation()} is invalid.");
-					}
+				{
+					throw new InvalidOperationException($"The identifier-kind {identifierKind.ToStringRepresentation()} is invalid.");
+				}
 			}
 
 			return await Task.FromResult(filterBuilder.Build()).ConfigureAwait(false);

@@ -17,20 +17,11 @@ namespace RegionOrebroLan.Web.Authentication.DependencyInjection.Registration
 			if(schemeRegistrationOptions == null)
 				throw new ArgumentNullException(nameof(schemeRegistrationOptions));
 
-			authenticationBuilder.Services.Configure<IISOptions>(options =>
-			{
-				options.AutomaticAuthentication = false;
-			});
+			authenticationBuilder.Services.Configure<IISOptions>(options => { options.AutomaticAuthentication = false; });
 
-			authenticationBuilder.Services.Configure<IISServerOptions>(options =>
-			{
-				options.AutomaticAuthentication = false;
-			});
+			authenticationBuilder.Services.Configure<IISServerOptions>(options => { options.AutomaticAuthentication = false; });
 
-			authenticationBuilder.AddNegotiate(name, schemeRegistrationOptions.DisplayName, options =>
-			{
-				this.Bind(authenticationBuilder, options, schemeRegistrationOptions);
-			});
+			authenticationBuilder.AddNegotiate(name, schemeRegistrationOptions.DisplayName, options => { this.Bind(authenticationBuilder, options, schemeRegistrationOptions); });
 		}
 
 		#endregion
