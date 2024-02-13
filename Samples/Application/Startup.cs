@@ -33,8 +33,7 @@ namespace Application
 
 		public virtual void Configure(IApplicationBuilder applicationBuilder)
 		{
-			if(applicationBuilder == null)
-				throw new ArgumentNullException(nameof(applicationBuilder));
+			ArgumentNullException.ThrowIfNull(applicationBuilder);
 
 			applicationBuilder
 				.UseDeveloperExceptionPage()
@@ -47,8 +46,7 @@ namespace Application
 
 		public virtual void ConfigureServices(IServiceCollection services)
 		{
-			if(services == null)
-				throw new ArgumentNullException(nameof(services));
+			ArgumentNullException.ThrowIfNull(services);
 
 			//// We could skip the configuration of cookie-authentication in the configuration-file (appsettings.json) and instead do:
 			//services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

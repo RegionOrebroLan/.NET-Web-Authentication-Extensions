@@ -35,8 +35,7 @@ namespace Application.Controllers
 			this.AuthenticationSchemeLoader = authenticationSchemeLoader ?? throw new ArgumentNullException(nameof(authenticationSchemeLoader));
 			this.DecorationLoader = decorationLoader ?? throw new ArgumentNullException(nameof(decorationLoader));
 
-			if(loggerFactory == null)
-				throw new ArgumentNullException(nameof(loggerFactory));
+			ArgumentNullException.ThrowIfNull(loggerFactory);
 
 			this.Logger = loggerFactory.CreateLogger(this.GetType());
 		}
@@ -143,8 +142,7 @@ namespace Application.Controllers
 
 		protected internal virtual async Task<ClaimsPrincipal> CreateClaimsPrincipalAsync(string authenticationScheme, IClaimBuilderCollection claims)
 		{
-			if(claims == null)
-				throw new ArgumentNullException(nameof(claims));
+			ArgumentNullException.ThrowIfNull(claims);
 
 			return await Task.FromResult(new ClaimsPrincipal(new ClaimsIdentity(claims.Build(), authenticationScheme, claims.FindFirstNameClaim()?.Type, claims.FindFirst(ClaimTypes.Role, JwtClaimTypes.Role)?.Type)));
 		}
@@ -287,11 +285,9 @@ namespace Application.Controllers
 
 		protected internal virtual async Task ResolveName(AuthenticateResult authenticateResult, IClaimBuilderCollection claims)
 		{
-			if(authenticateResult == null)
-				throw new ArgumentNullException(nameof(authenticateResult));
+			ArgumentNullException.ThrowIfNull(authenticateResult);
 
-			if(claims == null)
-				throw new ArgumentNullException(nameof(claims));
+			ArgumentNullException.ThrowIfNull(claims);
 
 			var nameClaim = claims.FindFirstNameClaim();
 
@@ -311,11 +307,9 @@ namespace Application.Controllers
 
 		protected internal virtual async Task ResolveUniqueIdentifier(AuthenticateResult authenticateResult, string authenticationScheme, IClaimBuilderCollection claims)
 		{
-			if(authenticateResult == null)
-				throw new ArgumentNullException(nameof(authenticateResult));
+			ArgumentNullException.ThrowIfNull(authenticateResult);
 
-			if(claims == null)
-				throw new ArgumentNullException(nameof(claims));
+			ArgumentNullException.ThrowIfNull(claims);
 
 			var uniqueIdentifierClaim = claims.FindFirstUniqueIdentifierClaim();
 
@@ -355,8 +349,7 @@ namespace Application.Controllers
 
 		protected internal virtual void ValidateAuthenticationScheme(string authenticationSchemeName, AuthenticationSchemeKind kind)
 		{
-			if(authenticationSchemeName == null)
-				throw new ArgumentNullException(nameof(authenticationSchemeName));
+			ArgumentNullException.ThrowIfNull(authenticationSchemeName);
 
 			var authenticationScheme = this.AuthenticationSchemeLoader.GetAsync(authenticationSchemeName).Result;
 

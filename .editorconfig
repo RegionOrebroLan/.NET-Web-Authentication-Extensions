@@ -23,7 +23,7 @@ indent_style = space
 dotnet_analyzer_diagnostic.severity = error
 
 # Suppress (suppress any rule you need to suppress)
-#dotnet_diagnostic.CA1860.severity = none
+dotnet_diagnostic.CA1860.severity = none
 dotnet_diagnostic.IDE0003.severity = none
 dotnet_diagnostic.IDE0008.severity = none
 dotnet_diagnostic.IDE0011.severity = none
@@ -31,6 +31,7 @@ dotnet_diagnostic.IDE0046.severity = none
 dotnet_diagnostic.IDE0055.severity = none
 dotnet_diagnostic.IDE0058.severity = none
 dotnet_diagnostic.IDE0063.severity = none
+dotnet_diagnostic.IDE0270.severity = none
 dotnet_diagnostic.IDE0305.severity = none
 
 # Temporary
