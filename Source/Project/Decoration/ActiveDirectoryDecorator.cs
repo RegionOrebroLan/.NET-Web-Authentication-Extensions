@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -67,7 +66,6 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 
 		#region Methods
 
-		[SuppressMessage("Design", "CA1031:Do not catch general exception types")]
 		protected internal virtual async Task<string> CreateFilterAsync(IClaimBuilderCollection claims)
 		{
 			try
@@ -183,7 +181,6 @@ namespace RegionOrebroLan.Web.Authentication.Decoration
 			return await Task.FromResult(filterBuilder.Build()).ConfigureAwait(false);
 		}
 
-		[SuppressMessage("Design", "CA1031:Do not catch general exception types")]
 		public virtual async Task DecorateAsync(AuthenticateResult authenticateResult, string authenticationScheme, IClaimBuilderCollection claims, AuthenticationProperties properties)
 		{
 			try

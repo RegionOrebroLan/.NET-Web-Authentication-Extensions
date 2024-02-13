@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices.Protocols;
 using System.IO;
 using System.Linq;
@@ -70,7 +69,6 @@ namespace IntegrationTests.DirectoryServices
 		}
 
 		[TestMethod]
-		[SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase")]
 		public async Task ConnectionString_WithSecurePort_Test()
 		{
 			await this.ConnectionStringTest("ConnectionString-With-Secure-Port", AuthType.Kerberos, (await this.GetSystemDomainFirstPartAsync()).ToLowerInvariant(), 636);
