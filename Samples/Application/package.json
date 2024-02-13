@@ -1,26 +1,24 @@
 {
 	"dependencies": {
-		"bootstrap": "5.1.3",
+		"bootstrap": "5.3.2",
 		"svgxuse": "1.2.6"
 	},
 	"devDependencies": {
-		"@rollup/plugin-commonjs": "21.0.1",
-		"@rollup/plugin-node-resolve": "13.1.1",
-		"@rollup/plugin-typescript": "8.3.0",
-		"@types/bootstrap": "5.1.6",
-		"bootstrap-icons": "1.7.2",
-		"del": "6.0.0",
-		"gulp": "4.0.2",
-		"gulp-plumber": "1.2.1",
-		"gulp-rename": "2.0.0",
-		"gulp-sass": "5.0.0",
-		"gulp-sourcemaps": "3.0.0",
-		"gulp-svg-sprite": "1.5.0",
-		"node-sass": "7.0.1",
-		"rollup": "2.62.0",
-		"rollup-plugin-terser": "7.0.2",
-		"tslib": "2.3.1",
-		"typescript": "4.5.4"
+		"@types/bootstrap": "5.2.10",
+		"bootstrap-icons": "1.11.3",
+		"esbuild": "0.20.0",
+		"sass": "1.70.0",
+		"svg-sprite": "2.0.2"
 	},
-	"private": true
+	"private": true,
+	"scripts": {
+		"Build-Debug": "npm run Build-Script-Debug && npm run Build-Sprite && npm run Build-StyleSheet-Debug",
+		"Build-Release": "npm run Build-Script-Release && npm run Build-Sprite && npm run Build-StyleSheet-Release",
+		"Build-Script-Debug": "esbuild Scripts/Site.ts --bundle --outfile=wwwroot/Scripts/site.js",
+		"Build-Script-Release": "esbuild Scripts/Site.ts --bundle --minify --outfile=wwwroot/Scripts/site.js",
+		"//": "https://madecurious.com/curiosities/generating-svg-sprites-the-easy-way/, https://github.com/svg-sprite/svg-sprite/blob/HEAD/docs/command-line.md",
+		"Build-Sprite": "svg-sprite -s --symbol-dest wwwroot/Style/Icons --symbol-sprite sprite.svg Style/Icons/**/*.svg",
+		"Build-StyleSheet-Debug": "sass Style/Site.scss:wwwroot/Style/site.css --no-source-map",
+		"Build-StyleSheet-Release": "sass Style/Site.scss:wwwroot/Style/site.css --no-source-map --style=compressed"
+	}
 }

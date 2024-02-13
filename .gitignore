@@ -405,7 +405,7 @@ Samples/Application/Scripts/**/*.js
 Samples/Application/Style/**/*.css
 Samples/Application/wwwroot/Scripts/*
 !Samples/Application/wwwroot/Scripts/.gitkeep
-Samples/Application/wwwroot/Style/*
-!Samples/Application/wwwroot/Style/.gitkeep
+Samples/Application/wwwroot/Style/site.css
+Samples/Application/wwwroot/Style/Icons/*
 !Samples/Application/wwwroot/favicon.ico
 Samples/Application/package-lock.json

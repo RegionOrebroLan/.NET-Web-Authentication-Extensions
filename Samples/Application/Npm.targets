@@ -1,0 +1,9 @@
+<Project>
+	<Target Name="NpmInstall" Inputs="package.json" Outputs="node_modules/.install-stamp">
+		<Exec Command="npm install" />
+		<Touch AlwaysCreate="true" Files="node_modules/.install-stamp" />
+	</Target>
+	<Target Name="NpmRunBuild" AfterTargets="AfterBuild" DependsOnTargets="NpmInstall">
+		<Exec Command="npm run Build-$(Configuration)" />
+	</Target>
+</Project>

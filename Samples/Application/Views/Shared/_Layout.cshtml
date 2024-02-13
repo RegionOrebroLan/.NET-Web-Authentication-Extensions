@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="robots" content="noindex,nofollow" />
 		<title>@ViewBag.Name - Sample application</title>
-		<link asp-append-version="true" href="~/Style/Site.min.css" rel="stylesheet" />
+		<link asp-append-version="true" href="~/Style/site.css" rel="stylesheet" />
 	</head>
 	<body>
 		<header>
@@ -59,6 +59,6 @@
 		<footer class="border-top container pt-2 text-center text-muted">
 			<span>Target-framework: <strong>@(typeof(Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectOptions).Assembly.GetName().Version)</strong></span>
 		</footer>
-		<script asp-append-version="true" src="~/Scripts/Site.min.js"></script>
+		<script asp-append-version="true" src="~/Scripts/site.js"></script>
 	</body>
 </html>
