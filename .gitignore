@@ -301,7 +301,7 @@ node_modules/
 *.dsw
 *.dsp
 
-# Visual Studio 6 technical files 
+# Visual Studio 6 technical files
 *.ncb
 *.aps
 
@@ -398,17 +398,14 @@ FodyWeavers.xsd
 *.sln.iml
 
 # Custom
-Source/.Global/Signing/*
+StrongName.snk
 
-!Source/.Global/Signing/ReadMe.md
-!Source/.Global/Signing/StrongName.Development.snk
-
-Source/Samples/Application/Scripts/**/*.js.map
-Source/Samples/Application/Scripts/**/*.js
-Source/Samples/Application/Style/**/*.css
-Source/Samples/Application/wwwroot/Scripts/*
-!Source/Samples/Application/wwwroot/Scripts/.gitkeep
-Source/Samples/Application/wwwroot/Style/*
-!Source/Samples/Application/wwwroot/Style/.gitkeep
-!Source/Samples/Application/wwwroot/favicon.ico
-Source/Samples/Application/package-lock.json
+Samples/Application/Scripts/**/*.js.map
+Samples/Application/Scripts/**/*.js
+Samples/Application/Style/**/*.css
+Samples/Application/wwwroot/Scripts/*
+!Samples/Application/wwwroot/Scripts/.gitkeep
+Samples/Application/wwwroot/Style/*
+!Samples/Application/wwwroot/Style/.gitkeep
+!Samples/Application/wwwroot/favicon.ico
+Samples/Application/package-lock.json

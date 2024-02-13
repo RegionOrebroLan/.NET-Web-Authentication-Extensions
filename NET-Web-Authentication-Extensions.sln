@@ -1,34 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29905.134
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Global", ".Global", "{11402557-CA24-4A83-BE7F-E88F242BAA07}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{43D62E8E-B7D9-4020-A5CA-3D94D999CD5A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".root", ".root", "{11402557-CA24-4A83-BE7F-E88F242BAA07}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 		Directory.Version.props = Directory.Version.props
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{E3F474E2-0E85-47CD-A2DB-55852CEDB670}"
-	ProjectSection(SolutionItems) = preProject
-		..\ReadMe.md = ..\ReadMe.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Settings", "Settings", "{E69917BB-D44E-418E-AE1E-8C62EE842E58}"
-	ProjectSection(SolutionItems) = preProject
-		..\.editorconfig = ..\.editorconfig
-		..\.gitignore = ..\.gitignore
-		..\License = ..\License
-		..\NuGet.config = ..\NuGet.config
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Signing", "Signing", "{169D8A5D-6205-40F4-86B6-054AF7BEE7B3}"
-	ProjectSection(SolutionItems) = preProject
-		.Global\Signing\ReadMe.md = .Global\Signing\ReadMe.md
-		.Global\Signing\StrongName.Development.snk = .Global\Signing\StrongName.Development.snk
+		License = License
+		NuGet.config = NuGet.config
+		ReadMe.md = ReadMe.md
+		StrongName.Development.snk = StrongName.Development.snk
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{87E72CD1-DCE7-433D-83AD-45A6DC1FF3AB}"
@@ -36,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{87E7
 		Samples\Directory.Build.props = Samples\Directory.Build.props
 		Samples\Directory.Build.targets = Samples\Directory.Build.targets
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{F3AFF728-E77E-43E4-B31D-FEC669E52DAB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BD932090-BBDD-468D-990C-4425B779A1FD}"
 	ProjectSection(SolutionItems) = preProject
@@ -46,7 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BD932090
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Samples\Application\Application.csproj", "{DAE38783-4C02-42E1-898A-4A14D0D98C9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project", "Project\Project.csproj", "{D9A714B9-5387-4FB3-AF50-858F95205971}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project", "Source\Project\Project.csproj", "{0D572A03-B6BB-467B-A7DF-23DD2506EB85}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Integration-tests", "Tests\Integration-tests\Integration-tests.csproj", "{16598E18-E593-4C45-88FA-21A648D2A4A3}"
 EndProject
@@ -64,10 +51,6 @@ Global
 		{DAE38783-4C02-42E1-898A-4A14D0D98C9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAE38783-4C02-42E1-898A-4A14D0D98C9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAE38783-4C02-42E1-898A-4A14D0D98C9B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D9A714B9-5387-4FB3-AF50-858F95205971}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9A714B9-5387-4FB3-AF50-858F95205971}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9A714B9-5387-4FB3-AF50-858F95205971}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D9A714B9-5387-4FB3-AF50-858F95205971}.Release|Any CPU.Build.0 = Release|Any CPU
 		{16598E18-E593-4C45-88FA-21A648D2A4A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{16598E18-E593-4C45-88FA-21A648D2A4A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16598E18-E593-4C45-88FA-21A648D2A4A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -80,19 +63,20 @@ Global
 		{3ED78059-9F54-4511-8A4F-D0DDF380EC0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ED78059-9F54-4511-8A4F-D0DDF380EC0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3ED78059-9F54-4511-8A4F-D0DDF380EC0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D572A03-B6BB-467B-A7DF-23DD2506EB85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D572A03-B6BB-467B-A7DF-23DD2506EB85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D572A03-B6BB-467B-A7DF-23DD2506EB85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D572A03-B6BB-467B-A7DF-23DD2506EB85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{43D62E8E-B7D9-4020-A5CA-3D94D999CD5A} = {11402557-CA24-4A83-BE7F-E88F242BAA07}
-		{E3F474E2-0E85-47CD-A2DB-55852CEDB670} = {11402557-CA24-4A83-BE7F-E88F242BAA07}
-		{E69917BB-D44E-418E-AE1E-8C62EE842E58} = {11402557-CA24-4A83-BE7F-E88F242BAA07}
-		{169D8A5D-6205-40F4-86B6-054AF7BEE7B3} = {11402557-CA24-4A83-BE7F-E88F242BAA07}
 		{DAE38783-4C02-42E1-898A-4A14D0D98C9B} = {87E72CD1-DCE7-433D-83AD-45A6DC1FF3AB}
 		{16598E18-E593-4C45-88FA-21A648D2A4A3} = {BD932090-BBDD-468D-990C-4425B779A1FD}
 		{291BADEB-DE89-4F61-AE6A-B28D938E51CD} = {BD932090-BBDD-468D-990C-4425B779A1FD}
 		{3ED78059-9F54-4511-8A4F-D0DDF380EC0A} = {BD932090-BBDD-468D-990C-4425B779A1FD}
+		{0D572A03-B6BB-467B-A7DF-23DD2506EB85} = {F3AFF728-E77E-43E4-B31D-FEC669E52DAB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9D7A5EBB-83F7-4E96-9BFA-4FC6B4C3856E}

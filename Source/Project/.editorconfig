@@ -5,3 +5,6 @@ dotnet_diagnostic.IDE0057.severity = none
 dotnet_diagnostic.IDE0078.severity = none
 dotnet_diagnostic.IDE0083.severity = none
 dotnet_diagnostic.IDE0090.severity = none
+
+[ExtendedAuthenticationBuilder.cs]
+dotnet_diagnostic.CS0618.severity = none

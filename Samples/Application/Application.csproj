@@ -10,7 +10,7 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\Project\Project.csproj" />
+		<ProjectReference Include="../../Source/Project/Project.csproj" />
 	</ItemGroup>
-	<Import Project="Build\Build.targets" />
+	<Import Project="Build/Build.targets" />
 </Project>
